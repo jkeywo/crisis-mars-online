@@ -1,0 +1,6 @@
+node_modules/
+.venv/
+.uv-cache/
+*.egg-info/
+.vitest/
+__pycache__/

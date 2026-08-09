@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  js:
+    name: tests and data checksums
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - run: npm test
+      - run: npm run data:validate
+
+  pasm:
+    name: PASM model
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # This repo is not a fleet game and does not call vellum's reusable
+      # fleet-ci workflow (that one is Rust/Trunk shaped). It uses the one
+      # composite action it actually needs. The rev here must match the pin
+      # in pyproject.toml.
+      - uses: jkeywo/vellum/actions/pasm-validate@186e64f724d648539c3a1f25e29307eb90e2873a
+        with:
+          spec-path: pasm/spec
+          scan: gate
+          scenario-glob: pasm/spec/scenarios/*.yaml
+
+  # ---------------------------------------------------------------------------
+  # Publish to the gh-pages branch.
+  #
+  # Two things this buys over serving main directly, which is what it replaces.
+  #
+  # A broken commit can no longer reach players: this needs both gates above,
+  # so the live site is always a revision whose tests passed. Deploying from a
+  # branch meant every push went out, tested or not.
+  #
+  # And only the game gets served. main also carries the PASM model, the test
+  # suite, the transcription tools and two lockfiles, none of which anybody
+  # loading the page should be fetching or is entitled to browse.
+  #
+  # Still no build step. This copies files; it does not transform them, and
+  # what is served is byte-for-byte what is committed.
+  # ---------------------------------------------------------------------------
+  publish:
+    name: publish to gh-pages
+    needs: [js, pasm]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assemble the site
+        run: |
+          mkdir -p _site
+          # The runtime, and nothing else. Anything not listed here is not
+          # served, which is the point of publishing from a branch at all.
+          cp index.html host.html replay.html .nojekyll _site/
+          cp -r gui data assets vendor _site/
+          # A marker so a confusing bug report can be tied to a revision.
+          printf '%s\n%s\n' "$GITHUB_SHA" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > _site/VERSION
+
+      - name: Push it
+        run: |
+          cd _site
+          git init -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "publish ${GITHUB_SHA::7}"
+          # Force, because gh-pages is derived rather than authored: its history
+          # is noise, and every commit on it is a full copy of the site.
+          git push -q --force \
+            "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" \
+            gh-pages
