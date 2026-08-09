@@ -38,6 +38,8 @@ import '../components/cm-map-board.js';
 import '../components/cm-war-progress.js';
 import '../components/cm-hand.js';
 import '../components/cm-card-viewer.js';
+import '../components/cm-initiative-queue.js';
+import '../components/cm-adjudication.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -66,11 +68,17 @@ export async function startHostApp({ location = window.location, beeper = create
     <dt>${gap.about} — ${gap.ruling}</dt>
     <dd><em>${gap.silent}</em> ${gap.because}</dd>`).join('');
 
-  // One board lane per map, same as the players see.
+  // One lane per map: the board the players see, plus the umpire's own
+  // queue and adjudication panel beside it.
   for (const mapId of Object.keys(data.maps.maps)) {
-    const board = document.createElement('cm-map-board');
-    board.setAttribute('map', mapId);
-    $('host-boards').append(board);
+    const lane = document.createElement('div');
+    lane.className = 'cm-lane';
+    for (const tag of ['cm-map-board', 'cm-initiative-queue', 'cm-adjudication']) {
+      const element = document.createElement(tag);
+      element.setAttribute('map', mapId);
+      lane.append(element);
+    }
+    $('host-boards').append(lane);
   }
 
   const screens = { start: $('screen-start'), running: $('screen-running') };
@@ -264,9 +272,10 @@ export async function startHostApp({ location = window.location, beeper = create
     $('war-strip').hidden = false;
     $('war').data = data;
     $('war').view = session.state;
-    for (const board of $('host-boards').children) {
-      board.data = data;
-      board.view = session.state;
+    for (const element of $('host-boards')
+      .querySelectorAll('cm-map-board, cm-initiative-queue, cm-adjudication')) {
+      element.data = data;
+      element.view = session.state;
     }
     for (const id of ['npc-n1', 'npc-n2']) {
       $(id).data = data;
@@ -283,6 +292,13 @@ export async function startHostApp({ location = window.location, beeper = create
       $('unplaced').textContent = waiting.length
         ? `Still to place their action card: ${waiting.join(', ')}.`
         : 'Every action card is placed.';
+    } else if (phase.name === 'action' && session.state.initiative.unplaced.length) {
+      // The gaps ruling made flesh: the never-placed join no queue, and this
+      // is where the facilitator finds out who they are.
+      $('unplaced').hidden = false;
+      $('unplaced').textContent = 'Never placed, in no queue: '
+        + session.state.initiative.unplaced
+          .map((code) => data.roles.roles[code]?.name ?? code).join(', ') + '.';
     } else {
       $('unplaced').hidden = true;
     }
@@ -360,6 +376,10 @@ export async function startHostApp({ location = window.location, beeper = create
   // showing it.
   document.addEventListener('cm-time-up', () => beeper.beep(3, 880));
   document.addEventListener('cm-overtime', () => beeper.beep(1, 660));
+  // And the spotlight's own two crossings, higher-pitched so the umpire can
+  // tell the sixty-second clock from the phase clock without looking.
+  document.addEventListener('cm-spotlight-warning', () => beeper.beep(1, 990));
+  document.addEventListener('cm-spotlight-up', () => beeper.beep(2, 990));
 
   $('advance-phase').addEventListener('click', () => asFacilitator('facilitator:advance-phase'));
   $('pause-clock').addEventListener('click', () => asFacilitator('facilitator:pause-clock'));

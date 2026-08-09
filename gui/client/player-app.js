@@ -34,6 +34,8 @@ import '../components/cm-war-progress.js';
 import '../components/cm-hand.js';
 import '../components/cm-role-card.js';
 import '../components/cm-card-viewer.js';
+import '../components/cm-initiative-queue.js';
+import '../components/cm-action-spotlight.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -59,9 +61,14 @@ export async function startPlayerApp({ location = window.location, beeper = crea
   // with the boards that exist — and one placement button each, for the same
   // reason.
   for (const [mapId, map] of Object.entries(data.maps.maps)) {
-    const board = document.createElement('cm-map-board');
-    board.setAttribute('map', mapId);
-    $('boards').append(board);
+    const lane = document.createElement('div');
+    lane.className = 'cm-lane';
+    for (const tag of ['cm-map-board', 'cm-initiative-queue', 'cm-action-spotlight']) {
+      const element = document.createElement(tag);
+      element.setAttribute('map', mapId);
+      lane.append(element);
+    }
+    $('boards').append(lane);
 
     const button = document.createElement('button');
     button.type = 'button';
@@ -129,6 +136,12 @@ export async function startPlayerApp({ location = window.location, beeper = crea
     dispatch(event.detail.verb, event.detail.payload));
   document.addEventListener('cm-view-card', (event) =>
     $('card-viewer').show(event.detail.cardId));
+
+  // The spotlight clock says when it crosses a line; what that is worth is
+  // the page's call — one pip at ten seconds, two at time. Best-effort, like
+  // every noise this app makes.
+  document.addEventListener('cm-spotlight-warning', () => beeper?.beep(1, 990));
+  document.addEventListener('cm-spotlight-up', () => beeper?.beep(2, 990));
 
   function dispatch(verb, payload) {
     $('action-error').textContent = '';
@@ -215,9 +228,10 @@ export async function startPlayerApp({ location = window.location, beeper = crea
     $('war-strip').hidden = false;
     $('war').data = data;
     $('war').view = view;
-    for (const board of $('boards').children) {
-      board.data = data;
-      board.view = view;
+    for (const element of $('boards')
+      .querySelectorAll('cm-map-board, cm-initiative-queue, cm-action-spotlight')) {
+      element.data = data;
+      element.view = view;
     }
     $('role-card').data = data;
     $('role-card').view = view;

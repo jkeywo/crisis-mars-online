@@ -2510,3 +2510,132 @@ cm-card-viewer {
   color: #10131f;
   font-weight: 700;
 }
+
+
+/* --------------------------------------------------------------------------
+   The Action Phase (Phase B5): lanes, the call order, the spotlight and the
+   adjudication table.
+   -------------------------------------------------------------------------- */
+
+.cm-lane { display: grid; gap: 0.6rem; align-content: start; }
+
+cm-initiative-queue { display: block; }
+
+.cm-queue-head {
+  margin: 0;
+  font-family: var(--cm-serif);
+}
+
+.cm-queue {
+  list-style: none;
+  margin: 0.2rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.cm-queue-entry {
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.cm-queue-entry[data-done="true"] {
+  color: var(--cm-muted);
+  text-decoration: line-through;
+}
+
+.cm-queue-entry[data-next="true"]::after { content: 'next'; color: var(--cm-muted); }
+
+.cm-queue-entry[data-live="true"] {
+  background: color-mix(in srgb, var(--cm-gold) 18%, transparent);
+  border: 1px solid var(--cm-gold);
+  font-weight: 600;
+}
+
+.cm-queue-ring { font-variant-numeric: tabular-nums; }
+
+.cm-queue-entry[data-state="soon"] .cm-queue-ring { color: var(--cm-amber); }
+
+.cm-queue-entry[data-state="over"] .cm-queue-ring { color: var(--cm-blood); }
+
+/* --- the spotlight and the adjudication table ------------------------------ */
+
+.cm-spotlight, .cm-adjudicate {
+  background: var(--cm-paper);
+  border: 1px solid var(--cm-rule);
+  border-radius: 6px;
+  padding: 0.5rem 0.7rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.cm-spotlight[data-status="closed"] { border-color: var(--cm-green); }
+
+.cm-spotlight-words, .cm-spotlight-narration {
+  margin: 0;
+  padding-left: 0.6rem;
+  border-left: 3px solid var(--cm-rule);
+  font-style: italic;
+}
+
+.cm-spotlight-narration { border-left-color: var(--cm-gold); }
+
+.cm-ally-chip, .cm-card-chip {
+  display: inline-block;
+  padding: 0.05rem 0.4rem;
+  border: 1px solid var(--cm-rule);
+  border-radius: 999px;
+  font-size: 0.8em;
+}
+
+.cm-ally-chip[data-ally="confirmed"] { border-color: var(--cm-green); }
+
+.cm-ally-chip[data-ally="declined"] { border-color: var(--cm-blood); opacity: 0.6; }
+
+.cm-card-chip[data-fate="accepted"] { border-color: var(--cm-green); }
+
+.cm-card-chip[data-fate="vetoed"] {
+  border-color: var(--cm-blood);
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.cm-spotlight-sums { margin: 0; }
+
+.cm-declare, .cm-effects { display: grid; gap: 0.4rem; }
+
+.cm-declare fieldset, .cm-effects fieldset, .cm-ruling {
+  border: 1px solid var(--cm-rule);
+  border-radius: 4px;
+  padding: 0.3rem 0.5rem;
+}
+
+.cm-declare label, .cm-ruling label { display: block; }
+
+.cm-effect-track {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cm-effect-track input { width: 4rem; }
+
+.cm-difficulty button[aria-pressed="true"] {
+  background: var(--cm-gold);
+  color: #10131f;
+  font-weight: 700;
+}
+
+.cm-adjudicate-buttons { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+.cm-narrate textarea { width: 100%; }
+
+.cm-ally-answer {
+  border: 1px solid var(--cm-gold);
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+}
