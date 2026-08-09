@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Crisis: Mars</title>
+  <link rel="stylesheet" href="gui/console.css">
+  <script src="vendor/peerjs.min.js"></script>
+</head>
+<body class="cm-shell cm-shell-player">
+  <header class="cm-bar">
+    <span class="cm-brand">Crisis: Mars</span>
+    <!-- Who you are and where the turn is: the things a player looks up most,
+         on the one strip that is on screen whichever pane is open. -->
+    <div id="bar-status" class="cm-bar-status" hidden>
+      <span id="bar-role" class="cm-bar-role"></span>
+      <cm-phase-clock id="clock"></cm-phase-clock>
+    </div>
+    <cm-connection-dot id="connection" status="connecting"></cm-connection-dot>
+  </header>
+
+  <main class="cm-main">
+    <!-- 1. the code ------------------------------------------------------- -->
+    <section id="screen-code" class="cm-panel" hidden>
+      <h1>Join the game</h1>
+      <p class="cm-lede">Your facilitator will read out a seven-character code.</p>
+      <form id="code-form" class="cm-form">
+        <label for="join-code">Join code</label>
+        <input id="join-code" name="join-code" autocomplete="off" autocapitalize="characters"
+               spellcheck="false" maxlength="12" placeholder="MARS42X" required>
+        <p id="code-error" class="cm-error" role="alert"></p>
+        <button type="submit" class="cm-primary">Continue</button>
+      </form>
+    </section>
+
+    <!-- 2. the name ------------------------------------------------------- -->
+    <section id="screen-name" class="cm-panel" hidden>
+      <h1>Who are you?</h1>
+      <p class="cm-lede">
+        Your own name, not your character's — you will choose a lanyard next.
+        This is what the others see on the roster.
+      </p>
+      <form id="name-form" class="cm-form">
+        <label for="player-name">Your name</label>
+        <input id="player-name" name="player-name" autocomplete="nickname"
+               maxlength="40" required>
+        <button type="submit" class="cm-primary">Join</button>
+      </form>
+    </section>
+
+    <!-- 3. the lobby ------------------------------------------------------ -->
+    <section id="screen-lobby" class="cm-panel cm-wide" hidden>
+      <h1>The Solar System, 2225</h1>
+      <p class="cm-lede">
+        Game <strong id="lobby-code" class="cm-code"></strong>.
+        <span id="lobby-message"></span>
+      </p>
+      <p id="claim-error" class="cm-error" role="alert"></p>
+
+      <div id="role-picker" class="cm-roles" hidden></div>
+
+      <h2>Who is here</h2>
+      <cm-seat-roster id="roster"></cm-seat-roster>
+
+      <button id="start-over" type="button" class="cm-start-over" hidden>
+        Not this game — start over
+      </button>
+    </section>
+
+    <!-- 4. the game ------------------------------------------------------- -->
+    <section id="screen-game" class="cm-panel cm-full" hidden>
+      <div class="cm-game-body">
+        <!-- what you can do, always in view -->
+        <aside id="action-rail" class="cm-rail cm-action-rail">
+          <h2>What you can do</h2>
+          <p id="action-error" class="cm-error" role="alert"></p>
+          <cm-action-list id="actions"></cm-action-list>
+        </aside>
+
+        <!-- the boards, when they arrive -->
+        <div id="game-main" class="cm-game-main">
+          <div class="cm-pane">
+            <h2>The maps</h2>
+            <p class="cm-meta">
+              Earth, Mars and the Asteroid Belt arrive with a later phase.
+              Until then the facilitator narrates the boards over voice, the
+              same way the paper game runs them on a wall.
+            </p>
+            <h2>Who is here</h2>
+            <cm-seat-roster id="game-roster"></cm-seat-roster>
+          </div>
+        </div>
+
+        <!-- your own lanyard and hand, always in view where there is room -->
+        <aside id="character-rail" class="cm-rail cm-character-rail">
+          <div id="sheet"></div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { startPlayerApp } from './gui/client/player-app.js';
+    startPlayerApp();
+  </script>
+</body>
+</html>

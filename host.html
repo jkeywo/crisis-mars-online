@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Crisis: Mars — Facilitator</title>
+  <link rel="stylesheet" href="gui/console.css">
+  <script src="vendor/peerjs.min.js"></script>
+</head>
+<body class="cm-shell">
+  <header class="cm-bar">
+    <span class="cm-brand">Crisis: Mars <span class="cm-tag">facilitator</span></span>
+    <cm-connection-dot id="connection" status="connecting"></cm-connection-dot>
+  </header>
+
+  <main class="cm-main">
+    <!-- starting or resuming ---------------------------------------------- -->
+    <section id="screen-start" class="cm-panel" hidden>
+      <h1>Run a game</h1>
+      <p class="cm-lede">
+        The game lives in this tab. Keep it open, keep the laptop plugged in,
+        and turn off sleep.
+      </p>
+      <label for="player-count">How many players?</label>
+      <select id="player-count">
+        <option value="18" selected>18 — the full game</option>
+        <option value="17">17</option>
+        <option value="16">16</option>
+        <option value="15">15</option>
+        <option value="14">14</option>
+        <option value="13">13</option>
+        <option value="12">12</option>
+        <option value="11">11</option>
+        <option value="10">10</option>
+        <option value="9">9</option>
+        <option value="8">8 — the smallest table</option>
+      </select>
+      <p class="cm-meta">
+        The scaling table is applied for you: the gamespec names the exact
+        roster for every head count, and only those lanyards — and their
+        resource cards — are dealt in. The two NPC lanyards are always yours.
+      </p>
+
+      <button id="new-game" type="button" class="cm-primary">Start a new game</button>
+      <p id="start-error" class="cm-error" role="alert"></p>
+
+      <div id="resume" hidden>
+        <h2>Or pick up where you left off</h2>
+        <ul id="resume-list" class="cm-resumes"></ul>
+      </div>
+
+      <h2>Or open a saved game</h2>
+      <p class="cm-meta">
+        A downloaded save can be opened on any machine — this is how a game
+        survives a laptop dying.
+      </p>
+      <input id="import-file" type="file" accept="application/json,.json">
+    </section>
+
+    <!-- running ------------------------------------------------------------ -->
+    <section id="screen-running" class="cm-panel cm-wide" hidden>
+      <section class="cm-run-control">
+        <cm-phase-clock id="clock"></cm-phase-clock>
+        <div class="cm-clock-buttons">
+          <button id="advance-phase" type="button" class="cm-primary">Next phase</button>
+          <button id="pause-clock" type="button">Pause</button>
+          <button id="extend-clock" type="button" data-minutes="1">+1 min</button>
+          <button id="shorten-clock" type="button" data-minutes="-1">−1 min</button>
+          <button id="end-game" type="button">Call time</button>
+        </div>
+        <p class="cm-meta">
+          The clock runs past zero rather than stopping. A phase ends when you
+          say it does — every negotiation overruns a little.
+        </p>
+      </section>
+
+      <section id="lobby-roles" class="cm-lobby-roles" hidden>
+        <h2>Choosing lanyards</h2>
+        <p class="cm-meta">
+          The same picker every player has open right now. Begin the game
+          above once enough of the table has sat down — a lanyard can still be
+          claimed or re-claimed after that, same as any late arrival.
+        </p>
+        <div id="role-grid" class="cm-roles-by-team"></div>
+      </section>
+
+      <div class="cm-columns">
+        <div>
+          <h1>Game <span id="join-code" class="cm-code"></span></h1>
+          <p class="cm-lede">Read the code out. Paste the link.</p>
+
+          <label for="player-link">Player link</label>
+          <div class="cm-row">
+            <input id="player-link" readonly>
+            <button id="copy-link" type="button">Copy</button>
+          </div>
+
+          <details class="cm-testing">
+            <summary>Testing on one machine</summary>
+            <p class="cm-meta">
+              Opens tabs that each take a seat of their own rather than
+              sharing this machine's. For trying the game out alone — not
+              something to reach for at a real table.
+            </p>
+            <div class="cm-row">
+              <label for="test-seats">How many</label>
+              <input id="test-seats" type="number" min="1" max="8" value="2">
+              <button id="open-test-seats" type="button">Open test players</button>
+            </div>
+          </details>
+
+          <p class="cm-pin">
+            Facilitator PIN <strong id="facilitator-pin"></strong>
+            <span class="cm-meta">
+              Only the other facilitator gets this. Anyone with it can edit the game.
+            </span>
+          </p>
+
+          <h2>Keeping the game</h2>
+          <p class="cm-meta">
+            Saved automatically as you go. Download one before anything
+            important — it is the only copy that survives this machine.
+          </p>
+          <button id="download-save" type="button">Download save</button>
+          <p id="save-warning" class="cm-error" role="alert" hidden>
+            Could not save to this browser — storage is full or blocked.
+            Download a save instead.
+          </p>
+          <p id="replay-warning" class="cm-error" role="alert" hidden></p>
+
+          <h2>Who is here</h2>
+          <p id="seated-count" class="cm-meta"></p>
+          <p class="cm-meta">
+            Clearing a seat empties the chair, not the character: whoever was
+            in it can no longer resume, and their lanyard stays on the wall
+            with everything it holds for somebody else to take.
+          </p>
+          <!-- `editable` is the whole of what separates this roster from the
+               identical one every player has open. -->
+          <cm-seat-roster id="roster" editable></cm-seat-roster>
+
+          <h2>Connections</h2>
+          <pre id="host-log" class="cm-log"></pre>
+        </div>
+
+        <div>
+          <h2>Change anything</h2>
+          <cm-state-inspector id="inspector"></cm-state-inspector>
+
+          <section id="gaps-panel" class="cm-gaps-panel" hidden>
+            <details>
+              <summary>Where the rules are silent</summary>
+              <p class="cm-meta">
+                The printed rules were written for a room with you in it, so a
+                few questions are never answered on paper. The app had to pick
+                something before anybody sat down. Here is what it picked —
+                overrule any of it with the inspector above.
+              </p>
+              <dl id="rules-gaps" class="cm-gaps"></dl>
+            </details>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { startHostApp } from './gui/host/host-app.js';
+    startHostApp();
+  </script>
+</body>
+</html>

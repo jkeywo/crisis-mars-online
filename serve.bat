@@ -42,7 +42,6 @@ echo   Crisis Mars, served from %CD%
 echo.
 echo     Facilitator   http://localhost:%PORT%/host.html
 echo     Player        http://localhost:%PORT%/index.html
-echo     Map check     http://localhost:%PORT%/tools/map-check.html
 echo.
 echo   Open the player link in a second window to test a real connection -
 echo   two tabs of the same window get their own seats too.
