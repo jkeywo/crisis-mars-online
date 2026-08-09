@@ -205,14 +205,17 @@ describe('<cm-action-list>', () => {
     expect(verbs.some((v) => v.startsWith('facilitator:'))).toBe(false);
   });
 
-  it('says a talking phase has nothing to click rather than showing nothing', () => {
-    // The skeleton has no player verbs beyond the lobby's, and claim-role has
-    // its own control — so every playing phase is honest about being for
-    // talking, instead of a blank rail nobody can interpret.
+  it('offers the card verbs in a playing phase, with reclaim refused for want of a loan', () => {
     const list = mount('cm-action-list');
     list.data = data;
     list.view = seated('negotiation');
-    expect(list.textContent).toContain('for talking');
+    const verbs = [...list.querySelectorAll('[data-verb]')].map((b) => b.dataset.verb);
+    expect(verbs).toContain('hand-card');
+    expect(verbs).toContain('discard-card');
+    // Nothing is out on loan in a fresh game, so reclaiming sits under
+    // "Not right now" rather than vanishing — a player who cannot see it
+    // cannot learn that loans come back.
+    expect(list.querySelector('.cm-actions-unavailable [data-verb="reclaim-card"]')).toBeTruthy();
   });
 
   it('says the game is over in the epilogue\'s own words', () => {

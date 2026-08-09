@@ -36,6 +36,8 @@ import '../components/cm-phase-clock.js';
 import '../components/cm-state-inspector.js';
 import '../components/cm-map-board.js';
 import '../components/cm-war-progress.js';
+import '../components/cm-hand.js';
+import '../components/cm-card-viewer.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -266,6 +268,10 @@ export async function startHostApp({ location = window.location, beeper = create
       board.data = data;
       board.view = session.state;
     }
+    for (const id of ['npc-n1', 'npc-n2']) {
+      $(id).data = data;
+      $(id).view = session.state;
+    }
 
     const ended = phase.name === 'epilogue';
     $('advance-phase').textContent = phase.name === 'lobby' ? 'Begin the game'
@@ -324,6 +330,14 @@ export async function startHostApp({ location = window.location, beeper = create
 
   document.addEventListener('cm-facilitate', (event) =>
     asFacilitator(event.detail.verb, event.detail.payload));
+
+  // The NPC hands raise the same commands a player's hand would; here they
+  // are applied as the facilitator, whose payload already names the lanyard.
+  $('card-viewer').data = data;
+  document.addEventListener('cm-command', (event) =>
+    asFacilitator(event.detail.verb, event.detail.payload));
+  document.addEventListener('cm-view-card', (event) =>
+    $('card-viewer').show(event.detail.cardId));
 
   // --- the clock, out loud --------------------------------------------------
   // A facilitator running a room is not looking at this screen. They are

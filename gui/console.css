@@ -2333,3 +2333,155 @@ cm-war-progress {
 }
 
 .cm-war-station-range { font-variant-numeric: tabular-nums; }
+
+
+/* --------------------------------------------------------------------------
+   Cards in hands (Phase B3): the hand, the lanyard, and the viewer.
+   -------------------------------------------------------------------------- */
+
+cm-hand { display: block; }
+
+cm-hand h4 {
+  margin: 0.6rem 0 0.25rem;
+  font-family: var(--cm-serif);
+}
+
+.cm-hand-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.cm-hand-cards li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.cm-card-thumb {
+  padding: 0;
+  border: 1px solid var(--cm-rule);
+  border-radius: 4px;
+  background: none;
+  cursor: zoom-in;
+  line-height: 0;
+}
+
+.cm-card-thumb img { width: 4.2rem; border-radius: 3px; display: block; }
+
+.cm-hand-spent .cm-card-thumb { opacity: 0.45; }
+
+.cm-hand-card-words {
+  display: grid;
+  gap: 0.2rem;
+  font-size: 0.85em;
+}
+
+.cm-hand-loan-badge {
+  color: var(--cm-amber);
+  font-size: 0.85em;
+}
+
+.cm-hand-actions {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.cm-hands-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1rem;
+  margin: 0.6rem 0;
+}
+
+.cm-hands-entry {
+  background: var(--cm-paper);
+  border: 1px solid var(--cm-rule);
+  border-radius: 6px;
+  padding: 0.5rem 0.7rem;
+}
+
+.cm-hands-entry h3 {
+  margin: 0 0 0.3rem;
+  font-size: 1em;
+  font-family: var(--cm-serif);
+}
+
+.cm-npc-hands {
+  background: var(--cm-paper);
+  border: 1px solid var(--cm-rule);
+  border-radius: 6px;
+  padding: 0.5rem 0.8rem;
+}
+
+/* --- the lanyard ------------------------------------------------------------ */
+
+cm-role-card { display: block; }
+
+.cm-lanyard {
+  margin: 0;
+  border-left: 4px solid var(--faction-colour, var(--cm-rule));
+  border-radius: 6px;
+  background: var(--cm-paper);
+  padding: 0.6rem;
+}
+
+.cm-lanyard img { width: 100%; border-radius: 4px; display: block; }
+
+.cm-lanyard figcaption {
+  display: grid;
+  gap: 0.15rem;
+  padding-top: 0.4rem;
+}
+
+.cm-lanyard-flip { margin-top: 0.4rem; }
+
+.cm-lanyard-private {
+  background: var(--cm-paper);
+  border: 1px solid var(--cm-gold);
+  border-radius: 6px;
+  padding: 0.5rem 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.cm-lanyard-private h4 {
+  margin: 0.5rem 0 0.15rem;
+  font-family: var(--cm-serif);
+  color: var(--cm-gold);
+}
+
+/* --- the viewer -------------------------------------------------------------- */
+
+cm-card-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  background: rgba(5, 7, 14, 0.75);
+}
+
+.cm-viewer-card {
+  position: relative;
+  margin: 0;
+  max-width: min(26rem, 90vw);
+  background: var(--cm-paper);
+  border: 1px solid var(--cm-rule);
+  border-radius: 8px;
+  padding: 0.8rem;
+}
+
+.cm-viewer-card img { width: 100%; border-radius: 6px; display: block; }
+
+.cm-viewer-card figcaption { display: grid; gap: 0.2rem; padding-top: 0.5rem; }
+
+.cm-viewer-card [data-close] {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.3rem;
+  font-size: 1.1rem;
+  line-height: 1;
+}

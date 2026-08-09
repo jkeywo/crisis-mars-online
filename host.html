@@ -154,6 +154,20 @@
         </div>
 
         <div>
+          <h2>The NPC hands</h2>
+          <p class="cm-meta">
+            The U.N. Ambassador and the Martian Senate Speaker are yours to
+            roleplay. Hand their cards out — the tithe, a bribe, a favour —
+            through the same verbs the players use; every pass lands in the
+            log like everything else.
+          </p>
+          <section class="cm-npc-hands">
+            <h3>Unified Nations Ambassador</h3>
+            <cm-hand id="npc-n1" acts-for="N1"></cm-hand>
+            <h3>Martian Senate Speaker</h3>
+            <cm-hand id="npc-n2" acts-for="N2"></cm-hand>
+          </section>
+
           <h2>Change anything</h2>
           <cm-state-inspector id="inspector"></cm-state-inspector>
 
@@ -173,6 +187,8 @@
       </div>
     </section>
   </main>
+
+  <cm-card-viewer id="card-viewer"></cm-card-viewer>
 
   <script type="module">
     import { startHostApp } from './gui/host/host-app.js';

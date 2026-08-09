@@ -89,6 +89,13 @@
             <!-- One lane per map, built from maps.json by the app so the row
                  cannot disagree with the boards that exist. -->
             <div id="boards" class="cm-boards-lanes"></div>
+            <!-- Hands are public — the paper game plays cards face up — so
+                 anybody can read anybody's. Folded, because your own hand is
+                 on the rail and this is for checking on the neighbours. -->
+            <details id="all-hands">
+              <summary>Everyone's hands</summary>
+              <div id="hands-list" class="cm-hands-list"></div>
+            </details>
             <h2>Who is here</h2>
             <cm-seat-roster id="game-roster"></cm-seat-roster>
           </div>
@@ -96,11 +103,14 @@
 
         <!-- your own lanyard and hand, always in view where there is room -->
         <aside id="character-rail" class="cm-rail cm-character-rail">
-          <div id="sheet"></div>
+          <cm-role-card id="role-card"></cm-role-card>
+          <cm-hand id="hand"></cm-hand>
         </aside>
       </div>
     </section>
   </main>
+
+  <cm-card-viewer id="card-viewer"></cm-card-viewer>
 
   <script type="module">
     import { startPlayerApp } from './gui/client/player-app.js';

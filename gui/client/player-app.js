@@ -31,6 +31,9 @@ import '../components/cm-phase-clock.js';
 import '../components/cm-action-list.js';
 import '../components/cm-map-board.js';
 import '../components/cm-war-progress.js';
+import '../components/cm-hand.js';
+import '../components/cm-role-card.js';
+import '../components/cm-card-viewer.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -110,6 +113,21 @@ export async function startPlayerApp({ location = window.location, beeper = crea
   }
 
   document.addEventListener('cm-retry', () => manager.retryNow());
+
+  // The hand's affordances raise commands; sending them is the page's job,
+  // like everything else that leaves this tab.
+  $('card-viewer').data = data;
+  document.addEventListener('cm-command', (event) =>
+    dispatch(event.detail.verb, event.detail.payload));
+  document.addEventListener('cm-view-card', (event) =>
+    $('card-viewer').show(event.detail.cardId));
+
+  function dispatch(verb, payload) {
+    $('action-error').textContent = '';
+    const { envelope, sent } = sendCommand(verb, payload);
+    if (sent) client.awaiting(envelope.data.seq, verb);
+    else $('action-error').textContent = 'Not connected — try again in a moment.';
+  }
 
   // The way out of a remembered seat: back to the code screen, with the
   // remembered name cleared so the next load asks properly rather than
@@ -193,43 +211,46 @@ export async function startPlayerApp({ location = window.location, beeper = crea
       board.data = data;
       board.view = view;
     }
-    renderSheet(view, mine);
+    $('role-card').data = data;
+    $('role-card').view = view;
+    $('hand').data = data;
+    $('hand').view = view;
+    renderAllHands(view, mine);
     $('game-roster').roles = data.roles.roles;
     $('game-roster').seats = seats;
   }
 
   /**
-   * Your own lanyard, and your hand.
+   * Everyone else's cards, one readonly hand per active lanyard.
    *
-   * The back of the role card is static data rendered only for its owner —
-   * the projection carries it as `brief`, the same accepted trade RBO made
-   * for briefs.json. The hand is read off the public card records: everything
-   * this player currently holds, spent or not.
+   * Rebuilt only when the roster of codes changes; on an ordinary render the
+   * existing hands are just handed the fresh projection. Hands are public in
+   * the paper game, so there is nothing here the manifest has not already
+   * let through.
    */
-  function renderSheet(view, mine) {
-    const printed = data.roles.roles[mine] ?? {};
-    const faction = data.factions.factions[printed.factionId];
-    const held = Object.values(view.cards ?? {}).filter((c) => c.holderCode === mine);
-
-    $('sheet').innerHTML = `
-      <h2>${escape(printed.name ?? mine)}</h2>
-      <p class="cm-meta">${escape(faction?.name ?? '')} · initiative ${
-  (printed.initiative ?? []).join(', ')}</p>
-      ${view.brief ? `
-        <h3>Who you are</h3>
-        <p>${escape(view.brief.background ?? '')}</p>
-        <h3>Your goal</h3>
-        <p>${escape(view.brief.personalGoal ?? '')}</p>` : ''}
-      <h3>Your hand</h3>
-      <ul class="cm-hand">${held.map((card) => `
-        <li data-state="${card.state}">
-          <img src="assets/cards/${escape(card.id)}.png" alt="${escape(
-  data.resources.types[card.type]?.name ?? card.type)}" loading="lazy">
-          <span>${escape(data.resources.types[card.type]?.name ?? card.type)}${
-  card.ownerCode === mine ? '' : ` — on loan from ${escape(card.ownerCode)}`}${
-  card.state === 'spent' ? ' (spent)' : ''}</span>
-        </li>`).join('') || '<li class="cm-empty">nothing in hand</li>'}
-      </ul>`;
+  let handsKey = '';
+  function renderAllHands(view, mine) {
+    const codes = Object.keys(view.roles ?? {}).filter((code) => code !== mine);
+    const key = codes.join(',');
+    if (key !== handsKey) {
+      handsKey = key;
+      $('hands-list').replaceChildren(...codes.map((code) => {
+        const block = document.createElement('div');
+        block.className = 'cm-hands-entry';
+        const name = document.createElement('h3');
+        name.textContent = data.roles.roles[code]?.name
+          ?? data.factions.npcs?.[code]?.name ?? code;
+        const hand = document.createElement('cm-hand');
+        hand.setAttribute('code', code);
+        hand.setAttribute('readonly', '');
+        block.append(name, hand);
+        return block;
+      }));
+    }
+    for (const hand of $('hands-list').querySelectorAll('cm-hand')) {
+      hand.data = data;
+      hand.view = view;
+    }
   }
 
   /**
