@@ -13,6 +13,11 @@
     <cm-connection-dot id="connection" status="connecting"></cm-connection-dot>
   </header>
 
+  <!-- The war, across the top of everything. Hidden on the start screen. -->
+  <div id="war-strip" class="cm-war-strip" hidden>
+    <cm-war-progress id="war"></cm-war-progress>
+  </div>
+
   <main class="cm-main">
     <!-- starting or resuming ---------------------------------------------- -->
     <section id="screen-start" class="cm-panel" hidden>
@@ -73,6 +78,11 @@
           say it does — every negotiation overruns a little.
         </p>
       </section>
+
+      <!-- The three boards, one lane each, built from maps.json by the app.
+           The inspector edits the tracks; these react like every other
+           cm- component. -->
+      <div id="host-boards" class="cm-boards-lanes"></div>
 
       <section id="lobby-roles" class="cm-lobby-roles" hidden>
         <h2>Choosing lanyards</h2>

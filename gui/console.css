@@ -2139,3 +2139,197 @@ cm-shire-editor { display: block; }
   border: 1px solid var(--cm-rule);
   border-radius: 6px;
 }
+
+
+/* --------------------------------------------------------------------------
+   The boards (Phase B2). Three lanes, one per map, each a card of track
+   rails; and the War Progress rail across the header strip.
+   -------------------------------------------------------------------------- */
+
+.cm-boards-lanes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+  align-items: start;
+  margin: 0.8rem 0;
+}
+
+cm-map-board {
+  display: block;
+  background: var(--cm-paper);
+  border: 1px solid var(--cm-rule);
+  border-radius: 8px;
+  padding: 0.7rem 0.9rem;
+}
+
+.cm-board-head h3 {
+  margin: 0 0 0.5rem;
+  font-family: var(--cm-serif);
+  border-bottom: 1px solid var(--cm-rule);
+  padding-bottom: 0.3rem;
+}
+
+.cm-board-tracks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.cm-track {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+}
+
+.cm-track-name { flex: 1; color: var(--cm-muted); }
+
+.cm-track[data-moved="true"] .cm-track-name { color: var(--cm-ink); }
+
+.cm-track-value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  min-width: 2ch;
+  text-align: right;
+}
+
+/* A track whose value has left the printed initial carries a quiet mark. */
+.cm-track[data-moved="true"] .cm-track-value { color: var(--cm-gold); }
+
+/* The moment a value changes, the row flashes and says by how much. */
+.cm-track[data-flash] { animation: cm-flash 1.6s ease-out; }
+
+.cm-track-delta {
+  font-size: 0.8em;
+  font-weight: 600;
+  padding: 0 0.3rem;
+  border-radius: 3px;
+}
+
+.cm-track[data-flash="up"] .cm-track-delta { color: var(--cm-green); }
+
+.cm-track[data-flash="down"] .cm-track-delta { color: var(--cm-blood); }
+
+@keyframes cm-flash {
+  from { background: color-mix(in srgb, var(--cm-gold) 35%, transparent); }
+  to { background: transparent; }
+}
+
+.cm-board-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  min-height: 1.6rem;
+  margin: 0.5rem 0;
+  padding: 0.25rem 0.3rem;
+  border: 1px dashed var(--cm-rule);
+  border-radius: 4px;
+}
+
+.cm-board-cards[data-empty="true"] { opacity: 0.5; }
+
+.cm-action-token {
+  display: inline-block;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.8em;
+  font-weight: 700;
+  color: #10131f;
+  background: var(--faction-colour, var(--cm-muted));
+}
+
+.cm-board-locations {
+  list-style: none;
+  margin: 0.3rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.cm-location {
+  border: 1px solid var(--cm-rule);
+  border-radius: 4px;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.8em;
+  color: var(--cm-muted);
+}
+
+/* --- the war rail ---------------------------------------------------------- */
+
+.cm-war-strip {
+  background: var(--cm-paper);
+  border-bottom: 1px solid var(--cm-rule);
+  padding: 0.35rem 1rem;
+}
+
+cm-war-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  overflow-x: auto;
+}
+
+.cm-war-label {
+  font-family: var(--cm-serif);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.cm-war-quiet { color: var(--cm-muted); font-style: italic; }
+
+.cm-war-value {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.cm-war-delta[data-flash="up"] { color: var(--cm-green); }
+
+.cm-war-delta[data-flash="down"] { color: var(--cm-blood); }
+
+.cm-war-route {
+  list-style: none;
+  display: flex;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0;
+}
+
+.cm-war-station {
+  position: relative;
+  padding: 0.15rem 0.5rem 0.15rem;
+  border: 1px solid var(--cm-rule);
+  border-radius: 4px;
+  font-size: 0.75em;
+  color: var(--cm-muted);
+  white-space: nowrap;
+  display: grid;
+  justify-items: center;
+}
+
+.cm-war-station[data-surrender="true"] { border-color: var(--cm-blood); }
+
+.cm-war-station[data-marker="true"] {
+  color: var(--cm-ink);
+  border-color: var(--cm-gold);
+  background: color-mix(in srgb, var(--cm-gold) 18%, transparent);
+}
+
+.cm-war-marker {
+  position: absolute;
+  top: -0.45rem;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: var(--cm-gold);
+}
+
+.cm-war-surrender {
+  color: var(--cm-blood);
+  font-variant: small-caps;
+}
+
+.cm-war-station-range { font-variant-numeric: tabular-nums; }

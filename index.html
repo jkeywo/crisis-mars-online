@@ -19,6 +19,12 @@
     <cm-connection-dot id="connection" status="connecting"></cm-connection-dot>
   </header>
 
+  <!-- The war, across the top of everything. Hidden until the game screen is
+       up; says "not begun" until the turn-two correspondence starts it. -->
+  <div id="war-strip" class="cm-war-strip" hidden>
+    <cm-war-progress id="war"></cm-war-progress>
+  </div>
+
   <main class="cm-main">
     <!-- 1. the code ------------------------------------------------------- -->
     <section id="screen-code" class="cm-panel" hidden>
@@ -77,15 +83,12 @@
           <cm-action-list id="actions"></cm-action-list>
         </aside>
 
-        <!-- the boards, when they arrive -->
+        <!-- the three boards -->
         <div id="game-main" class="cm-game-main">
           <div class="cm-pane">
-            <h2>The maps</h2>
-            <p class="cm-meta">
-              Earth, Mars and the Asteroid Belt arrive with a later phase.
-              Until then the facilitator narrates the boards over voice, the
-              same way the paper game runs them on a wall.
-            </p>
+            <!-- One lane per map, built from maps.json by the app so the row
+                 cannot disagree with the boards that exist. -->
+            <div id="boards" class="cm-boards-lanes"></div>
             <h2>Who is here</h2>
             <cm-seat-roster id="game-roster"></cm-seat-roster>
           </div>

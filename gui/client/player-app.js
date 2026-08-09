@@ -29,6 +29,8 @@ import '../components/cm-connection-dot.js';
 import '../components/cm-seat-roster.js';
 import '../components/cm-phase-clock.js';
 import '../components/cm-action-list.js';
+import '../components/cm-map-board.js';
+import '../components/cm-war-progress.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -49,6 +51,14 @@ export async function startPlayerApp({ location = window.location, beeper = crea
   // from one machine. It forces a token of its own rather than adopting the
   // shared one, which is what stops four tabs becoming one seat four times.
   const seat = seatFromLocation(location);
+
+  // One board lane per map, built from the data so the row cannot disagree
+  // with the boards that exist.
+  for (const mapId of Object.keys(data.maps.maps)) {
+    const board = document.createElement('cm-map-board');
+    board.setAttribute('map', mapId);
+    $('boards').append(board);
+  }
 
   const screens = {
     code: $('screen-code'),
@@ -176,6 +186,13 @@ export async function startPlayerApp({ location = window.location, beeper = crea
     $('actions').data = data;
     $('actions').view = view;
     $('action-error').textContent = client.lastRefusal?.reason ?? '';
+    $('war-strip').hidden = false;
+    $('war').data = data;
+    $('war').view = view;
+    for (const board of $('boards').children) {
+      board.data = data;
+      board.view = view;
+    }
     renderSheet(view, mine);
     $('game-roster').roles = data.roles.roles;
     $('game-roster').seats = seats;

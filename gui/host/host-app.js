@@ -34,6 +34,8 @@ import '../components/cm-connection-dot.js';
 import '../components/cm-seat-roster.js';
 import '../components/cm-phase-clock.js';
 import '../components/cm-state-inspector.js';
+import '../components/cm-map-board.js';
+import '../components/cm-war-progress.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -61,6 +63,13 @@ export async function startHostApp({ location = window.location, beeper = create
   $('rules-gaps').innerHTML = KNOWN_GAPS.map((gap) => `
     <dt>${gap.about} — ${gap.ruling}</dt>
     <dd><em>${gap.silent}</em> ${gap.because}</dd>`).join('');
+
+  // One board lane per map, same as the players see.
+  for (const mapId of Object.keys(data.maps.maps)) {
+    const board = document.createElement('cm-map-board');
+    board.setAttribute('map', mapId);
+    $('host-boards').append(board);
+  }
 
   const screens = { start: $('screen-start'), running: $('screen-running') };
   const show = (which) => {
@@ -246,6 +255,17 @@ export async function startHostApp({ location = window.location, beeper = create
 
     $('inspector').data = data;
     $('inspector').state = session.state;
+
+    // The boards and the war rail render the same shape the players get — a
+    // facilitator's projection is the whole state, so the state itself will
+    // do. They react to the inspector like every other cm- component.
+    $('war-strip').hidden = false;
+    $('war').data = data;
+    $('war').view = session.state;
+    for (const board of $('host-boards').children) {
+      board.data = data;
+      board.view = session.state;
+    }
 
     const ended = phase.name === 'epilogue';
     $('advance-phase').textContent = phase.name === 'lobby' ? 'Begin the game'
