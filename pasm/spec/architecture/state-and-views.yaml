@@ -1,0 +1,184 @@
+entities:
+  - state: authoritative-game-state
+    core:
+      status: proposed
+      confidence: confirmed
+      title: Authoritative Game State
+      summary: >-
+        One plain JSON-serialisable object holding the whole game — phase and
+        clock, seats, the dealt roster of lanyards, the three maps' tracks,
+        War Progress, every resource card's owner and holder, the action
+        cards, and the command log.
+      rationale:
+        - Plain objects rather than classes so structured cloning, saving to local storage, exporting to a file and deep-equality assertions all come for free.
+        - Derived values are deliberately absent. Impact totals, effect bands and the War Progress marker's map location are recomputed on demand, because storing them is how the boards and the tracker come to disagree.
+        - A card whose owner is not in the dealt roster is not in state at all — the box is not a place.
+    architecture:
+      classification: authoritative
+      owner: game-host
+      writers:
+        - game-host
+      replicas:
+        - projected-player-view
+        - projected-facilitator-view
+    implementation:
+      status: implemented
+      paths:
+        - gui/rules/state.js
+      symbols:
+        - createInitialState
+        - rosterFor
+        - seatForToken
+      tests:
+        - npm test
+
+  - component: game-host
+    core:
+      status: proposed
+      confidence: confirmed
+      title: Game Host
+      summary: >-
+        Owns authoritative state and the pipeline that changes it — admit,
+        reduce, log, persist, reproject.
+      rationale:
+        - Facilitator overrides travel this same pipeline rather than mutating state directly, which keeps the game replayable from its seed and log and keeps "what did the umpire change?" answerable.
+        - Knows nothing about the console that drives it or the transport that reaches it. That is what lets a co-facilitator build one from a mirrored log and carry on hosting.
+    architecture:
+      kind: host-coordinator
+      authority: authoritative
+      owns:
+        - authoritative-game-state
+      coordinates:
+        - command-admission
+        - view-projector
+      runs_in:
+        - facilitator-browser-runtime
+    implementation:
+      status: implemented
+      paths:
+        - gui/host/game-host.js
+      symbols:
+        - GameHost
+      tests:
+        - npm test
+
+  - component: command-admission
+    core:
+      status: proposed
+      confidence: confirmed
+      title: Command Admission
+      summary: >-
+        The one gate the rules are enforced at. Every command is admitted or
+        refused with a reason, against the phase, the actor and the game.
+      rationale:
+        - The host calls it before touching state; clients call the same function against their own projection to grey out controls — but a client's answer is presentation only.
+        - A refusal is a sentence rather than a boolean, because the reason is the whole value of enforcing rules for players.
+    architecture:
+      kind: rules-gate
+      pure: "true"
+      runs_in:
+        - facilitator-browser-runtime
+        - player-browser-runtime
+    implementation:
+      status: implemented
+      paths:
+        - gui/rules/admission.js
+      symbols:
+        - admit
+        - availableTo
+      tests:
+        - npm test
+
+  - component: view-projector
+    core:
+      status: proposed
+      confidence: confirmed
+      title: View Projector
+      summary: >-
+        The only way state leaves the host. A generic walk over the visibility
+        manifest, which declares every path's audience once, as data.
+      rationale:
+        - Redaction spread across send sites fails open — correct until somebody adds a field, and then it silently is not. A manifest with a completeness test fails closed instead.
+        - "Crisis Mars keeps very little from the table: the boards and cards are public in the room. What never leaves the host is the machinery — seed, cursor, log, seat tokens — and the umpire's own notes."
+        - A lanyard's private back is static data attached to its owner's projection rather than a state path, the same accepted trade RBO made for briefs.
+    architecture:
+      kind: projection
+      pure: "true"
+      reads:
+        - authoritative-game-state
+      produces:
+        - projected-player-view
+        - projected-facilitator-view
+    implementation:
+      status: implemented
+      paths:
+        - gui/rules/views.js
+        - gui/rules/visibility.js
+      symbols:
+        - projectView
+        - unclassifiedPaths
+      tests:
+        - npm test
+
+  - state: projected-player-view
+    core:
+      status: proposed
+      confidence: confirmed
+      title: Projected Player View
+      summary: >-
+        One seat's copy of the game, produced by the projector: everything
+        public, plus that seat's own lanyard back.
+    architecture:
+      classification: replica
+      derived_from: authoritative-game-state
+
+  - state: projected-facilitator-view
+    core:
+      status: proposed
+      confidence: confirmed
+      title: Projected Facilitator View
+      summary: >-
+        The whole game, unredacted, plus the viewer. What the co-facilitator
+        mirrors, and therefore everything a takeover needs.
+    architecture:
+      classification: replica
+      derived_from: authoritative-game-state
+
+  - component: player-console
+    core:
+      status: proposed
+      confidence: confirmed
+      title: Player Console
+      summary: >-
+        The player page. Renders the latest projection and sends commands; it
+        never patches, merges or predicts.
+      rationale:
+        - Holding no truth of its own is what makes a reconnect free — the next projection is simply what is true now.
+    architecture:
+      kind: console
+      runs_in:
+        - player-browser-runtime
+      reads:
+        - projected-player-view
+    implementation:
+      status: implemented
+      paths:
+        - gui/client/player-app.js
+      tests:
+        - npm test
+
+  - role: primary-facilitator
+    core:
+      status: proposed
+      confidence: confirmed
+      title: Primary Facilitator
+      summary: The facilitator whose browser is the authoritative host and owns the phase clock.
+
+  - role: co-facilitator
+    core:
+      status: proposed
+      confidence: confirmed
+      title: Co-Facilitator
+      summary: >-
+        The second facilitator. Adjudicates alongside the primary, and holds a
+        full mirror of state that can be promoted to host if the primary dies.

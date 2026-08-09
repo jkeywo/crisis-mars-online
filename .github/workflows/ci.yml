@@ -38,7 +38,8 @@ jobs:
         with:
           spec-path: pasm/spec
           scan: gate
-          scenario-glob: pasm/spec/scenarios/*.yaml
+          # No scenarios yet — the first one arrives with the Action Phase
+          # slice, and the glob comes back with it.
 
   # ---------------------------------------------------------------------------
   # Publish to the gh-pages branch.

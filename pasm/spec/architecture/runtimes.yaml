@@ -1,0 +1,44 @@
+entities:
+  - component: facilitator-browser-runtime
+    core:
+      status: proposed
+      confidence: confirmed
+      title: Facilitator Browser Runtime
+      summary: >-
+        A browser tab opened on the host page. Holds authoritative state, runs
+        the rules, keeps the clock, and answers to the join code's peer id.
+      rationale:
+        - Treated as a named runtime rather than an implicit "the host" so the components that may only exist inside it are declared, not assumed.
+        - A backgrounded tab is throttled to roughly one timer tick a second, which is why the phase clock is derived from wall-clock time rather than accumulated ticks.
+    architecture:
+      kind: runtime
+      trust_boundary: facilitator
+
+  - component: player-browser-runtime
+    core:
+      status: proposed
+      confidence: confirmed
+      title: Player Browser Runtime
+      summary: >-
+        A browser tab opened on the player page. Holds a redacted projection,
+        renders it, and sends commands. It decides nothing.
+      rationale:
+        - It imports the rules module to grey out unaffordable controls, but that answer is presentation only; the host's admission is the one that counts.
+    architecture:
+      kind: runtime
+      trust_boundary: client-to-host
+
+  - component: replay-browser-runtime
+    core:
+      status: proposed
+      confidence: confirmed
+      title: Replay Browser Runtime
+      summary: >-
+        A browser tab opened on the replay page. Holds a save file and a cursor
+        into its log, and talks to nothing.
+      rationale:
+        - "Named as a third runtime rather than folded into the player's, because the two share no assumption worth sharing: this one has no peer, no clock, no seat and no commands, and it rebuilds state locally instead of being sent one."
+        - Offline in the strong sense — a save opened here needs neither the host nor the game to still exist, which is what makes it usable the week after.
+    architecture:
+      kind: runtime
+      trust_boundary: local-file
