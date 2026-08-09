@@ -84,6 +84,12 @@ export const FIELD_VISIBILITY = [
   { path: 'cards.**', audience: PUBLIC },
   // An action card placed on a map is the most public act in the game.
   { path: 'actionCards.**', audience: PUBLIC },
+  // The spotlight is performed aloud: the call order, every declaration,
+  // every ruling, every die and every narration happen in front of the whole
+  // room, so the records of them are everybody's.
+  { path: 'initiative.**', audience: PUBLIC },
+  { path: 'actions.**', audience: PUBLIC },
+  { path: 'futureImpacts.**', audience: PUBLIC },
 
   { path: 'aftermath.**', audience: PUBLIC },
 ];

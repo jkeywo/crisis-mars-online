@@ -119,6 +119,12 @@ export function createInitialState({ joinCode, seed, data, playerCount, rosterCo
   const actionCards = {};
   for (const code of roster) actionCards[code] = { placed: null, spent: false };
 
+  // Banked future-impact tokens, spendable as a bonus on a later action.
+  // Zeroed per player up front rather than created on first credit, so the
+  // bank is a column every console can draw from the very first turn.
+  const futureImpacts = {};
+  for (const code of roster) futureImpacts[code] = 0;
+
   return {
     schemaVersion: SCHEMA_VERSION,
     joinCode,
@@ -148,6 +154,14 @@ export function createInitialState({ joinCode, seed, data, playerCount, rosterCo
     warProgress: null,
     cards,
     actionCards,
+    // The Action Phase's call order. Empty outside the phase; advance-phase
+    // builds the queues from the turn's printed initiative row and the
+    // placements the moment an Action Phase opens. See emptyInitiative().
+    initiative: emptyInitiative(),
+    // Every spotlight ever opened, keyed a1, a2… and kept — a closed action
+    // is part of the story of the game, and the replay reads it back.
+    actions: {},
+    futureImpacts,
     // When time was called, for the debrief. Prose about the ending belongs
     // to the facilitator, not to state.
     aftermath: { endedAt: null, endedOnTurn: null },
@@ -155,6 +169,17 @@ export function createInitialState({ joinCode, seed, data, playerCount, rosterCo
     log: [],
     lastSeq: {},
   };
+}
+
+/**
+ * The Action Phase machinery at rest.
+ *
+ * One shape for "no Action Phase is running", used by createInitialState and
+ * by the turn rollover, so nothing downstream ever asks "is there a queues
+ * object" — there always is, it is just empty between phases.
+ */
+export function emptyInitiative() {
+  return { queues: {}, done: {}, current: {}, unplaced: [] };
 }
 
 /** The seat holding a token, or null. */

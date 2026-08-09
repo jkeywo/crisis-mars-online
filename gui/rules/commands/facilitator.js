@@ -15,8 +15,37 @@
  * whose `admit` simply always says yes.
  */
 
-import { PHASES, OUT_OF_PLAY } from '../state.js';
+import { PHASES, OUT_OF_PLAY, emptyInitiative } from '../state.js';
 import { no, ok } from './shared.js';
+
+/**
+ * The call order for a turn's Action Phase, built the moment the phase opens.
+ *
+ * Each role's printed initiative row names its call position for each turn,
+ * and the queue for a map is simply the roles placed there, in that order.
+ * A player who never placed — the print makes placement mandatory, but a
+ * mandate is not a crash barrier — goes to the `unplaced` bucket for the
+ * facilitator to deal with by hand. See gaps.js.
+ */
+function buildInitiative(draft, data) {
+  const turnIndex = draft.phase.turn - 1;
+  const order = [...draft.rosterCodes].sort((a, b) =>
+    (data.roles.roles[a]?.initiative?.[turnIndex] ?? 99)
+    - (data.roles.roles[b]?.initiative?.[turnIndex] ?? 99));
+
+  const initiative = emptyInitiative();
+  for (const mapId of Object.keys(draft.maps)) {
+    initiative.queues[mapId] = [];
+    initiative.done[mapId] = [];
+    initiative.current[mapId] = null;
+  }
+  for (const code of order) {
+    const placed = draft.actionCards[code]?.placed;
+    if (placed && initiative.queues[placed]) initiative.queues[placed].push(code);
+    else initiative.unplaced.push(code);
+  }
+  draft.initiative = initiative;
+}
 
 /**
  * The printed length of a phase, in minutes.
@@ -91,6 +120,9 @@ export const FACILITATOR_COMMANDS = {
           for (const role of Object.values(draft.roles)) {
             role.perTurn = { recovered: 0 };
           }
+          // The old turn's call order is spent; the next Action Phase builds
+          // its own from the new placements.
+          draft.initiative = emptyInitiative();
         }
       } else {
         draft.phase.name = PHASES[at + 1];
@@ -98,6 +130,10 @@ export const FACILITATOR_COMMANDS = {
       draft.phase.paused = false;
       draft.phase.pausedRemainingMs = null;
       draft.phase.endsAt = phaseEndsAt(draft, data, ctx.cmd.payload, ctx.now);
+      // The Action Phase's whole apparatus exists exactly while the phase
+      // does: built on the way in, from this turn's printed initiative row
+      // and the placements the Negotiation Phase just froze.
+      if (draft.phase.name === 'action') buildInitiative(draft, data);
     },
   },
 
