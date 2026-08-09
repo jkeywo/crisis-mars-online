@@ -1,0 +1,222 @@
+{
+ "_generated": "crisis_mars gamespec @ analogue-projects 9cc5207 via tools/export_web_data.py",
+ "_doNotEdit": true,
+ "turns": 4,
+ "phases": [
+  {
+   "id": "team_phase",
+   "display_name": "Team Phase",
+   "function": "briefing",
+   "duration": "5 minutes"
+  },
+  {
+   "id": "negotiation_phase",
+   "display_name": "Negotiation Phase",
+   "function": "negotiation",
+   "duration": "5 minutes"
+  },
+  {
+   "id": "action_phase",
+   "display_name": "Action Phase",
+   "function": "resolution",
+   "duration": "10 minutes"
+  }
+ ],
+ "clock": [
+  {
+   "segment": "Prologue",
+   "minutes": "00-30"
+  },
+  {
+   "segment": "Turn 1",
+   "minutes": "30-50"
+  },
+  {
+   "segment": "Turn 2",
+   "minutes": "50-70"
+  },
+  {
+   "segment": "Turn 3",
+   "minutes": "70-90"
+  },
+  {
+   "segment": "Turn 4",
+   "minutes": "90-110"
+  },
+  {
+   "segment": "Epilogue",
+   "minutes": "110-120"
+  }
+ ],
+ "spotlightSeconds": 60,
+ "impact": {
+  "formula": "turn_number + allies + accepted_resources - difficulty + consequence_bonus",
+  "difficulty": {
+   "type": "integer",
+   "min": -3,
+   "max": 0
+  },
+  "difficultyGuidance": "The print gives no scale. The only printed anchor: \"Try to avoid moving War Progress directly, or if you do apply at least a -1 difficulty to the action.\" Everything else is facilitator judgement.\n",
+  "bands": [
+   {
+    "max": 1,
+    "label": "Insignificant",
+    "tagline": "barely a ripple",
+    "printed": "Any effects will be short lived and soon forgotten."
+   },
+   {
+    "min": 2,
+    "max": 3,
+    "label": "Minor",
+    "tagline": "a small shift",
+    "printed": "A subtle effect, minorly influencing events."
+   },
+   {
+    "min": 4,
+    "max": 5,
+    "label": "Moderate",
+    "tagline": "drawing attention",
+    "printed": "A meaningful effect that can shift the local balance of power."
+   },
+   {
+    "min": 6,
+    "max": 7,
+    "label": "Notable",
+    "tagline": "a turning point",
+    "printed": "A significant and eye catching effect that may have multiple effects."
+   },
+   {
+    "min": 8,
+    "max": 9,
+    "label": "Major",
+    "tagline": "a force to be reckoned with",
+    "printed": "Your action has a lasting effect with significant consequences."
+   },
+   {
+    "min": 10,
+    "max": null,
+    "label": "Radical",
+    "tagline": "game changing",
+    "printed": "Can fundamentally change the political or strategic landscape."
+   }
+  ]
+ },
+ "resourceCommitment": {
+  "base_limit": 3,
+  "per_ally_bonus": 1,
+  "distinct_factions": true,
+  "relevance_ref": "game.resource_relevance"
+ },
+ "allyRule": "An ally spends their own action with yours: +1 impact and +1 to the resource limit. Bring them with you when called.\n",
+ "consequenceDie": [
+  {
+   "faces": [
+    1,
+    2
+   ],
+   "id": "complication",
+   "effect": "The action succeeds, but has an unexpected consequence."
+  },
+  {
+   "faces": [
+    3,
+    4
+   ],
+   "id": "normal",
+   "effect": "The action happens as normal."
+  },
+  {
+   "faces": [
+    5,
+    6
+   ],
+   "id": "boon",
+   "effect": "Increase the action's impact by 1."
+  }
+ ],
+ "effects": {
+  "score_modifier": {
+   "kind": "plus_or_minus",
+   "by_band": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ]
+  },
+  "regain_resources": {
+   "by_band": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "out_of_faction_cost": 2,
+   "printed": "Choose those narratively appropriate rather than giving them a choice. If a player wants resources that would be outside of their faction they \"cost\" 2 each, and if there isn't a spent card available to give them then it's just too hard for them to manage.\n"
+  },
+  "sabotage_resources": {
+   "by_band": [
+    0,
+    1,
+    1,
+    2,
+    3,
+    4
+   ],
+   "printed": "Avoid using this too much, especially against factions that are struggling in the game. Visit them in the team phase and confiscate the appropriate number of resources.\n"
+  },
+  "increase_future_impact": {
+   "by_band": [
+    0,
+    1,
+    1,
+    2,
+    2,
+    3
+   ],
+   "printed": "Increase future Impact of an action, adjudicate whether this can be applied to the action as you would a resource card. This can be used to collaborate between players in the same turn and map. Since players are called to the map in a random order they cannot predict who will get the final say in how the action works.\n"
+  }
+ },
+ "exampleActions": [
+  "Raid",
+  "Sabotage",
+  "Hide",
+  "Diplomacy",
+  "Hack",
+  "Patrol",
+  "Transport",
+  "Guard",
+  "Research",
+  "Spy",
+  "Recruit",
+  "Upgrade",
+  "Riot",
+  "Train",
+  "Build",
+  "Steal",
+  "Ambush",
+  "Produce",
+  "Distract",
+  "Disrupt",
+  "Exploit",
+  "Interdict",
+  "Betray",
+  "Celebrate",
+  "Mine",
+  "Strike",
+  "Threaten",
+  "Undermine",
+  "Implicate",
+  "Distribute",
+  "Impersonate",
+  "Propagandise",
+  "Imprison",
+  "Fortify",
+  "Smuggle",
+  "Kidnap"
+ ]
+}

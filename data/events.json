@@ -1,0 +1,144 @@
+{
+ "_generated": "crisis_mars gamespec @ analogue-projects 9cc5207 via tools/export_web_data.py",
+ "_doNotEdit": true,
+ "facilitatorOnly": true,
+ "correspondence": [
+  {
+   "id": "war_correspondence_t1",
+   "turn": 1,
+   "readAloud": "After a recent increase in support, the Martian Senate votes to declare\nindependence from Earth.\nThis move has been denounced as illegal by the Unified Nations Congress\nof Earth, but they are still considering their response.\n",
+   "optional": false,
+   "effects": [],
+   "note": "There will be no other news in turn 1, as the game has only just started."
+  },
+  {
+   "id": "war_correspondence_t2",
+   "turn": 2,
+   "readAloud": "The UN Congress declares war on Mars, recalling their patrol fleet from\nthe Asteroid Belt into a makeshift navy that is rapidly approaching\nMartian orbit.\n",
+   "optional": false,
+   "effects": [
+    {
+     "track": "war_progress",
+     "set": 11
+    },
+    {
+     "track": "earth_gov_military",
+     "delta": 6
+    },
+    {
+     "track": "shipping_control_un",
+     "delta": -4
+    }
+   ]
+  },
+  {
+   "id": "war_correspondence_t3",
+   "turn": 3,
+   "readAloud": "The Martian Senate reveals they have been constructing a war fleet, in\nsecret, on a base on Phobos.\n",
+   "optional": true,
+   "effects": [
+    {
+     "track": "senate_military",
+     "delta": 5
+    }
+   ],
+   "note": "You may choose to delay or not do this at all, depending on how the game is going. Make sure both sides are going to be competitive in the war for at least 1 more turn.\n"
+  },
+  {
+   "id": "war_correspondence_t4",
+   "turn": 4,
+   "readAloud": null,
+   "optional": false,
+   "effects": [],
+   "note": "Do not meddle in the war, but announce how the UN and Senate are reacting. Remind players this is the last turn of the game.\n"
+  }
+ ],
+ "tithe": {
+  "from": "belt_union",
+  "to": "unified_nations_ambassador",
+  "amountByTurn": {
+   "1": 1,
+   "2": 1,
+   "3": 2,
+   "4": 2
+  },
+  "onRefusal": [
+   "move Shipping Control towards Earth",
+   "consequences for the stations if Earth has shipping control"
+  ],
+  "latitude": "The amounts are \"as standard\"; the guide licenses judgement based on how much tension the table needs.\n"
+ },
+ "npcPlayNotes": {
+  "N1": [
+   "Your goals are to restore the status quo -- Mars under Earth rule, the Asteroid Belt working for Earth, the Corporations working to enrich Earth.\n",
+   "You have a condescending view of all exterior factions, even the UNSS, but this won't stop you working with them.\n"
+  ],
+  "N2": [
+   "Your goals are to keep the senate under Political Control and come out of the independence war with Martian Independence.\n",
+   "You have a low opinion of illegitimate groups like Viva Mars and the Free Federation (and maybe even the Belt Union), but could work with them if necessary.\n"
+  ]
+ },
+ "opportunityGuidance": [
+  {
+   "trigger": "war_support_high",
+   "principle": "High War Support can be used to recruit to the Earth Gov Military, redirect Luna Prosperity and Shipping Control towards the war effort and apply modifiers to how war progress is calculated.\n",
+   "examples": [
+    "Convert a moon base into a military facility -- move Luna Prosperity to Earth Gov Military.",
+    "Recall patrol ships from the Asteroid Belt -- move UN Shipping Control to Earth Gov Military.",
+    "Enact conscription -- move War Support to Earth Gov Military.",
+    "Adopt a defensive stance -- halve War Progress change next turn. Or an aggressive stance to double the change.",
+    "Root out traitors -- if there is infiltration amongst the people of Earth its effects will be cancelled out; if there isn't it will have no effect."
+   ]
+  },
+  {
+   "trigger": "war_support_low",
+   "principle": "Low War Support can be used to make opportunities for aggressive action against Earth directly or redirect resources away from the Earth Gov Military.\n",
+   "examples": [
+    "Use the lack of vigilance to launch a direct strike -- increase War Support but directly reduce War Progress.",
+    "Encourage deserters -- move Earth Gov Military to Martian Senate Military. Or to the Asteroid Belt.",
+    "Lobby for investment in infrastructure not war -- move Earth Gov Military to Luna Prosperity and/or the Terraforming Project.",
+    "Plant infiltrators in Earth organisations -- these can be called upon for bonuses to future actions."
+   ]
+  },
+  {
+   "trigger": "un_oversight_high",
+   "principle": "High UN Oversight allows the UNSS to move resources towards, or away from, Luna and Canopy Corp.\n",
+   "examples": [
+    "Subsidise or tax the Luna corporations -- move Earth Gov Military to or from Luna Prosperity and Canopy Corp Shares.",
+    "Requisition corporate resources for the war effort -- move Luna Prosperity and/or Canopy Corp Shares to Earth Gov Military.",
+    "Military contracts up for tender -- these could go to Canopy Corp, Deimos Rising or either Asteroid Belt station and will increase their prosperity.",
+    "Plant spies in Canopy Corp -- they will report back on any subversive behaviour."
+   ]
+  },
+  {
+   "trigger": "un_oversight_low",
+   "principle": "With Low UN Oversight Canopy Corp has greater freedom to pursue their own goals apart from Earth.\n",
+   "examples": [
+    "Lobby the UN for subsidies -- reduce War Support and increase Canopy Corp Shares.",
+    "Move offices to Mars -- reduce Luna Prosperity, but increase Corporate Senate Control; their goals shift from caring about Earth to securing funding for the Terraforming Project away from Earth.",
+    "Funnel off UN funds meant for the Terraforming Project -- this will reduce Terraforming Project and grant the C.E.O. some Untraceable Cash resource cards."
+   ]
+  },
+  {
+   "trigger": "senate_control_lead",
+   "principle": "Senate control can typically move scores around between Senate Military, Terraforming Project, Deimos Rising Valuation, Martian Shipping Control and the Mars Trade Route. It can also set the Senate's military stance the same way high War Support can for Earth.\n",
+   "examples": [
+    "Reallocate state concessions from Deimos Rising to the Military.",
+    "Allocate military craft to Deimos Rising -- reduce military but grant Deimos Rising some Patrol Ship resource cards.",
+    "Withdraw ships from the Asteroid Belt to the front lines -- reduce Martian Shipping Control and increase Senate Military.",
+    "Set up Martian-owned terraforming stations -- funnel points from the Senate Military or Deimos Rising Valuation and reduce Martian dependence on Canopy Corp.",
+    "Adopt a defensive stance -- halve War Progress change next turn. Or an aggressive stance to double the change."
+   ]
+  },
+  {
+   "trigger": "shipping_control_lead",
+   "principle": "Shipping Control can typically affect either Trade Route or the Prosperities on the Belt map, and non-war, non-political scores on the other maps.\n",
+   "examples": [
+    "Redirect shipping from Earth to Mars -- move Trade Route score from Earth to Mars. This could also work vice versa.",
+    "Tax shipping to both planets, sending the proceeds to Ceres -- reduce both Trade Routes but increase Ceres Prosperity. This could also be offered for Luna, or Vesta and Pallas.",
+    "Prioritise shipping to the terraforming -- reduce both Militaries, Luna Prosperity and Deimos Rising Valuation into the Terraforming Project and Canopy Shares.",
+    "Organise a strike or blockade shipping -- both Trade Routes are reduced, but the faction in control can reverse this change at any time."
+   ]
+  }
+ ]
+}

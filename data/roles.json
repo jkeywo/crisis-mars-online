@@ -1,0 +1,564 @@
+{
+ "_generated": "crisis_mars gamespec @ analogue-projects 9cc5207 via tools/export_web_data.py",
+ "_doNotEdit": true,
+ "roles": {
+  "C1": {
+   "id": "canopy_corp_ceo",
+   "name": "Canopy Corp C.E.O.",
+   "title": "C.E.O.",
+   "factionId": "canopy_corp",
+   "initiative": [
+    14,
+    5,
+    1,
+    14
+   ],
+   "handCardIds": [
+    "rc_c1_1",
+    "rc_c1_2",
+    "rc_c1_3",
+    "rc_c1_4",
+    "rc_c1_5"
+   ],
+   "private": {
+    "background": "You are a career corporate actor, chosen from the privileged upper class of Luna.\nAll that matters in this life is achieving the personal wealth and power required to protect yourself and your loved ones.",
+    "personalGoal": "You are due a massive bonus at the end of turn 4, so all that matters is Canopy Corp's share price at that moment."
+   },
+   "card": {
+    "front": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Role_1.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Jumbo Back/Crisis Mars v1.0 - Jumbo Cards Role_1.png"
+   },
+   "actionCard": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Action Cards_1.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Action Cards_1.png"
+   }
+  },
+  "C2": {
+   "id": "canopy_corp_cto",
+   "name": "Canopy Corp C.T.O.",
+   "title": "C.T.O.",
+   "factionId": "canopy_corp",
+   "initiative": [
+    10,
+    10,
+    11,
+    7
+   ],
+   "handCardIds": [
+    "rc_c2_1",
+    "rc_c2_2",
+    "rc_c2_3",
+    "rc_c2_4",
+    "rc_c2_5"
+   ],
+   "private": {
+    "background": "You were one of the finest terraforming engineers Earth has ever produced and have been working on the Mars terraforming project since its inception.\nLong since promoted away from technical work it is still your main motivation.",
+    "personalGoal": "The terraforming project must be protected, no matter what the political and military outcome of the conflict."
+   },
+   "card": {
+    "front": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Role_2.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Jumbo Back/Crisis Mars v1.0 - Jumbo Cards Role_2.png"
+   },
+   "actionCard": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Action Cards_2.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Action Cards_2.png"
+   }
+  },
+  "C3": {
+   "id": "canopy_corp_security_chief",
+   "name": "Canopy Corp Security Chief",
+   "title": "Security Chief",
+   "factionId": "canopy_corp",
+   "initiative": [
+    6,
+    4,
+    16,
+    8
+   ],
+   "handCardIds": [
+    "rc_c3_1",
+    "rc_c3_2",
+    "rc_c3_3",
+    "rc_c3_4",
+    "rc_c3_5"
+   ],
+   "private": {
+    "background": "A project as large as the Terraforming of Mars cannot be left to chance, so Earth Security arranged to have you as a mole in Canopy Corp, to ensure they continue to act in the best interests of Earth.",
+    "personalGoal": "Ensure Canopy Corp remains loyal to Earth and safe from physical threats."
+   },
+   "card": {
+    "front": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Role_3.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Jumbo Back/Crisis Mars v1.0 - Jumbo Cards Role_3.png"
+   },
+   "actionCard": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Action Cards_3.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Action Cards_3.png"
+   }
+  },
+  "V1": {
+   "id": "viva_mars_hero",
+   "name": "Viva Mars Hero",
+   "title": "Hero",
+   "factionId": "viva_mars",
+   "initiative": [
+    9,
+    17,
+    17,
+    2
+   ],
+   "handCardIds": [
+    "rc_v1_1",
+    "rc_v1_2",
+    "rc_v1_3",
+    "rc_v1_4",
+    "rc_v1_5"
+   ],
+   "private": {
+    "background": "You were one of the first members of Viva Mars and came to the media’s attention after leading a daring prison break. Since then you have been seen as the de facto leader of Viva Mars.",
+    "personalGoal": "Make sure Viva Mars survives as a cohesive and effective political entity."
+   },
+   "card": {
+    "front": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Role_4.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Jumbo Back/Crisis Mars v1.0 - Jumbo Cards Role_4.png"
+   },
+   "actionCard": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Action Cards_4.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Action Cards_4.png"
+   }
+  },
+  "V2": {
+   "id": "viva_mars_firebrand",
+   "name": "Viva Mars Firebrand",
+   "title": "Firebrand",
+   "factionId": "viva_mars",
+   "initiative": [
+    11,
+    13,
+    13,
+    3
+   ],
+   "handCardIds": [
+    "rc_v2_1",
+    "rc_v2_2",
+    "rc_v2_3",
+    "rc_v2_4",
+    "rc_v2_5"
+   ],
+   "private": {
+    "background": "When many of Viva Mars left to go mainstream you were amongst the most disappointed. There can be no compromise with Earth. Only when they can no longer fight will Mars be free from oppression.",
+    "personalGoal": "The ends justify the means, make sure Earth loses the capacity and will to fight."
+   },
+   "card": {
+    "front": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Role_5.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Jumbo Back/Crisis Mars v1.0 - Jumbo Cards Role_5.png"
+   },
+   "actionCard": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Action Cards_5.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Action Cards_5.png"
+   }
+  },
+  "V3": {
+   "id": "viva_mars_veteran",
+   "name": "Viva Mars Veteran",
+   "title": "Veteran",
+   "factionId": "viva_mars",
+   "initiative": [
+    17,
+    9,
+    6,
+    12
+   ],
+   "handCardIds": [
+    "rc_v3_1",
+    "rc_v3_2",
+    "rc_v3_3",
+    "rc_v3_4",
+    "rc_v3_5"
+   ],
+   "private": {
+    "background": "An ex-soldier in the Earth Gov military on Mars, you have vital practical skills for the resistance.\nMost members of Viva Mars are ideologically committed to the cause, you stay because they were like a family when you needed them.",
+    "personalGoal": "Ensure Viva Mars' military success and that it is recognised."
+   },
+   "card": {
+    "front": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Role_6.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Jumbo Back/Crisis Mars v1.0 - Jumbo Cards Role_6.png"
+   },
+   "actionCard": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Action Cards_6.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Action Cards_6.png"
+   }
+  },
+  "B1": {
+   "id": "belt_union_ceres_boss",
+   "name": "Belt Union Ceres Boss",
+   "title": "Ceres Boss",
+   "factionId": "belt_union",
+   "initiative": [
+    4,
+    12,
+    15,
+    11
+   ],
+   "handCardIds": [
+    "rc_b1_1",
+    "rc_b1_2",
+    "rc_b1_3",
+    "rc_b1_4",
+    "rc_b1_5"
+   ],
+   "private": {
+    "background": "Born on Earth you made your career by earning respect from both corporations and the belt miners, coming to run the largest station in the Belt.",
+    "personalGoal": "Politics is all well and good, but ultimately the Belt needs commerce to thrive. Keep prosperity and security high, particularly on Ceres."
+   },
+   "card": {
+    "front": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Role_7.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Jumbo Back/Crisis Mars v1.0 - Jumbo Cards Role_7.png"
+   },
+   "actionCard": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Action Cards_7.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Action Cards_7.png"
+   }
+  },
+  "B2": {
+   "id": "belt_union_vandp_boss",
+   "name": "Belt Union V&P Boss",
+   "title": "V&P Boss",
+   "factionId": "belt_union",
+   "initiative": [
+    12,
+    7,
+    12,
+    15
+   ],
+   "handCardIds": [
+    "rc_b2_1",
+    "rc_b2_2",
+    "rc_b2_3",
+    "rc_b2_4",
+    "rc_b2_5"
+   ],
+   "private": {
+    "background": "You are a native to the Belt and have worked on everything from one-man prospecting vessels to bulk haulers.\nUnion to the core, you have temporary command of both the Vesta and Pallas stations until someone can take Pallas off your hands.",
+    "personalGoal": "Exploit the conflict for the benefit of the Belt and the Union."
+   },
+   "card": {
+    "front": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Role_8.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Jumbo Back/Crisis Mars v1.0 - Jumbo Cards Role_8.png"
+   },
+   "actionCard": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Action Cards_8.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Action Cards_8.png"
+   }
+  },
+  "B3": {
+   "id": "belt_union_radical",
+   "name": "Belt Union Radical",
+   "title": "Radical",
+   "factionId": "belt_union",
+   "initiative": [
+    7,
+    2,
+    7,
+    13
+   ],
+   "handCardIds": [
+    "rc_b3_1",
+    "rc_b3_2",
+    "rc_b3_3",
+    "rc_b3_4",
+    "rc_b3_5"
+   ],
+   "private": {
+    "background": "There is a growing number of voices within the Union that see Martian independence as a chance for the Belt to get the same.\nYou are few in number but you represent many of these workers.",
+    "personalGoal": "Work towards freeing the Belt from Earth and Luna control."
+   },
+   "card": {
+    "front": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Role_9.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Jumbo Back/Crisis Mars v1.0 - Jumbo Cards Role_9.png"
+   },
+   "actionCard": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Action Cards_9.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Action Cards_9.png"
+   }
+  },
+  "U1": {
+   "id": "unss_security_secretary",
+   "name": "UNSS Security Secretary",
+   "title": "Security Secretary",
+   "factionId": "unss",
+   "initiative": [
+    3,
+    6,
+    18,
+    17
+   ],
+   "handCardIds": [
+    "rc_u1_1",
+    "rc_u1_2",
+    "rc_u1_3",
+    "rc_u1_4",
+    "rc_u1_5"
+   ],
+   "private": {
+    "background": "A career civil servant, you have never been into the field but your exemplary administrative skills have put you in charge of one of the most powerful and secretive branches of Earth Gov.",
+    "personalGoal": "The numbers don't lie, in an increasingly chaotic and unpredictable moment in human history it is vital that you get the Earth Gov Congress to increase the official mandate of the UNSS."
+   },
+   "card": {
+    "front": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Role_10.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Jumbo Back/Crisis Mars v1.0 - Jumbo Cards Role_10.png"
+   },
+   "actionCard": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Action Cards_10.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Action Cards_10.png"
+   }
+  },
+  "U3": {
+   "id": "unss_head_of_tactical",
+   "name": "UNSS Head of Tactical",
+   "title": "Head of Tactical",
+   "factionId": "unss",
+   "initiative": [
+    16,
+    15,
+    14,
+    1
+   ],
+   "handCardIds": [
+    "rc_u3_1",
+    "rc_u3_2",
+    "rc_u3_3",
+    "rc_u3_4",
+    "rc_u3_5"
+   ],
+   "private": {
+    "background": "As a child you were orphaned in one of the first attacks by Viva Mars, and that led you to a career in the military and then later in intelligence. Humanity, off earth, is the new wild west and it needs to be tamed to avoid any further tragedies.",
+    "personalGoal": "Get revenge on Viva Mars and any groups like them."
+   },
+   "card": {
+    "front": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Role_11.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Jumbo Back/Crisis Mars v1.0 - Jumbo Cards Role_11.png"
+   },
+   "actionCard": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Action Cards_11.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Action Cards_11.png"
+   }
+  },
+  "U2": {
+   "id": "unss_head_of_intelligence",
+   "name": "UNSS Head of Intelligence",
+   "title": "Head of Intelligence",
+   "factionId": "unss",
+   "initiative": [
+    13,
+    16,
+    8,
+    4
+   ],
+   "handCardIds": [
+    "rc_u2_1",
+    "rc_u2_2",
+    "rc_u2_3",
+    "rc_u2_4",
+    "rc_u2_5"
+   ],
+   "private": {
+    "background": "You come from a background of wealth, but working in intelligence is a calling. If everyone just knew what they needed to know you believe you can help end violence and even though you have risen through the ranks this idealism has not left you.",
+    "personalGoal": "Cultivate information sources amongst the player base and head off conflict."
+   },
+   "card": {
+    "front": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Role_12.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Jumbo Back/Crisis Mars v1.0 - Jumbo Cards Role_12.png"
+   },
+   "actionCard": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Action Cards_12.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Action Cards_12.png"
+   }
+  },
+  "D1": {
+   "id": "deimos_rising_corp_ceo",
+   "name": "Deimos Rising Corp C.E.O.",
+   "title": "C.E.O.",
+   "factionId": "deimos_rising",
+   "initiative": [
+    2,
+    1,
+    4,
+    18
+   ],
+   "handCardIds": [
+    "rc_d1_1",
+    "rc_d1_2",
+    "rc_d1_3",
+    "rc_d1_4",
+    "rc_d1_5"
+   ],
+   "private": {
+    "background": "You joined the Martian independence movement just as it was becoming institutionalised, which suited you fine and you found yourself in the right place to be placed at the head of the Deimos Rising Corporation. Once independence is secured the Senate has promised to take Deimos Rising public, and with it you can hope to become very wealthy should the valuation go well.",
+    "personalGoal": "Increase valuation in advance of a IPO."
+   },
+   "card": {
+    "front": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Role_13.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Jumbo Back/Crisis Mars v1.0 - Jumbo Cards Role_13.png"
+   },
+   "actionCard": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Action Cards_13.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Action Cards_13.png"
+   }
+  },
+  "D3": {
+   "id": "deimos_rising_corp_fleet_manager",
+   "name": "Deimos Rising Corp Fleet Manager",
+   "title": "Fleet Manager",
+   "factionId": "deimos_rising",
+   "initiative": [
+    18,
+    8,
+    3,
+    9
+   ],
+   "handCardIds": [
+    "rc_d3_1",
+    "rc_d3_2",
+    "rc_d3_3",
+    "rc_d3_4",
+    "rc_d3_5"
+   ],
+   "private": {
+    "background": "A native Martian your early work was as a ship hand, spending most of your time in space but always being drawn back to the red planet. Now in charge of running the commercial fleet for Deimos Rising you still retain your love of mars and hope for its independence.",
+    "personalGoal": "Martian patriot with sympathies to Senate and Viva Mars."
+   },
+   "card": {
+    "front": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Role_14.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Jumbo Back/Crisis Mars v1.0 - Jumbo Cards Role_14.png"
+   },
+   "actionCard": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Action Cards_14.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Action Cards_14.png"
+   }
+  },
+  "D2": {
+   "id": "deimos_rising_corp_station_manager",
+   "name": "Deimos Rising Corp Station Manager",
+   "title": "Station Manager",
+   "factionId": "deimos_rising",
+   "initiative": [
+    8,
+    14,
+    9,
+    6
+   ],
+   "handCardIds": [
+    "rc_d2_1",
+    "rc_d2_2",
+    "rc_d2_3",
+    "rc_d2_4",
+    "rc_d2_5"
+   ],
+   "private": {
+    "background": "The ratification of the Deimos Rising mandate was only possible with the inclusion of some Earth loyalists, one of whom was supposed to be you. In truth you care little for politics, instead managing the station over Mars is simply a wise career choice, ripe with opportunity for wealth and advancement.",
+    "personalGoal": "Gain personal riches."
+   },
+   "card": {
+    "front": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Role_15.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Jumbo Back/Crisis Mars v1.0 - Jumbo Cards Role_15.png"
+   },
+   "actionCard": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Action Cards_15.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Action Cards_15.png"
+   }
+  },
+  "F3": {
+   "id": "free_federation_captain_of_the_kraken",
+   "name": "Free Federation Captain of the Kraken",
+   "title": "Captain of the Kraken",
+   "factionId": "free_federation",
+   "initiative": [
+    15,
+    18,
+    5,
+    5
+   ],
+   "handCardIds": [
+    "rc_f3_1",
+    "rc_f3_2",
+    "rc_f3_3",
+    "rc_f3_4",
+    "rc_f3_5"
+   ],
+   "private": {
+    "background": "You were not born to privilege and tried to become someone important through a life of crime. Now, you are escaping your past crimes on Earth by committing new ones in space with the same goal.",
+    "personalGoal": "Become leader of the Free Federation.\nGain personal glory and recognition."
+   },
+   "card": {
+    "front": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Role_16.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Jumbo Back/Crisis Mars v1.0 - Jumbo Cards Role_16.png"
+   },
+   "actionCard": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Action Cards_16.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Action Cards_16.png"
+   }
+  },
+  "F2": {
+   "id": "free_federation_captain_of_the_eclipse",
+   "name": "Free Federation Captain of the Eclipse",
+   "title": "Captain of the Eclipse",
+   "factionId": "free_federation",
+   "initiative": [
+    5,
+    3,
+    2,
+    16
+   ],
+   "handCardIds": [
+    "rc_f2_1",
+    "rc_f2_2",
+    "rc_f2_3",
+    "rc_f2_4",
+    "rc_f2_5"
+   ],
+   "private": {
+    "background": "A born Martian, you toyed with the politics of Viva Mars before getting a steady job in space transport. You lead a mutiny against your old captain after they tried to space one of the crew and have been on the run ever since. The Free Federation has helped arm the Eclipse and you have since gained a reputation for efficiency within the pirate organisation.",
+    "personalGoal": "Become leader of the Free Federation.\nSupport Mars in its bid for freedom."
+   },
+   "card": {
+    "front": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Role_17.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Jumbo Back/Crisis Mars v1.0 - Jumbo Cards Role_17.png"
+   },
+   "actionCard": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Action Cards_17.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Action Cards_17.png"
+   }
+  },
+  "F1": {
+   "id": "free_federation_captain_of_the_corsair",
+   "name": "Free Federation Captain of the Corsair",
+   "title": "Captain of the Corsair",
+   "factionId": "free_federation",
+   "initiative": [
+    1,
+    11,
+    10,
+    10
+   ],
+   "handCardIds": [
+    "rc_f1_1",
+    "rc_f1_2",
+    "rc_f1_3",
+    "rc_f1_4",
+    "rc_f1_5"
+   ],
+   "private": {
+    "background": "You have lived in the Belt since your parents went to space to find their fortune. After an industrial accident left you an orphan you fell in with the Free Federation and have worked your way up the ranks till you now command the Corsair. In all the conflict between Earth and Mars the Belt has been left out of the conversation, this distraction could be an opportunity to help your people (and yourself).",
+    "personalGoal": "Become leader of the Free Federation.\nSupport the rights of the Asteroid Belt."
+   },
+   "card": {
+    "front": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Role_18.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Jumbo Back/Crisis Mars v1.0 - Jumbo Cards Role_18.png"
+   },
+   "actionCard": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Action Cards_18.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Action Cards_18.png"
+   }
+  }
+ }
+}

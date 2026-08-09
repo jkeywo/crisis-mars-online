@@ -1,0 +1,234 @@
+{
+ "_generated": "crisis_mars gamespec @ analogue-projects 9cc5207 via tools/export_web_data.py",
+ "_doNotEdit": true,
+ "warOutcome": {
+  "derivedFrom": "war_progress",
+  "bands": [
+   {
+    "id": "earth_surrenders",
+    "when": "war_progress <= 0",
+    "printed": "Surrender (at Earth Gov Capital)",
+    "meaning": "The war front reached Earth Gov Capital; Earth surrenders and Mars has its independence."
+   },
+   {
+    "id": "mars_surrenders",
+    "when": "war_progress >= 20",
+    "printed": "Surrender (at the Senate Building)",
+    "meaning": "The war front reached the Senate Building; Mars surrenders and Earth rule is restored."
+   },
+   {
+    "id": "unresolved_at_end",
+    "when": "otherwise",
+    "meaning": "Neither capital fell in four turns. The front's final position -- which location hex the marker sits on -- is the shape of the peace the epilogue narrates.\n"
+   }
+  ]
+ },
+ "goalAssessment": {
+  "derivation": "inferred_from_goal_statements",
+  "factionGoals": [
+   {
+    "objective": "canopy_corp_goal_1",
+    "evidence": [
+     "war_outcome",
+     "senate_control_corporate",
+     "senate_control_politicians"
+    ]
+   },
+   {
+    "objective": "canopy_corp_goal_2",
+    "evidence": [
+     "terraforming_project",
+     "mars_trade_route"
+    ]
+   },
+   {
+    "objective": "canopy_corp_goal_3",
+    "evidence": [
+     "luna_prosperity",
+     "canopy_shares"
+    ]
+   },
+   {
+    "objective": "canopy_corp_goal_4",
+    "evidence": [
+     "senate_control_corporate",
+     "senate_control_politicians",
+     "senate_control_people"
+    ]
+   },
+   {
+    "objective": "viva_mars_goal_1",
+    "evidence": [
+     "war_outcome"
+    ]
+   },
+   {
+    "objective": "viva_mars_goal_2",
+    "evidence": [
+     "senate_control_people"
+    ]
+   },
+   {
+    "objective": "viva_mars_goal_3",
+    "evidence": [],
+    "judged": "at_the_table"
+   },
+   {
+    "objective": "viva_mars_goal_4",
+    "evidence": [
+     "terraforming_project"
+    ]
+   },
+   {
+    "objective": "belt_union_goal_1",
+    "evidence": [
+     "ceres_prosperity",
+     "vesta_and_pallas_prosperity"
+    ]
+   },
+   {
+    "objective": "belt_union_goal_2",
+    "evidence": [
+     "war_outcome",
+     "senate_control_politicians",
+     "war_support"
+    ]
+   },
+   {
+    "objective": "belt_union_goal_3",
+    "evidence": [
+     "earth_trade_route",
+     "mars_trade_route"
+    ]
+   },
+   {
+    "objective": "belt_union_goal_4",
+    "evidence": [
+     "shipping_control_belt_union"
+    ]
+   },
+   {
+    "objective": "unss_goal_1",
+    "evidence": [
+     "war_progress",
+     "war_support"
+    ]
+   },
+   {
+    "objective": "unss_goal_2",
+    "evidence": [
+     "war_outcome"
+    ]
+   },
+   {
+    "objective": "unss_goal_3",
+    "evidence": [
+     "shipping_control_un",
+     "earth_trade_route"
+    ]
+   },
+   {
+    "objective": "unss_goal_4",
+    "evidence": [
+     "canopy_shares",
+     "un_oversight"
+    ]
+   },
+   {
+    "objective": "deimos_rising_goal_1",
+    "evidence": [
+     "deimos_rising_valuation",
+     "shipping_control_martian_speaker"
+    ]
+   },
+   {
+    "objective": "deimos_rising_goal_2",
+    "evidence": [
+     "senate_control_corporate",
+     "senate_control_politicians"
+    ]
+   },
+   {
+    "objective": "deimos_rising_goal_3",
+    "evidence": [
+     "terraforming_project"
+    ]
+   },
+   {
+    "objective": "deimos_rising_goal_4",
+    "evidence": [
+     "deimos_rising_valuation"
+    ]
+   },
+   {
+    "objective": "free_federation_goal_1",
+    "evidence": [],
+    "judged": "at_the_table"
+   },
+   {
+    "objective": "free_federation_goal_2",
+    "evidence": [
+     "shipping_control_free_federation"
+    ]
+   },
+   {
+    "objective": "free_federation_goal_3",
+    "evidence": [],
+    "judged": "at_the_table"
+   },
+   {
+    "objective": "free_federation_goal_4",
+    "evidence": [
+     "shipping_control_free_federation"
+    ]
+   }
+  ],
+  "personalGoals": [
+   {
+    "briefing": "canopy_corp_ceo_brief",
+    "evidence": [
+     "canopy_shares"
+    ],
+    "note": "judged at the exact end of turn 4"
+   },
+   {
+    "briefing": "canopy_corp_cto_brief",
+    "evidence": [
+     "terraforming_project"
+    ]
+   },
+   {
+    "briefing": "viva_mars_firebrand_brief",
+    "evidence": [
+     "war_support",
+     "earth_gov_military"
+    ]
+   },
+   {
+    "briefing": "viva_mars_veteran_brief",
+    "evidence": [
+     "senate_military",
+     "war_progress"
+    ]
+   },
+   {
+    "briefing": "deimos_rising_corp_ceo_brief",
+    "evidence": [
+     "deimos_rising_valuation"
+    ]
+   },
+   {
+    "briefing": "belt_union_ceres_boss_brief",
+    "evidence": [
+     "ceres_prosperity"
+    ]
+   },
+   {
+    "briefing": "belt_union_vandp_boss_brief",
+    "evidence": [
+     "vesta_and_pallas_prosperity"
+    ]
+   }
+  ]
+ }
+}
