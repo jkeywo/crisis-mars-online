@@ -273,6 +273,20 @@ export async function startHostApp({ location = window.location, beeper = create
       $(id).view = session.state;
     }
 
+    // Who has not placed, said out loud where the clock is. Every action
+    // card is mandatory, so with a minute left this is the list to read out.
+    if (phase.name === 'negotiation') {
+      const waiting = Object.entries(session.state.actionCards)
+        .filter(([, card]) => card.placed === null)
+        .map(([code]) => data.roles.roles[code]?.name ?? code);
+      $('unplaced').hidden = false;
+      $('unplaced').textContent = waiting.length
+        ? `Still to place their action card: ${waiting.join(', ')}.`
+        : 'Every action card is placed.';
+    } else {
+      $('unplaced').hidden = true;
+    }
+
     const ended = phase.name === 'epilogue';
     $('advance-phase').textContent = phase.name === 'lobby' ? 'Begin the game'
       : ended ? 'The game is over' : 'Next phase';

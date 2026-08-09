@@ -14,12 +14,23 @@
  * This is not for rules the app enforces because they are printed. It is for
  * the gaps.
  *
- * Empty so far, deliberately. The skeleton enforces nothing the handbook
- * leaves to judgement — the clock, the roster and the pencil are all printed
- * or all the umpire's. The first real entries arrive with the Action Phase,
- * where difficulty, resource relevance and consequence adjudication are
- * exactly the sort of questions the print leaves to the room.
- *
  * @type {{id: string, about: string, silent: string, ruling: string, because: string}[]}
  */
-export const KNOWN_GAPS = [];
+export const KNOWN_GAPS = [
+  {
+    id: 'action-card-map-anchor',
+    about: 'Where a placed action card sits',
+    silent:
+      'The handbook says an action card is placed "on a map" during the '
+      + 'Negotiation Phase, and never names a location for it to occupy.',
+    ruling:
+      'The app anchors the card to the map as a whole — a token strip on the '
+      + 'board — never to a location.',
+    because:
+      'Locations are geography, and the printed rule is map-level: what the '
+      + 'action actually does, and where exactly, is narrated when the player '
+      + 'is called in the Action Phase. Pinning the token to a location would '
+      + 'invent a precision the print does not have, and the app would be '
+      + 'correcting it every time the story moved.',
+  },
+];

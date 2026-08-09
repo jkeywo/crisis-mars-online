@@ -78,6 +78,15 @@
       <div class="cm-game-body">
         <!-- what you can do, always in view -->
         <aside id="action-rail" class="cm-rail cm-action-rail">
+          <!-- The Negotiation Phase's one obligation, as its own control
+               rather than a row in the list: three map buttons and where
+               your card currently sits. -->
+          <div id="placement" class="cm-placement" hidden>
+            <h2>Your action card</h2>
+            <p id="placement-note" class="cm-meta"></p>
+            <div id="placement-buttons" class="cm-placement-buttons"></div>
+          </div>
+
           <h2>What you can do</h2>
           <p id="action-error" class="cm-error" role="alert"></p>
           <cm-action-list id="actions"></cm-action-list>

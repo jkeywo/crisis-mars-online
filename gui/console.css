@@ -2485,3 +2485,28 @@ cm-card-viewer {
   font-size: 1.1rem;
   line-height: 1;
 }
+
+
+/* --------------------------------------------------------------------------
+   The Negotiation Phase (Phase B4): the placement control.
+   -------------------------------------------------------------------------- */
+
+.cm-placement {
+  background: var(--cm-paper);
+  border: 1px solid var(--cm-gold);
+  border-radius: 6px;
+  padding: 0.5rem 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.cm-placement-buttons {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.cm-placement-buttons button[aria-pressed="true"] {
+  background: var(--cm-gold);
+  color: #10131f;
+  font-weight: 700;
+}

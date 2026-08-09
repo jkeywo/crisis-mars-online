@@ -106,6 +106,36 @@ describe('<cm-hand>', () => {
   });
 });
 
+describe('the recover affordance', () => {
+  it('is offered on your pile in the Negotiation Phase, and raises the verb', () => {
+    const hand = mount('cm-hand');
+    hand.data = data;
+    const view = viewFor('C1');
+    view.phase = { ...view.phase, name: 'negotiation' };
+    hand.view = view;
+
+    const raised = [];
+    hand.addEventListener('cm-command', (e) => raised.push(e.detail));
+    hand.querySelector('[data-recover="rc_c1_2"]').click();
+    expect(raised).toEqual([
+      { verb: 'recover-discard', payload: { cardId: 'rc_c1_2' } },
+    ]);
+  });
+
+  it('is not offered outside the phase, nor once the recovery is used', () => {
+    const hand = mount('cm-hand');
+    hand.data = data;
+    hand.view = viewFor('C1');   // team phase: no button
+    expect(hand.querySelector('[data-recover]')).toBeNull();
+
+    const used = viewFor('C1');
+    used.phase = { ...used.phase, name: 'negotiation' };
+    used.roles.C1.perTurn.recovered = 1;
+    hand.view = used;
+    expect(hand.querySelector('[data-recover]')).toBeNull();
+  });
+});
+
 describe('<cm-role-card>', () => {
   it('shows the owner their front, a flip, and the private back', () => {
     const card = mount('cm-role-card');

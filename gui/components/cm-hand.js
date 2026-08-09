@@ -57,6 +57,14 @@ export class CmHand extends HTMLElement {
       ?? this._data.factions.npcs?.[roleId]?.name ?? roleId;
     const others = Object.keys(this._view.roles ?? {}).filter((c) => c !== code);
 
+    // The one-back-per-phase rule is the host's to enforce; the button is
+    // simply not offered outside the phase it belongs to, or once this
+    // role's recovery is used, so a press that would certainly be refused
+    // is not invited.
+    const recovery = !this.readonly
+      && this._view.phase?.name === 'negotiation'
+      && (this._view.roles?.[code]?.perTurn?.recovered ?? 0) < 1;
+
     const thumb = (card) => `
       <button type="button" class="cm-card-thumb" data-view-card="${escape(card.id)}"
               aria-label="Look at ${escape(typeName(card))}">
@@ -108,7 +116,13 @@ export class CmHand extends HTMLElement {
         <ul class="cm-hand-cards cm-hand-spent">${discarded.map((card) => `
           <li data-card="${escape(card.id)}" data-state="spent">
             ${thumb(card)}
-            <div class="cm-hand-card-words"><span>${escape(typeName(card))}</span></div>
+            <div class="cm-hand-card-words">
+              <span>${escape(typeName(card))}</span>
+              ${recovery ? `
+                <div class="cm-hand-actions">
+                  <button type="button" data-recover="${escape(card.id)}">Recover</button>
+                </div>` : ''}
+            </div>
           </li>`).join('') || '<li class="cm-empty">nothing spent</li>'}
         </ul>
       </section>`;
@@ -131,6 +145,9 @@ export class CmHand extends HTMLElement {
     }
     for (const button of this.querySelectorAll('[data-reclaim]')) {
       button.onclick = () => this._emit('reclaim-card', { cardId: button.dataset.reclaim });
+    }
+    for (const button of this.querySelectorAll('[data-recover]')) {
+      button.onclick = () => this._emit('recover-discard', { cardId: button.dataset.recover });
     }
   }
 }

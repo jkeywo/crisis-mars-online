@@ -56,11 +56,19 @@ export async function startPlayerApp({ location = window.location, beeper = crea
   const seat = seatFromLocation(location);
 
   // One board lane per map, built from the data so the row cannot disagree
-  // with the boards that exist.
-  for (const mapId of Object.keys(data.maps.maps)) {
+  // with the boards that exist — and one placement button each, for the same
+  // reason.
+  for (const [mapId, map] of Object.entries(data.maps.maps)) {
     const board = document.createElement('cm-map-board');
     board.setAttribute('map', mapId);
     $('boards').append(board);
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.dataset.placeMap = mapId;
+    button.textContent = map.name;
+    button.addEventListener('click', () => dispatch('place-action-card', { mapId }));
+    $('placement-buttons').append(button);
   }
 
   const screens = {
@@ -215,9 +223,30 @@ export async function startPlayerApp({ location = window.location, beeper = crea
     $('role-card').view = view;
     $('hand').data = data;
     $('hand').view = view;
+    renderPlacement(view, mine);
     renderAllHands(view, mine);
     $('game-roster').roles = data.roles.roles;
     $('game-roster').seats = seats;
+  }
+
+  /**
+   * The Negotiation Phase's one obligation, as its own control.
+   *
+   * Three buttons and a sentence: where your card sits, or that it does not
+   * yet. Re-placement is an overwrite until the facilitator calls the phase,
+   * so the buttons stay live and the current map reads pressed.
+   */
+  function renderPlacement(view, mine) {
+    const card = view.actionCards?.[mine];
+    const open = view.phase.name === 'negotiation' && Boolean(card);
+    $('placement').hidden = !open;
+    if (!open) return;
+    for (const button of $('placement-buttons').children) {
+      button.setAttribute('aria-pressed', String(button.dataset.placeMap === card.placed));
+    }
+    $('placement-note').textContent = card.placed
+      ? `On ${data.maps.maps[card.placed]?.name ?? card.placed} — you can move it until the phase ends.`
+      : 'Not placed yet. Placement is mandatory — pick a map.';
   }
 
   /**

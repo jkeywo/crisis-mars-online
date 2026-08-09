@@ -88,6 +88,24 @@ describe('<cm-map-board>', () => {
     expect(board.querySelectorAll('[data-flash]')).toHaveLength(0);
   });
 
+  it('shows a placed action card as a faction-coloured token on its map', () => {
+    const board = mount('cm-map-board', { map: 'earth_map' });
+    board.data = data;
+    const view = freshView();
+    view.actionCards.C1 = { placed: 'earth_map', spent: false };
+    view.actionCards.V1 = { placed: 'mars_map', spent: false };
+    board.view = view;
+
+    const strip = board.querySelector('.cm-board-cards');
+    expect(strip.dataset.empty).toBe('false');
+    const tokens = [...strip.querySelectorAll('.cm-action-token')];
+    // C1's token, in Canopy's printed colour — and V1's is on another board.
+    expect(tokens.map((t) => t.dataset.code)).toEqual(['C1']);
+    expect(tokens[0].getAttribute('style'))
+      .toContain(data.factions.factions.canopy_corp.colour);
+    expect(tokens[0].title).toBe(data.roles.roles.C1.name);
+  });
+
   it('flashes upward movement as up', () => {
     const board = mount('cm-map-board', { map: 'mars_map' });
     board.data = data;

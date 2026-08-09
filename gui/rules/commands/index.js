@@ -8,9 +8,9 @@
  * about this directory: beside the other verbs about the same subject, and
  * beside the helpers only those verbs use.
  *
- * The chair, the cards, and the umpire. The turn's own verbs (placing an
- * action card, resolving with the die) arrive with the Negotiation and
- * Action Phases and will each be a fragment beside these.
+ * The chair, the cards, the Negotiation Phase, and the umpire. The Action
+ * Phase's own verbs (calling the spotlight, resolving with the die) arrive
+ * with it and will be a fragment beside these.
  *
  * The accessors below stay here rather than in a fragment because each of them
  * reads the whole registry. A fragment that imported them would be importing
@@ -20,11 +20,13 @@
 
 import { LOBBY_COMMANDS } from './lobby.js';
 import { CARD_COMMANDS } from './cards.js';
+import { NEGOTIATION_COMMANDS } from './negotiation.js';
 import { FACILITATOR_COMMANDS } from './facilitator.js';
 
 export const COMMANDS = {
   ...LOBBY_COMMANDS,
   ...CARD_COMMANDS,
+  ...NEGOTIATION_COMMANDS,
   ...FACILITATOR_COMMANDS,
 };
 

@@ -74,12 +74,17 @@ export function createInitialState({ joinCode, seed, data, playerCount, rosterCo
       // this is the game's own record of the claim, written by the claim-role
       // command and so replayable from the log.
       claimedBySeat: null,
+      // Allowances that refresh every turn. `recovered` is the Negotiation
+      // Phase's one-discard-back rule; reset by advance-phase on rollover.
+      perTurn: { recovered: 0 },
     };
   }
   // The two NPCs are always in the game, whoever is at the table. They are
   // facilitator-played, so a player claim on them is refused — see lobby.js.
+  // They keep the same per-turn allowances: the Speaker's discard pile
+  // recovers by the same printed rule as anybody's.
   for (const code of NPC_CODES) {
-    roles[code] = { id: code, npc: true, claimedBySeat: null };
+    roles[code] = { id: code, npc: true, claimedBySeat: null, perTurn: { recovered: 0 } };
   }
 
   // One tracks object per map, seeded from the printed initial values. The

@@ -86,6 +86,11 @@ export const FACILITATOR_COMMANDS = {
             card.placed = null;
             card.spent = false;
           }
+          // And the per-turn allowances refresh — one discard recovered per
+          // Negotiation Phase, of which each turn has exactly one.
+          for (const role of Object.values(draft.roles)) {
+            role.perTurn = { recovered: 0 };
+          }
         }
       } else {
         draft.phase.name = PHASES[at + 1];
