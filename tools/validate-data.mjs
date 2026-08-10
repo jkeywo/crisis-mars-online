@@ -135,9 +135,6 @@ export async function validateData() {
   }
   for (const [code, role] of Object.entries(roles)) {
     if (!factions[role.factionId]) fail(`${code}: faction '${role.factionId}' is not a faction`);
-    if ((role.initiative ?? []).length !== CHECKSUMS.turns) {
-      fail(`${code}: initiative has ${role.initiative?.length ?? 0} entries, expected ${CHECKSUMS.turns}`);
-    }
     if ((role.handCardIds ?? []).length !== CHECKSUMS.cardsPerPlayer) {
       fail(`${code}: expected ${CHECKSUMS.cardsPerPlayer} hand cards, found ${role.handCardIds?.length ?? 0}`);
     }
@@ -152,15 +149,10 @@ export async function validateData() {
     }
   }
 
-  // Initiative is a pre-rolled call order: each turn's column must be a
-  // permutation of 1..18, or two players get called at once and one never.
-  for (let turn = 0; turn < CHECKSUMS.turns; turn += 1) {
-    const column = codes.map((code) => roles[code].initiative?.[turn]).sort((a, b) => a - b);
-    const wanted = Array.from({ length: CHECKSUMS.roles }, (_, i) => i + 1);
-    if (JSON.stringify(column) !== JSON.stringify(wanted)) {
-      fail(`initiative turn ${turn + 1}: not a permutation of 1..${CHECKSUMS.roles} (${column.join(',')})`);
-    }
-  }
+  // The initiative arrays in roles.json are deliberately unchecked: the
+  // author ruled the printed values an old rule (call order is a seeded
+  // shuffle now), the field is a vestigial transcription, and nothing in
+  // the app may read it — this validator included.
 
   // --- resources -------------------------------------------------------------
   if (Object.keys(types).length !== CHECKSUMS.resourceTypes) {

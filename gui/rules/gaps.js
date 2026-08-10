@@ -247,4 +247,24 @@ export const KNOWN_GAPS = [
       + 'ending away from the room. Adjudication is human here by design; '
       + 'so is the curtain.',
   },
+  {
+    id: 'initiative-randomised',
+    status: 'author-ruled',
+    ruledOn: '2026-08-10',
+    about: 'The Action Phase call order',
+    silent:
+      'The printed role cards carry a per-turn initiative value each, and '
+      + 'the exported roles.json still transcribes the four columns.',
+    ruling:
+      'Those values are an old rule. The call order is a fresh seeded '
+      + 'shuffle of each map\u2019s placed players, every turn, drawn from '
+      + 'the same rng stream as the dice so a replay deals it identically. '
+      + 'The transcribed arrays stay in the data untouched, and nothing '
+      + 'reads them.',
+    because:
+      'The author\u2019s errata, ruled directly: "remove the initiative '
+      + 'values from cards, that\u2019s an old rule, the action card order '
+      + 'should be randomised." The data field waits on a gamespec-side '
+      + 'ledger entry rather than being hand-edited here.',
+  },
 ];

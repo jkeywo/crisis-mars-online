@@ -39,25 +39,27 @@ function actionPhase({ playerCount = 12, leaveUnplaced = [] } = {}) {
   return run(state, [[FACILITATOR, 'facilitator:advance-phase', {}]]);   // action
 }
 
-/** The queue order the data itself predicts for a turn and a set of codes. */
-const printedOrder = (codes, turn) => [...codes].sort((a, b) =>
-  data.roles.roles[a].initiative[turn - 1] - data.roles.roles[b].initiative[turn - 1]);
-
 describe('the call order', () => {
-  it('builds one queue per map from the printed initiative row', () => {
+  it('deals each map a seeded shuffle of its placed players', () => {
+    // The author's ruling: no printed initiative — a fresh shuffle per map
+    // per turn, off the same stream as the dice. Same seed, same script,
+    // same order, which is the whole of what replay needs.
     const state = actionPhase();
-    // Twelve players at this count: C1 C2 U1 U2 on Earth, V1 V2 D1 D2 on
-    // Mars, B1 B2 F1 F2 on the Belt — each queue in initiative order.
-    expect(state.initiative.queues.earth_map)
-      .toEqual(printedOrder(['C1', 'C2', 'U1', 'U2'], 1));
-    expect(state.initiative.queues.mars_map)
-      .toEqual(printedOrder(['V1', 'V2', 'D1', 'D2'], 1));
-    expect(state.initiative.queues.belt_map)
-      .toEqual(printedOrder(['B1', 'B2', 'F1', 'F2'], 1));
+    const again = actionPhase();
+    expect(state.initiative.queues).toEqual(again.initiative.queues);
+
+    // Every queue holds exactly its map's placed players, order aside.
+    expect([...state.initiative.queues.earth_map].sort())
+      .toEqual(['C1', 'C2', 'U1', 'U2']);
+    expect([...state.initiative.queues.mars_map].sort())
+      .toEqual(['D1', 'D2', 'V1', 'V2']);
+    expect([...state.initiative.queues.belt_map].sort())
+      .toEqual(['B1', 'B2', 'F1', 'F2']);
     expect(state.initiative.unplaced).toEqual([]);
-    // Absent codes are simply not in any queue: twelve dealt, twelve queued.
-    const queued = Object.values(state.initiative.queues).flat();
-    expect(queued.sort()).toEqual([...state.rosterCodes].sort());
+
+    // And the shuffle really drew from the stream: three four-player maps
+    // consume three draws each.
+    expect(state.rngCursor).toBe(9);
   });
 
   it('lists a player who never placed rather than inventing a placement', () => {
@@ -66,19 +68,27 @@ describe('the call order', () => {
     expect(Object.values(state.initiative.queues).flat()).not.toContain('U2');
   });
 
-  it('uses each turn’s own initiative row', () => {
-    // Walk the same table to turn two: the queues re-sort by column two.
+  it('reshuffles every turn rather than repeating an order', () => {
+    // Walk the same twelve to turn two with identical placements: the
+    // stream has moved on, so the deal comes out different. (Deterministic
+    // with this seed — verified, not hoped.)
     let state = actionPhase();
+    const firstDeal = structuredClone(state.initiative.queues);
     state = run(state, [
       [FACILITATOR, 'facilitator:advance-phase', {}],   // turn 2 team
     ]);
     expect(state.initiative.queues).toEqual({});        // spent with the turn
     state = run(state, [[FACILITATOR, 'facilitator:advance-phase', {}]]);   // negotiation
-    for (const code of ['C1', 'V1', 'B1']) {
-      state = run(state, [[asPlayer(code), 'place-action-card', { mapId: 'earth_map' }]]);
+    const mapFor = { C: 'earth_map', U: 'earth_map', V: 'mars_map', D: 'mars_map', B: 'belt_map', F: 'belt_map' };
+    for (const code of state.rosterCodes) {
+      state = run(state, [[asPlayer(code), 'place-action-card', { mapId: mapFor[code[0]] }]]);
     }
     state = run(state, [[FACILITATOR, 'facilitator:advance-phase', {}]]);   // action
-    expect(state.initiative.queues.earth_map).toEqual(printedOrder(['C1', 'V1', 'B1'], 2));
+    for (const mapId of Object.keys(firstDeal)) {
+      expect([...state.initiative.queues[mapId]].sort())
+        .toEqual([...firstDeal[mapId]].sort());
+    }
+    expect(state.initiative.queues).not.toEqual(firstDeal);
   });
 });
 
@@ -386,12 +396,13 @@ describe('the die', () => {
         [FACILITATOR, 'facilitator:roll-consequence', { actionId: 'a1' }],
       ]);
     };
+    const before = actionPhase().rngCursor;   // the shuffle's own draws
     const once = script(actionPhase());
     const twice = script(actionPhase());
     expect(once.actions.a1.roll).toBe(twice.actions.a1.roll);
     expect(once.actions.a1.roll).toBeGreaterThanOrEqual(1);
     expect(once.actions.a1.roll).toBeLessThanOrEqual(6);
-    expect(once.rngCursor).toBe(1);
+    expect(once.rngCursor).toBe(before + 1);
     expect(once.actions.a1.status).toBe('rolled');
   });
 
@@ -713,7 +724,7 @@ describe('the record', () => {
     // the ally's card spent by an action on another map.
     expect(state.actions.a1.status).toBe('closed');
     expect(state.actions.a2.status).toBe('closed');
-    expect(state.rngCursor).toBe(2);
+    expect(state.rngCursor).toBe(9 + 2);   // three shuffles, then two dice
     // The same-map ally spent their action with e1's and left the queue.
     expect(state.actionCards[e2].spent).toBe(true);
     expect(state.initiative.queues.earth_map).not.toContain(e2);

@@ -57,9 +57,11 @@ the facilitator says so.
 Phase — placement is mandatory — and resolved in the Action Phase when its
 player is called.
 
-**Initiative** — the pre-rolled call order for the Action Phase: each role
-carries four printed values, one per turn, and each turn's column is a
-permutation of 1–18. Players are called to the maps in that order.
+**Initiative** — the call order for the Action Phase: a fresh seeded
+shuffle of each map's placed players, every turn, drawn through the game's
+own rng stream so replays reproduce it. (The per-turn values printed on the
+role cards are an old rule by the author's errata; the transcribed arrays
+remain in roles.json unread.)
 
 **Resource Card** — one of 108 cards across 24 types (Hackers, Patrol Ship,
 Untraceable Cash…). Owned by a role, held by whoever it was loaned to,

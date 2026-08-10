@@ -49,8 +49,7 @@ export class CmRoleCard extends HTMLElement {
              alt="${escape(printed.name)}${showingBack ? ' — private side' : ''}">
         <figcaption>
           <strong>${escape(printed.name)}</strong>
-          <span class="cm-meta">${escape(faction?.name ?? '')} · initiative ${
-  (printed.initiative ?? []).join(', ')}</span>
+          <span class="cm-meta">${escape(faction?.name ?? '')}</span>
         </figcaption>
         ${isOwner ? `
           <button type="button" class="cm-lanyard-flip" data-flip>

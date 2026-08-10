@@ -21,28 +21,38 @@ import { no, ok } from './shared.js';
 /**
  * The call order for a turn's Action Phase, built the moment the phase opens.
  *
- * Each role's printed initiative row names its call position for each turn,
- * and the queue for a map is simply the roles placed there, in that order.
- * A player who never placed — the print makes placement mandatory, but a
- * mandate is not a crash barrier — goes to the `unplaced` bucket for the
- * facilitator to deal with by hand. See gaps.js.
+ * A fresh seeded shuffle of each map's placed players, every turn — the
+ * author's ruling: the initiative values printed on the role cards are an
+ * old rule, and the arrays still in roles.json are a vestigial
+ * transcription nothing may read. The shuffle draws from the same rng
+ * stream as the dice, map by map in board order, so a replay deals the
+ * identical call order. A player who never placed goes to the `unplaced`
+ * bucket for the facilitator to deal with by hand. See gaps.js.
  */
-function buildInitiative(draft, data) {
-  const turnIndex = draft.phase.turn - 1;
-  const order = [...draft.rosterCodes].sort((a, b) =>
-    (data.roles.roles[a]?.initiative?.[turnIndex] ?? 99)
-    - (data.roles.roles[b]?.initiative?.[turnIndex] ?? 99));
-
+function buildInitiative(draft, roll) {
   const initiative = emptyInitiative();
+  const pool = {};
   for (const mapId of Object.keys(draft.maps)) {
     initiative.queues[mapId] = [];
     initiative.done[mapId] = [];
     initiative.current[mapId] = null;
+    pool[mapId] = [];
   }
-  for (const code of order) {
+  for (const code of draft.rosterCodes) {
     const placed = draft.actionCards[code]?.placed;
-    if (placed && initiative.queues[placed]) initiative.queues[placed].push(code);
+    if (placed && pool[placed]) pool[placed].push(code);
     else initiative.unplaced.push(code);
+  }
+  for (const mapId of Object.keys(draft.maps)) {
+    const codes = pool[mapId];
+    // Fisher–Yates off the seeded stream: roll(i + 1) is a die with as many
+    // faces as there are candidates, so every order is equally likely and
+    // every draw advances the cursor a replay will follow.
+    for (let i = codes.length - 1; i > 0; i -= 1) {
+      const j = roll(i + 1) - 1;
+      [codes[i], codes[j]] = [codes[j], codes[i]];
+    }
+    initiative.queues[mapId] = codes;
   }
   draft.initiative = initiative;
 }
@@ -96,7 +106,7 @@ export const FACILITATOR_COMMANDS = {
     admit(ctx) {
       return ctx.state.phase.name === 'epilogue' ? no('the game is over') : ok();
     },
-    effects(draft, ctx, { data }) {
+    effects(draft, ctx, { data, roll }) {
       const at = PHASES.indexOf(draft.phase.name);
       if (draft.phase.name === 'lobby') {
         draft.phase.turn = 1;
@@ -138,7 +148,7 @@ export const FACILITATOR_COMMANDS = {
       // The Action Phase's whole apparatus exists exactly while the phase
       // does: built on the way in, from this turn's printed initiative row
       // and the placements the Negotiation Phase just froze.
-      if (draft.phase.name === 'action') buildInitiative(draft, data);
+      if (draft.phase.name === 'action') buildInitiative(draft, roll);
     },
   },
 
