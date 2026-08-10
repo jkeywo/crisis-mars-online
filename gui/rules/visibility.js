@@ -115,6 +115,7 @@ export const FIELD_VISIBILITY = [
   { path: 'opportunities.*.id', audience: PUBLIC },
   { path: 'opportunities.*.turn', audience: PUBLIC },
   { path: 'opportunities.*.status', audience: PUBLIC },
+  { path: 'opportunities.*.resolvedTurn', audience: PUBLIC },
   { path: 'opportunities.*.factionId', audience: PUBLIC },
   { path: 'opportunities.*.npcCode', audience: PUBLIC },
   {

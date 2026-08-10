@@ -184,6 +184,10 @@ export const TEAM_COMMANDS = {
         votes: {},
         effects: [],
         status: 'pending',
+        // Filled by the resolve: which turn the answer landed in. The player
+        // console keeps an answered opportunity on screen for the rest of
+        // that turn, and this is what "the rest of that turn" reads.
+        resolvedTurn: null,
       };
     },
   },
@@ -236,6 +240,7 @@ export const TEAM_COMMANDS = {
       const record = draft.opportunities[ctx.cmd.payload.opportunityId];
       record.effects = [...(ctx.cmd.payload.effects ?? [])];
       record.status = 'resolved';
+      record.resolvedTurn = draft.phase.turn;
       applyEffects(draft, record.effects);
     },
   },

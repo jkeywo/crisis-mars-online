@@ -254,6 +254,9 @@ describe('opportunities', () => {
       }],
     ]);
     expect(state.opportunities.o1.status).toBe('resolved');
+    // The turn the answer landed in, public alongside the status: the
+    // player console's "answered this turn" window reads it.
+    expect(state.opportunities.o1.resolvedTurn).toBe(state.phase.turn);
     expect(state.maps.earth_map.tracks.war_support).toBe(14);
     expect(admit(state, data, {
       verb: 'facilitator:resolve-opportunity', payload: { opportunityId: 'o1', effects: [] },
