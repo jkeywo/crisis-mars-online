@@ -61,6 +61,7 @@ export const NEGOTIATION_COMMANDS = {
       // Your own pile only: a spent card goes home to its owner, wherever it
       // was spent, so recovery is the owner's and nobody else's.
       if (card.ownerCode !== subject) return no('only your own discard comes back');
+      if (card.state === 'destroyed') return no('that card was destroyed — it is out of the game');
       if (card.state !== 'spent') return no('that card is not in the discard');
       if ((state.roles[subject]?.perTurn?.recovered ?? 0) >= 1) {
         return no('you have already recovered a card this phase');

@@ -5,6 +5,7 @@ import { apply, replay } from '../../gui/rules/reducer.js';
 import { admit } from '../../gui/rules/admission.js';
 import { toSave } from '../../gui/rules/command-log.js';
 import { unclassifiedPaths } from '../../gui/rules/views.js';
+import { actionImpact } from '../../gui/rules/derive.js';
 
 const data = await loadData();
 
@@ -182,13 +183,6 @@ describe('declaring', () => {
     }, asPlayer(actor)).reason).toContain('you or a named ally');
   });
 
-  it('refuses spending future impact that is not banked', () => {
-    const { state, actor } = called();
-    expect(admit(state, data, {
-      verb: 'declare-action',
-      payload: { actionId: 'a1', text: 'x', allyCodes: [], cardIds: [], futureImpact: 1 },
-    }, asPlayer(actor)).reason).toContain('banked 0');
-  });
 });
 
 describe('allies', () => {
@@ -443,28 +437,20 @@ function rolled() {
   return { state, actor, ally, mine, loaned };
 }
 
-describe('band-limited effects', () => {
-  it('clamps track movement as a total budget across the action', () => {
-    // Turn 1, no allies, two accepted, no difficulty: impact 3 before any
-    // boon — Minor or Moderate, budget 2 or 3. Ask for far more than either.
+describe('effects, unclamped', () => {
+  it('accepts a ruling far past the printed guidance — the tables advise, never bind', () => {
+    // The author's ruling: the band column is lit on the panel, and that is
+    // the whole of it. Eight points of movement on a Minor action lands.
     const { state } = rolled();
-    const verdict = admit(state, data, {
-      verb: 'facilitator:apply-effects',
-      payload: {
-        actionId: 'a1',
-        effects: [
-          { trackId: 'war_support', delta: -3 },
-          { trackId: 'un_oversight', delta: 2 },
-        ],
-      },
-    }, FACILITATOR);
-    expect(verdict.ok).toBe(false);
-    expect(verdict.reason).toContain('points of track movement');
-
-    // Within budget lands, moving the boards immediately.
-    const applied = run(state, [[FACILITATOR, 'facilitator:apply-effects',
-      { actionId: 'a1', effects: [{ trackId: 'war_support', delta: -2 }] }]]);
-    expect(applied.maps.earth_map.tracks.war_support).toBe(14);
+    const applied = run(state, [[FACILITATOR, 'facilitator:apply-effects', {
+      actionId: 'a1',
+      effects: [
+        { trackId: 'war_support', delta: -5 },
+        { trackId: 'un_oversight', delta: 3 },
+      ],
+    }]]);
+    expect(applied.maps.earth_map.tracks.war_support).toBe(11);
+    expect(applied.maps.earth_map.tracks.un_oversight).toBe(7);
   });
 
   it('re-applies by reverting, never by adding', () => {
@@ -479,104 +465,122 @@ describe('band-limited effects', () => {
     expect(twice.actions.a1.effects).toEqual([{ trackId: 'war_support', delta: -1 }]);
   });
 
-  it('will not move a track below zero, and knows what a re-apply frees', () => {
+  it('still refuses what the boards cannot take', () => {
     const { state } = rolled();
-    // senate_military starts at 0.
+    // senate_military starts at 0: guidance or no guidance, no track goes
+    // below zero.
     expect(admit(state, data, {
       verb: 'facilitator:apply-effects',
       payload: { actionId: 'a1', effects: [{ trackId: 'senate_military', delta: -1 }] },
     }, FACILITATOR).reason).toContain('would go negative');
   });
 
-  it('prices regains by faction and clamps against the band', () => {
-    let { state, actor, ally, mine } = rolled();
-    // Spend two cards into the discard first: one of the actor's own faction
-    // and one of the ally's, via the pencil for brevity.
+  it('regains any discarded card, to the acting player alone', () => {
+    let { state, actor, mine } = rolled();
     state = run(state, [
       [FACILITATOR, 'facilitator:set', { path: ['cards', mine[2], 'state'], value: 'spent' }],
+      [FACILITATOR, 'facilitator:apply-effects',
+        { actionId: 'a1', regains: [mine[2]] }],
+      [FACILITATOR, 'facilitator:close-action', { actionId: 'a1' }],
     ]);
-    const foreignSpent = Object.values(state.cards)
-      .find((c) => c.ownerCode === ally && c.state === 'held').id;
-    state = run(state, [
-      [FACILITATOR, 'facilitator:set', { path: ['cards', foreignSpent, 'state'], value: 'spent' }],
-    ]);
-
-    // Impact 3 (turn 1 + 2 accepted) ± the boon: regain budget 2 or 3. An
-    // out-of-faction regain costs 2, so own(1) + foreign(2) = 3 busts a
-    // Minor band and only fits if the die came up a boon.
-    const payload = {
-      actionId: 'a1',
-      regains: [
-        { cardId: mine[2], toCode: actor },
-        { cardId: foreignSpent, toCode: actor },
-      ],
-    };
-    const budgetNow = state.actions.a1.roll >= 5 ? 3 : 2;
-    const verdict = admit(state, data,
-      { verb: 'facilitator:apply-effects', payload }, FACILITATOR);
-    if (budgetNow >= 3) {
-      expect(verdict.ok).toBe(true);
-    } else {
-      expect(verdict.ok).toBe(false);
-      expect(verdict.reason).toContain('out-of-faction');
-    }
-    // One own-faction card always fits.
-    expect(admit(state, data, {
+    expect(state.cards[mine[2]]).toMatchObject({ state: 'held', holderCode: actor });
+    // A held card is not in the discard, so it cannot be regained.
+    const fresh = rolled();
+    expect(admit(fresh.state, data, {
       verb: 'facilitator:apply-effects',
-      payload: { actionId: 'a1', regains: [{ cardId: mine[2], toCode: actor }] },
-    }, FACILITATOR).ok).toBe(true);
-    // And a recipient outside the action is refused whatever the budget.
-    expect(admit(state, data, {
-      verb: 'facilitator:apply-effects',
-      payload: { actionId: 'a1', regains: [{ cardId: mine[2], toCode: 'B1' }] },
-    }, FACILITATOR).reason).toContain('actor or a confirmed ally');
+      payload: { actionId: 'a1', regains: [fresh.mine[2]] },
+    }, FACILITATOR).reason).toContain('only a discarded card');
   });
 
-  it('clamps sabotage by count and keeps it off the committed cards', () => {
-    const { state, ally, mine, loaned } = rolled();
+  it('sabotages by mode: a discard comes back, a destruction never does', () => {
+    let { state, ally } = rolled();
     const victims = Object.values(state.cards)
       .filter((c) => c.holderCode === ally && c.state === 'held').map((c) => c.id);
-    // Budget at impact 3 is 1 (or 1 with boon: by_band 0,1,1,2,3,4 → index
-    // 1 or 2 both allow 1). Two is always too many here.
+    state = run(state, [
+      [FACILITATOR, 'facilitator:apply-effects', {
+        actionId: 'a1',
+        sabotage: [
+          { cardId: victims[0], mode: 'discard' },
+          { cardId: victims[1], mode: 'destroy' },
+        ],
+      }],
+      [FACILITATOR, 'facilitator:close-action', { actionId: 'a1' }],
+    ]);
+    expect(state.cards[victims[0]].state).toBe('spent');
+    expect(state.cards[victims[1]].state).toBe('destroyed');
+
+    // The discarded one recovers by the ordinary rule; the destroyed one is
+    // out of the game for good — recovery and regain both refuse it.
+    const owner0 = state.cards[victims[0]].ownerCode;
+    const owner1 = state.cards[victims[1]].ownerCode;
+    state = run(state, [
+      [FACILITATOR, 'facilitator:advance-phase', {}],   // turn 2 team
+      [FACILITATOR, 'facilitator:advance-phase', {}],   // negotiation
+    ]);
     expect(admit(state, data, {
-      verb: 'facilitator:apply-effects',
-      payload: { actionId: 'a1', sabotage: victims.slice(0, 2) },
-    }, FACILITATOR).reason).toContain('sabotaged');
+      verb: 'recover-discard', payload: { cardId: victims[0] },
+    }, asPlayer(owner0)).ok).toBe(true);
     expect(admit(state, data, {
-      verb: 'facilitator:apply-effects',
-      payload: { actionId: 'a1', sabotage: [victims[0]] },
-    }, FACILITATOR).ok).toBe(true);
-    // A card committed to this very action cannot be its own collateral.
-    expect(admit(state, data, {
-      verb: 'facilitator:apply-effects',
-      payload: { actionId: 'a1', sabotage: [loaned] },
-    }, FACILITATOR).reason).toContain('committed');
-    void mine;
+      verb: 'recover-discard', payload: { cardId: victims[1] },
+    }, asPlayer(owner1)).reason).toContain('destroyed');
   });
 
-  it('clamps future impact against the band and banks it only to players', () => {
-    const { state } = rolled();
+  it('says which mode, refuses committed cards, and wants a real mode', () => {
+    const { state, loaned } = rolled();
     expect(admit(state, data, {
       verb: 'facilitator:apply-effects',
-      payload: { actionId: 'a1', futureImpact: { amount: 9 } },
-    }, FACILITATOR).reason).toContain('future impact');
+      payload: { actionId: 'a1', sabotage: [{ cardId: loaned, mode: 'discard' }] },
+    }, FACILITATOR).reason).toContain('committed');
+    const victim = Object.values(state.cards)
+      .find((c) => c.state === 'held' && !state.actions.a1.accepted.includes(c.id)).id;
     expect(admit(state, data, {
       verb: 'facilitator:apply-effects',
-      payload: { actionId: 'a1', futureImpact: { amount: 1, toCode: 'N1' } },
-    }, FACILITATOR).reason).toContain('to a player');
+      payload: { actionId: 'a1', sabotage: [{ cardId: victim, mode: 'shred' }] },
+    }, FACILITATOR).reason).toContain('say which');
+  });
+});
+
+describe('the ledger and the spoken bonus', () => {
+  it('writes a private note against a character, replayably', () => {
+    let state = actionPhase();
+    state = run(state, [
+      [FACILITATOR, 'facilitator:note', { code: 'C1', text: 'Owed a favour by the docks.' }],
+      [FACILITATOR, 'facilitator:note', { code: 'C1', text: 'Prepared for the future.' }],
+    ]);
+    expect(state.notes.C1.map((note) => note.text)).toEqual([
+      'Owed a favour by the docks.', 'Prepared for the future.',
+    ]);
+    expect(admit(state, data, {
+      verb: 'facilitator:note', payload: { code: 'Z9', text: 'x' },
+    }, FACILITATOR).reason).toContain('no such character');
+    const { state: rebuilt, refused } = replay(toSave(state), data);
+    expect(refused).toEqual([]);
+    expect(rebuilt.notes).toEqual(state.notes);
+  });
+
+  it('speaks a flat bonus onto the action, counted into Impact', () => {
+    let { state } = rolled();
+    const before = actionImpact(state, data, state.actions.a1);
+    state = run(state, [[FACILITATOR, 'facilitator:set-bonus',
+      { actionId: 'a1', bonus: 2 }]]);
+    expect(state.actions.a1.bonus).toBe(2);
+    expect(actionImpact(state, data, state.actions.a1)).toBe(before + 2);
+    state = run(state, [[FACILITATOR, 'facilitator:close-action', { actionId: 'a1' }]]);
+    expect(admit(state, data, {
+      verb: 'facilitator:set-bonus', payload: { actionId: 'a1', bonus: 1 },
+    }, FACILITATOR).reason).toContain('over');
   });
 });
 
 describe('closing', () => {
-  it('spends the action cards, the accepted cards, and settles the bank', () => {
+  it('spends the action cards and the accepted cards, and delivers the regains', () => {
     let { state, actor, mine, loaned } = rolled();
     state = run(state, [
       [FACILITATOR, 'facilitator:set', { path: ['cards', mine[2], 'state'], value: 'spent' }],
       [FACILITATOR, 'facilitator:apply-effects', {
         actionId: 'a1',
         effects: [{ trackId: 'war_support', delta: -1 }],
-        regains: [{ cardId: mine[2], toCode: actor }],
-        futureImpact: { amount: 1 },
+        regains: [mine[2]],
       }],
       [FACILITATOR, 'facilitator:narrate', { actionId: 'a1', text: 'The depot burns.' }],
       [FACILITATOR, 'facilitator:close-action', { actionId: 'a1' }],
@@ -588,7 +592,6 @@ describe('closing', () => {
     expect(state.cards[mine[0]].state).toBe('spent');
     expect(state.cards[loaned].state).toBe('spent');
     expect(state.cards[mine[2]]).toMatchObject({ state: 'held', holderCode: actor });
-    expect(state.futureImpacts[actor]).toBe(1);
     expect(state.initiative.done.earth_map).toEqual([actor]);
     expect(state.initiative.current.earth_map).toBe(null);
     // And the queue moves on.
@@ -685,10 +688,12 @@ describe('the record', () => {
       [FACILITATOR, 'facilitator:rule-resources',
         { actionId: 'a2', acceptedCardIds: [], vetoedCardIds: [mc] }],
       [FACILITATOR, 'facilitator:roll-consequence', { actionId: 'a2' }],
+      [FACILITATOR, 'facilitator:set-bonus', { actionId: 'a1', bonus: 1 }],
+      [FACILITATOR, 'facilitator:note',
+        { code: e2, text: 'Stood with the strike on the port.' }],
       [FACILITATOR, 'facilitator:apply-effects', {
         actionId: 'a1',
         effects: [{ trackId: 'war_support', delta: -2 }],
-        futureImpact: { amount: 1, toCode: e2 },
       }],
       [FACILITATOR, 'facilitator:narrate', { actionId: 'a1', text: 'Flames over the port.' }],
       [FACILITATOR, 'facilitator:close-action', { actionId: 'a1' }],
@@ -712,7 +717,8 @@ describe('the record', () => {
     // The same-map ally spent their action with e1's and left the queue.
     expect(state.actionCards[e2].spent).toBe(true);
     expect(state.initiative.queues.earth_map).not.toContain(e2);
-    expect(state.futureImpacts[e2]).toBe(1);
+    expect(state.actions.a1.bonus).toBe(1);
+    expect(state.notes[e2]).toHaveLength(1);
   });
 
   it('classifies every path of a mid-action state', () => {

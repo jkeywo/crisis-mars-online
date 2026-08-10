@@ -44,6 +44,7 @@ function loadedState() {
   state.actionCards.C1 = { placed: 'earth_map', spent: false };
 
   state.facilitatorNotes = { plan: 'SECRET::facilitatorNotes.plan' };
+  state.notes = { C1: [{ ts: 1, text: 'SECRET::notes.c1' }] };
   state.log = [{ seq: 1, verb: 'claim-role', payload: 'SECRET::log.entry' }];
   state.lastSeq = { s1: 'SECRET::lastSeq.s1' };
   state.seed = 987654;
@@ -101,7 +102,7 @@ describe('no sentinel reaches a seat the manifest does not grant it', () => {
     // anything from them would only make adjudication harder.
     const json = JSON.stringify(projectView(state, data, { kind: 'facilitator' }));
     for (const secret of ['SECRET::facilitatorNotes.plan', 'SECRET::log.entry',
-      'SECRET::token.c1']) {
+      'SECRET::token.c1', 'SECRET::notes.c1']) {
       expect(json).toContain(secret);
     }
   });

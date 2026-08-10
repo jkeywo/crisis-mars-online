@@ -132,7 +132,7 @@ describe('<cm-action-spotlight>', () => {
       verb: 'declare-action',
       payload: {
         actionId: 'a1', text: 'I torch the shipyard',
-        allyCodes: [], cardIds: [offered], futureImpact: 0,
+        allyCodes: [], cardIds: [offered],
       },
     }]);
   });
@@ -246,8 +246,13 @@ describe('<cm-adjudication>', () => {
     const raised = [];
     panel.addEventListener('cm-facilitate', (e) => raised.push(e.detail));
 
-    // The budgets line reads from derive, and the die face is on screen.
+    // The guidance table lights the action's own band column and nothing
+    // else — advice on screen, never a clamp in the rules.
     expect(panel.textContent).toContain(`die ${state.actions.a1.roll}`);
+    const lit = panel.querySelectorAll('.cm-guidance td[data-band="true"]');
+    expect(lit).toHaveLength(4);   // one cell per printed table row
+    expect(panel.textContent).toContain('Nothing here is enforced');
+
     const input = panel.querySelector('[data-track="war_support"]');
     input.value = '-1';
     input.dispatchEvent(new Event('change'));
@@ -260,8 +265,20 @@ describe('<cm-adjudication>', () => {
         effects: [{ trackId: 'war_support', delta: -1 }],
         regains: [],
         sabotage: [],
-        futureImpact: { amount: 0, toCode: actor },
       },
+    });
+
+    // And the ledger control speaks a note and a bonus.
+    panel.querySelector('[data-note-text]').value = 'Prepared for the future.';
+    panel.querySelector('[data-add-note]').click();
+    expect(raised.at(-1)).toEqual({
+      verb: 'facilitator:note',
+      payload: { code: actor, text: 'Prepared for the future.' },
+    });
+    panel.querySelector('[data-bonus]').value = '1';
+    panel.querySelector('[data-set-bonus]').click();
+    expect(raised.at(-1)).toEqual({
+      verb: 'facilitator:set-bonus', payload: { actionId: 'a1', bonus: 1 },
     });
   });
 });

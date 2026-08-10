@@ -23,9 +23,7 @@
  */
 
 import { no, ok, subjectOf, roleName } from './shared.js';
-import {
-  actionImpact, effectBudgets, regainCost, resourceLimit, confirmedAllies,
-} from '../derive.js';
+import { resourceLimit, confirmedAllies } from '../derive.js';
 
 /** The next action record's id. Global across maps, so ids never collide. */
 const nextActionId = (state) => `a${Object.keys(state.actions).length + 1}`;
@@ -73,14 +71,12 @@ export const ACTION_COMMANDS = {
         offered: [],
         accepted: [],
         vetoed: [],
-        futureImpactSpent: 0,
         difficulty: 0,
+        bonus: 0,
         roll: null,
         effects: [],
         regains: [],
         sabotage: [],
-        futureImpactAwarded: 0,
-        futureImpactTo: null,
         narration: '',
         status: 'declaring',
         // The 60-second spotlight. A deadline for the room to watch, not a
@@ -190,11 +186,6 @@ export const ACTION_COMMANDS = {
           + 'the limit is three, plus one per ally');
       }
 
-      const spend = Number(cmd.payload?.futureImpact ?? 0);
-      if (!Number.isInteger(spend) || spend < 0) return no('future impact is spent in whole tokens');
-      if (spend > (state.futureImpacts[subject] ?? 0)) {
-        return no(`you have banked ${state.futureImpacts[subject] ?? 0} future impact`);
-      }
       return ok();
     },
     effects(draft, ctx) {
@@ -209,7 +200,6 @@ export const ACTION_COMMANDS = {
       action.offered = [...(ctx.cmd.payload.cardIds ?? [])];
       action.accepted = [];
       action.vetoed = [];
-      action.futureImpactSpent = Number(ctx.cmd.payload.futureImpact ?? 0);
     },
   },
 
@@ -360,27 +350,30 @@ export const ACTION_COMMANDS = {
   },
 
   /**
-   * The band-limited effects, clamped against the printed tables.
+   * The effects, structurally checked and never clamped.
    *
-   * Re-appliable while the action is open: the previous track movement is
-   * reverted before the new is applied, so a corrected ruling is a
-   * correction rather than a second helping. Card and bank consequences
-   * wait for close-action — this stores them and moves the tracks.
+   * The author's ruling: the four printed tables are guidance for the whole
+   * action, not enforced budgets. The adjudication panel presents them with
+   * the action's band column lit; this verb checks only what the boards can
+   * take — real tracks, whole points, nothing below zero, regains from the
+   * discard, sabotage of held cards that are not committed to the action.
+   *
+   * Still re-appliable while the action is open: the previous track movement
+   * is reverted before the new is applied, so a corrected ruling is a
+   * correction rather than a second helping. Card consequences wait for
+   * close-action — this stores them and moves the tracks.
    */
   'facilitator:apply-effects': {
     phases: '*',
     actor: 'facilitator',
     admit(ctx) {
-      const { state, cmd, data } = ctx;
+      const { state, cmd } = ctx;
       const action = actionIn(state, cmd.payload);
       if (!action) return no('no such action');
       if (action.status !== 'rolled') return no('roll the consequence die first');
 
-      const budgets = effectBudgets(actionImpact(state, data, action), data);
-
-      // --- track movement, as a total budget of points ----------------------
+      // --- track movement ----------------------------------------------------
       const effects = cmd.payload?.effects ?? [];
-      let spent = 0;
       const previous = {};
       for (const done of action.effects) {
         previous[done.trackId] = (previous[done.trackId] ?? 0) + done.delta;
@@ -395,54 +388,27 @@ export const ACTION_COMMANDS = {
         if (base + delta < 0) {
           return no(`${trackId} would go negative — it is ${base} before this action`);
         }
-        spent += Math.abs(delta);
-      }
-      if (spent > budgets.scoreModifier) {
-        return no(`that is ${spent} points of track movement — this band allows ${
-          budgets.scoreModifier}`);
       }
 
-      // --- regains, with the out-of-faction price ---------------------------
-      let regainSpent = 0;
-      for (const { cardId, toCode } of cmd.payload?.regains ?? []) {
+      // --- regains: from the discard, to the actor ---------------------------
+      for (const cardId of cmd.payload?.regains ?? []) {
         const card = state.cards[cardId];
         if (!card) return no('no such card to regain');
-        if (card.state !== 'spent') return no('only a spent card can be regained');
-        if (toCode !== action.actorCode && action.allies[toCode] !== 'confirmed') {
-          return no('regained cards go to the actor or a confirmed ally');
-        }
-        regainSpent += regainCost(data, card.ownerCode, toCode);
-      }
-      if (regainSpent > budgets.regain) {
-        return no(`that regain costs ${regainSpent} — this band allows ${budgets.regain}, `
-          + 'out-of-faction cards costing 2 each');
+        if (card.state === 'destroyed') return no('that card was destroyed — it is out of the game');
+        if (card.state !== 'spent') return no('only a discarded card can be regained');
       }
 
-      // --- sabotage ----------------------------------------------------------
-      const sabotage = cmd.payload?.sabotage ?? [];
-      for (const cardId of sabotage) {
+      // --- sabotage: discard or destroy, per card ----------------------------
+      for (const { cardId, mode } of cmd.payload?.sabotage ?? []) {
         const card = state.cards[cardId];
         if (!card) return no('no such card to sabotage');
         if (card.state !== 'held') return no('only a held card can be sabotaged');
         if (action.accepted.includes(cardId)) {
           return no('that card is committed to this very action');
         }
-      }
-      if (sabotage.length > budgets.sabotage) {
-        return no(`that is ${sabotage.length} cards sabotaged — this band allows ${
-          budgets.sabotage}`);
-      }
-
-      // --- future impact ------------------------------------------------------
-      const future = cmd.payload?.futureImpact ?? { amount: 0 };
-      const amount = Number(future.amount ?? 0);
-      if (!Number.isInteger(amount) || amount < 0) return no('future impact is whole tokens');
-      if (amount > budgets.futureImpact) {
-        return no(`that is ${amount} future impact — this band allows ${budgets.futureImpact}`);
-      }
-      if (amount > 0) {
-        const toCode = future.toCode ?? action.actorCode;
-        if (!state.rosterCodes.includes(toCode)) return no('bank future impact to a player');
+        if (!['discard', 'destroy'].includes(mode)) {
+          return no('sabotage discards, or destroys — say which');
+        }
       }
       return ok();
     },
@@ -460,11 +426,27 @@ export const ACTION_COMMANDS = {
         draft.maps[mapId].tracks[trackId] += delta;
       }
       action.regains = [...(ctx.cmd.payload.regains ?? [])];
-      action.sabotage = [...(ctx.cmd.payload.sabotage ?? [])];
-      const future = ctx.cmd.payload.futureImpact ?? { amount: 0 };
-      action.futureImpactAwarded = Number(future.amount ?? 0);
-      action.futureImpactTo = action.futureImpactAwarded > 0
-        ? future.toCode ?? action.actorCode : null;
+      action.sabotage = (ctx.cmd.payload.sabotage ?? []).map(({ cardId, mode }) => ({ cardId, mode }));
+    },
+  },
+
+  /**
+   * A flat bonus spoken onto the action — the umpire honouring a note, an
+   * omen, a promise. Public, because it is announced; counted by derive
+   * into the same Impact every console displays.
+   */
+  'facilitator:set-bonus': {
+    phases: '*',
+    actor: 'facilitator',
+    admit(ctx) {
+      const action = actionIn(ctx.state, ctx.cmd.payload);
+      if (!action) return no('no such action');
+      if (['closed', 'skipped'].includes(action.status)) return no('that action is over');
+      if (!Number.isInteger(ctx.cmd.payload?.bonus)) return no('a bonus is whole points');
+      return ok();
+    },
+    effects(draft, ctx) {
+      draft.actions[ctx.cmd.payload.actionId].bonus = ctx.cmd.payload.bonus;
     },
   },
 
@@ -511,9 +493,6 @@ export const ACTION_COMMANDS = {
           return no('an accepted card left the table — re-rule the resources');
         }
       }
-      if (action.futureImpactSpent > (state.futureImpacts[action.actorCode] ?? 0)) {
-        return no('the declared future impact is no longer in the bank');
-      }
       return ok();
     },
     effects(draft, ctx) {
@@ -537,25 +516,16 @@ export const ACTION_COMMANDS = {
       for (const cardId of action.accepted) {
         draft.cards[cardId].state = 'spent';
       }
-      // Regains, exactly as ruled at apply-effects.
-      for (const { cardId, toCode } of action.regains) {
+      // Regains, exactly as ruled at apply-effects: home to the acting
+      // player's hand, by the author's ruling.
+      for (const cardId of action.regains) {
         draft.cards[cardId].state = 'held';
-        draft.cards[cardId].holderCode = toCode;
+        draft.cards[cardId].holderCode = action.actorCode;
       }
-      // Sabotage confiscates by marking spent in place — into the owner's
-      // discard, recoverable later. See gaps.js.
-      for (const cardId of action.sabotage) {
-        draft.cards[cardId].state = 'spent';
-      }
-
-      // The bank: credit what was awarded, debit what was spent.
-      if (action.futureImpactAwarded > 0) {
-        const toCode = action.futureImpactTo ?? action.actorCode;
-        draft.futureImpacts[toCode] = (draft.futureImpacts[toCode] ?? 0)
-          + action.futureImpactAwarded;
-      }
-      if (action.futureImpactSpent > 0) {
-        draft.futureImpacts[action.actorCode] -= action.futureImpactSpent;
+      // Sabotage lands as ruled per card: discarded into the owner's pile,
+      // recoverable — or destroyed, out of the game for good. See gaps.js.
+      for (const { cardId, mode } of action.sabotage) {
+        draft.cards[cardId].state = mode === 'destroy' ? 'destroyed' : 'spent';
       }
 
       action.status = 'closed';
@@ -632,14 +602,12 @@ export const ACTION_COMMANDS = {
         offered: [],
         accepted: [],
         vetoed: [],
-        futureImpactSpent: 0,
         difficulty: 0,
+        bonus: 0,
         roll: null,
         effects: [],
         regains: [],
         sabotage: [],
-        futureImpactAwarded: 0,
-        futureImpactTo: null,
         narration: '',
         status: 'skipped',
         endsAt: null,

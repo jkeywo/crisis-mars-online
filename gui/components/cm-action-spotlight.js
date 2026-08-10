@@ -86,7 +86,7 @@ export class CmActionSpotlight extends HTMLElement {
         <p class="cm-spotlight-sums">
           Impact <strong>${impact}</strong> · ${escape(band?.label ?? '')}
           ${action.difficulty ? ` · difficulty ${action.difficulty}` : ''}
-          ${action.futureImpactSpent ? ` · +${action.futureImpactSpent} banked` : ''}
+          ${action.bonus ? ` · ${action.bonus > 0 ? '+' : ''}${action.bonus} bonus` : ''}
           ${action.roll !== null ? ` · die ${action.roll} (${escape(consequence?.id ?? '')})` : ''}
         </p>
         ${action.narration ? `
@@ -110,7 +110,6 @@ export class CmActionSpotlight extends HTMLElement {
         && !done.includes(code));
     const held = Object.values(this._view.cards ?? {})
       .filter((card) => card.holderCode === me && card.state === 'held');
-    const bank = this._view.futureImpacts?.[me] ?? 0;
 
     return `
       <form class="cm-declare" data-declare="${escape(action.id)}">
@@ -130,11 +129,6 @@ export class CmActionSpotlight extends HTMLElement {
                 ${action.offered.includes(card.id) ? 'checked' : ''}> ${
   escape(this._cardName(card.id))}</label>`).join('')}
           </fieldset>` : ''}
-        ${bank > 0 ? `
-          <label>Spend banked future impact (${bank})
-            <input type="number" name="futureImpact" min="0" max="${bank}"
-              value="${action.futureImpactSpent}">
-          </label>` : ''}
         <button type="submit" class="cm-primary">Declare</button>
       </form>`;
   }
@@ -161,7 +155,6 @@ export class CmActionSpotlight extends HTMLElement {
           text: form.elements.text.value,
           allyCodes: [...form.querySelectorAll('input[name="ally"]:checked')].map((i) => i.value),
           cardIds: [...form.querySelectorAll('input[name="card"]:checked')].map((i) => i.value),
-          futureImpact: Number(form.elements.futureImpact?.value ?? 0),
         });
       };
     }

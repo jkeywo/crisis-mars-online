@@ -93,7 +93,11 @@ export const FIELD_VISIBILITY = [
   // room, so the records of them are everybody's.
   { path: 'initiative.**', audience: PUBLIC },
   { path: 'actions.**', audience: PUBLIC },
-  { path: 'futureImpacts.**', audience: PUBLIC },
+  // The umpire's per-character ledger. A note may be a promised bonus, a
+  // grudge, a plot thread — the author's replacement for a public token
+  // bank — and none of it is anybody's business until it lands as a
+  // spoken bonus on an action.
+  { path: 'notes.**', audience: FACILITATOR },
 
   // --- the team phase --------------------------------------------------------
   // That a turn's war correspondence was published (or skipped) is public —

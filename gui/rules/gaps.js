@@ -82,52 +82,57 @@ export const KNOWN_GAPS = [
   },
   {
     id: 'score-modifier-total-budget',
+    status: 'author-ruled',
+    ruledOn: '2026-08-10',
     about: 'How far a band moves the tracks',
     silent:
       'The effect table prints "Score Modifier ±N" per band, and never '
       + 'says whether N is per track or in all.',
     ruling:
-      'A total budget: N points of track movement across the whole action, '
-      + 'split however the facilitator rules.',
+      'Guidance for the whole action, never enforced. The app lights the '
+      + 'band\u2019s column of the printed tables and counts the running '
+      + 'totals beside it; the facilitator rules, unclamped.',
     because:
-      'Per-track would let a Moderate action move five tracks three points '
-      + 'each — fifteen points of swing from one minute of play, dwarfing a '
-      + 'Radical action read as a total. The printed ladder only means '
-      + 'anything if a bigger band buys more movement in all.',
+      'The author\u2019s ruling: the tables calibrate judgement rather than '
+      + 'bind it. The app\u2019s job is to keep the right column in front of '
+      + 'the umpire at the moment of ruling — enforcement was the build\u2019s '
+      + 'invention, and it is gone.',
   },
   {
     id: 'sabotage-marks-spent',
+    status: 'author-ruled',
+    ruledOn: '2026-08-10',
     about: 'What confiscating a sabotaged resource does',
     silent:
       'The sabotage table says "visit them in the team phase and confiscate '
       + 'the appropriate number of resources", and never says where a '
       + 'confiscated card goes.',
     ruling:
-      'The card is marked spent where it is held, landing in its owner\u2019s '
-      + 'discard pile — recoverable later like any spend, never removed from '
-      + 'the game.',
+      'The facilitator\u2019s discretion, per card: discard it (into the '
+      + 'owner\u2019s pile, recoverable) or destroy it (out of the game, '
+      + 'never recoverable).',
     because:
-      'The deck is a closed economy of 108 cards and nothing else in the '
-      + 'print destroys one. Spending it hurts exactly as long as the '
-      + 'printed recovery rule says a spend hurts, and keeps every card '
-      + 'accounted for.',
+      'The author\u2019s ruling. Some sabotage is a setback and some is a '
+      + 'bomb, and the fiction should decide which — so the verb carries a '
+      + 'mode per card, and a destroyed card refuses every recovery.',
   },
   {
     id: 'regain-recipient-and-price',
+    status: 'author-ruled',
+    ruledOn: '2026-08-10',
     about: 'Who a regained card goes to, and from where',
     silent:
       'The regain table says "choose those narratively appropriate rather '
       + 'than giving them a choice" and prices out-of-faction cards at 2, '
       + 'without saying whose discard is eligible or who may receive.',
     ruling:
-      'The facilitator names each card and its recipient; recipients are '
-      + 'the actor or a confirmed ally; any spent card in the game is '
-      + 'eligible, costing 1 in the recipient\u2019s own faction and 2 outside it.',
+      'Regains come from the discarded cards and go to the ACTING player '
+      + 'only. The 1-in-faction / 2-outside price stands as displayed '
+      + 'guidance, unenforced like the rest of the tables.',
     because:
-      'The out-of-faction price only exists if out-of-faction cards are '
-      + 'reachable, which means the pool is wider than your own pile — and '
-      + 'the printed "if there isn\u2019t a spent card available then it\u2019s '
-      + 'just too hard" reads as the whole discard, not one faction\u2019s.',
+      'The author\u2019s ruling: the action earned the regain, so the actor '
+      + 'receives it — allies were paid in the action itself. Any discarded '
+      + 'card is eligible; a destroyed one is not, being out of the game.',
   },
   {
     id: 'spotlight-timer-informs-only',
@@ -146,20 +151,25 @@ export const KNOWN_GAPS = [
   },
   {
     id: 'future-impact-accepted-by-default',
+    status: 'author-ruled',
+    ruledOn: '2026-08-10',
     about: 'Spending banked future impact on an action',
     silent:
       'The future-impact table says to "adjudicate whether this can be '
       + 'applied to the action as you would a resource card" — a token, but '
       + 'with no offer/veto procedure printed for it.',
     ruling:
-      'The actor declares the spend with the action and it counts unless '
-      + 'the facilitator strikes it (re-declare, or the pencil). There is '
-      + 'no separate accept step.',
+      'No token bank at all. "Prepare for the Future" earns a private note '
+      + 'in the umpire\u2019s ledger against the character; when that '
+      + 'character next stands in a spotlight the notes are in front of the '
+      + 'facilitator, who may speak a flat bonus onto the action '
+      + '(facilitator:set-bonus, public, counted into Impact).',
     because:
-      'The token was already earned through a ruled, rolled and closed '
-      + 'action — a second full relevance procedure would adjudicate the '
-      + 'same story twice. The facilitator can still refuse one outright, '
-      + 'which is all the printed sentence asks for.',
+      'The author\u2019s ruling, replacing the build\u2019s bank entirely. '
+      + 'The printed sentence says to adjudicate the token like a resource — '
+      + 'and the adjudicator\u2019s memory is the mechanism, so the app is '
+      + 'that memory: notes are general-purpose, private, and become '
+      + 'mechanics only when the umpire says so, out loud.',
   },
   {
     id: 'opportunity-choice-is-a-record',

@@ -16,7 +16,8 @@
 
 /**
  * The printed formula: turn + allies + accepted resources − difficulty,
- * plus the consequence die's boon and any banked future impact spent.
+ * plus the consequence die's boon and any flat bonus the facilitator has
+ * spoken onto the action — the author's replacement for a token bank.
  *
  * `difficulty` is stored as the signed value the facilitator set (0 to −3),
  * so it is added rather than subtracted — the sign is already in it.
@@ -27,14 +28,14 @@
  * @param {number} [parts.accepted]         accepted resource cards
  * @param {number} [parts.difficulty]       0..-3, the facilitator's call
  * @param {number|null} [parts.dieFace]     null until rolled
- * @param {number} [parts.futureImpactSpent]
+ * @param {number} [parts.bonus]            facilitator:set-bonus, announced
  * @param {object} data
  */
 export function impactOf({
-  turn, allies = 0, accepted = 0, difficulty = 0, dieFace = null, futureImpactSpent = 0,
+  turn, allies = 0, accepted = 0, difficulty = 0, dieFace = null, bonus = 0,
 }, data) {
   const boon = dieFace !== null && consequenceOf(dieFace, data)?.id === 'boon' ? 1 : 0;
-  return turn + allies + accepted + difficulty + boon + futureImpactSpent;
+  return turn + allies + accepted + difficulty + boon + bonus;
 }
 
 /** What a die face means: complication, normal, or boon. */
@@ -113,6 +114,6 @@ export function actionImpact(state, data, action) {
     accepted: (action.accepted ?? []).length,
     difficulty: action.difficulty ?? 0,
     dieFace: action.roll,
-    futureImpactSpent: action.futureImpactSpent ?? 0,
+    bonus: action.bonus ?? 0,
   }, data);
 }

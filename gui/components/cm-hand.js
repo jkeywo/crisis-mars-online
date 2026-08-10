@@ -51,6 +51,7 @@ export class CmHand extends HTMLElement {
     const onLoan = cards.filter((c) => c.ownerCode === code
       && c.holderCode !== code && c.state === 'held');
     const discarded = cards.filter((c) => c.ownerCode === code && c.state === 'spent');
+    const destroyed = cards.filter((c) => c.ownerCode === code && c.state === 'destroyed');
 
     const typeName = (card) => this._data.resources.types[card.type]?.name ?? card.type;
     const whoIs = (roleId) => this._data.roles.roles[roleId]?.name
@@ -125,7 +126,13 @@ export class CmHand extends HTMLElement {
             </div>
           </li>`).join('') || '<li class="cm-empty">nothing spent</li>'}
         </ul>
-      </section>`;
+      </section>
+      ${destroyed.length ? `
+        <section class="cm-hand-destroyed">
+          <h4>Destroyed <span class="cm-meta">${destroyed.length}</span></h4>
+          <p class="cm-meta">${destroyed.map((card) => escape(typeName(card))).join(', ')}
+            — out of the game, never recoverable.</p>
+        </section>` : ''}`;
 
     for (const button of this.querySelectorAll('[data-view-card]')) {
       button.onclick = () => this.dispatchEvent(new CustomEvent('cm-view-card', {

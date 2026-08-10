@@ -2,11 +2,16 @@
  * <cm-adjudication> — one map's lane of the facilitator's table.
  *
  * The whole printed procedure as one panel: call, read the declaration, rule
- * the cards, set difficulty, roll, spend the band's budgets, narrate, close.
- * Every control emits a `cm-facilitate` command and decides nothing itself —
- * admission owns the clamps, and the Impact readout here is the same
- * derive.js computation the clamps use, so the number on this screen is the
- * number the rules will hold the ruling to.
+ * the cards, set difficulty, roll, rule the effects, narrate, close. Every
+ * control emits a `cm-facilitate` command and decides nothing itself.
+ *
+ * By the author's rulings the effect tables are guidance, not law: the panel
+ * draws the four printed rows with the action's band column lit and the
+ * running totals beside them, and nothing is clamped. The umpire's private
+ * ledger rides along — every note against the actor and each confirmed ally
+ * is on screen at the moment of ruling, a new note is one box away
+ * ("Prepare for the Future" is a sentence here, not a token), and a note
+ * honoured becomes a spoken, public, flat bonus on the action.
  *
  * The effect pickers stage locally (per action, in `_staged`) and commit as
  * one `facilitator:apply-effects` — the same shape a paper facilitator works
@@ -14,7 +19,7 @@
  */
 
 import {
-  actionImpact, bandFor, consequenceOf, effectBudgets, regainCost, confirmedAllies,
+  actionImpact, bandFor, bandIndexOf, consequenceOf, regainCost, confirmedAllies,
 } from '../rules/derive.js';
 
 export class CmAdjudication extends HTMLElement {
@@ -78,10 +83,8 @@ export class CmAdjudication extends HTMLElement {
       this._staged = {
         actionId: action.id,
         effects: {},                    // trackId -> delta
-        regains: [...action.regains],
-        sabotage: [...action.sabotage],
-        futureImpact: action.futureImpactAwarded,
-        futureImpactTo: action.futureImpactTo ?? action.actorCode,
+        regains: [...action.regains],   // cardIds
+        sabotage: action.sabotage.map((entry) => ({ ...entry })),
         narration: action.narration,
       };
       for (const { trackId, delta } of action.effects) this._staged.effects[trackId] = delta;
@@ -118,7 +121,6 @@ export class CmAdjudication extends HTMLElement {
 
     const impact = actionImpact(this._view, this._data, action);
     const band = bandFor(impact, this._data);
-    const budgets = effectBudgets(impact, this._data);
     const staged = this._stagedFor(action);
     const confirmed = confirmedAllies(action);
     const rolled = action.status === 'rolled';
@@ -135,6 +137,8 @@ export class CmAdjudication extends HTMLElement {
           <p>${Object.entries(action.allies).map(([code, status]) => `
             <span class="cm-ally-chip" data-ally="${escape(status)}">${
   escape(this._name(code))} · ${escape(status)}</span>`).join(' ')}</p>` : ''}
+
+        ${this._notesPanel(action, confirmed)}
 
         ${action.offered.length && !rolled ? `
           <fieldset class="cm-ruling"><legend>Rule the offer</legend>
@@ -160,12 +164,13 @@ export class CmAdjudication extends HTMLElement {
         <p class="cm-spotlight-sums">
           Impact <strong>${impact}</strong> · ${escape(band?.label ?? '')}
           <span class="cm-meta">${escape(band?.printed ?? '')}</span>
+          ${action.bonus ? `· ${action.bonus > 0 ? '+' : ''}${action.bonus} bonus` : ''}
           ${action.roll !== null
     ? `· die ${action.roll} (${escape(consequenceOf(action.roll, this._data)?.id ?? '')})`
     : `<button type="button" data-roll>Roll the consequence die</button>`}
         </p>
 
-        ${rolled ? this._effectsPanel(action, staged, budgets, confirmed) : ''}
+        ${rolled ? this._effectsPanel(action, staged, impact) : ''}
 
         <label class="cm-narrate">Narration
           <textarea name="narration" rows="2">${escape(staged.narration)}</textarea>
@@ -181,21 +186,83 @@ export class CmAdjudication extends HTMLElement {
     this._wireLane();
   }
 
-  _effectsPanel(action, staged, budgets, confirmed) {
+  /**
+   * The umpire's ledger, at the moment it matters: every note against the
+   * actor and each confirmed ally, and the box that writes the next one.
+   */
+  _notesPanel(action, confirmed) {
+    const characters = [action.actorCode, ...confirmed];
+    const noted = characters
+      .map((code) => [code, this._view.notes?.[code] ?? []])
+      .filter(([, notes]) => notes.length);
+
+    return `
+      <details class="cm-adjudicate-notes" ${noted.length ? 'open' : ''}>
+        <summary>Your notes ${noted.length
+    ? `<span class="cm-meta">${noted.reduce((n, [, notes]) => n + notes.length, 0)}</span>` : ''}</summary>
+        ${noted.length ? noted.map(([code, notes]) => `
+          <p class="cm-meta"><strong>${escape(this._name(code))}</strong></p>
+          <ul>${notes.map((note) => `<li>${escape(note.text)}</li>`).join('')}</ul>`).join('')
+    : '<p class="cm-empty">Nothing written against them.</p>'}
+        <div class="cm-row">
+          <select data-note-code>
+            ${characters.map((code) => `
+              <option value="${escape(code)}">${escape(this._name(code))}</option>`).join('')}
+          </select>
+          <input type="text" data-note-text placeholder="Prepare for the future…">
+          <button type="button" data-add-note>Note it</button>
+        </div>
+        <div class="cm-row">
+          <label>Spoken bonus
+            <input type="number" step="1" data-bonus value="${action.bonus}" style="width: 4rem">
+          </label>
+          <button type="button" data-set-bonus>Set</button>
+          <span class="cm-meta">Public, counted into Impact — honouring a note, out loud.</span>
+        </div>
+      </details>`;
+  }
+
+  /**
+   * The printed effect tables as guidance — the action's band column lit,
+   * the running totals beside — and the unclamped pickers.
+   */
+  _effectsPanel(action, staged, impact) {
     const tracks = this._data.maps.maps[this.mapId].trackIds;
     const trackSpent = Object.values(staged.effects)
       .reduce((sum, delta) => sum + Math.abs(delta || 0), 0);
-    const regainSpent = staged.regains.reduce((sum, { cardId, toCode }) =>
-      sum + regainCost(this._data, this._view.cards[cardId]?.ownerCode, toCode), 0);
+    const regainSpent = staged.regains.reduce((sum, cardId) =>
+      sum + regainCost(this._data, this._view.cards[cardId]?.ownerCode, action.actorCode), 0);
     const spentCards = Object.values(this._view.cards)
       .filter((card) => card.state === 'spent');
     const heldCards = Object.values(this._view.cards)
       .filter((card) => card.state === 'held' && !action.accepted.includes(card.id));
-    const recipients = [action.actorCode, ...confirmed];
+
+    const litColumn = bandIndexOf(impact, this._data);
+    const bands = this._data.meta.impact.bands;
+    const tables = this._data.meta.effects;
+    const guidanceRows = [
+      ['Score modifier ±', tables.score_modifier.by_band, `${trackSpent} staged`],
+      ['Regain', tables.regain_resources.by_band, `${regainSpent} staged`],
+      ['Sabotage', tables.sabotage_resources.by_band, `${staged.sabotage.length} staged`],
+      ['Future impact', tables.increase_future_impact.by_band, 'a note, now'],
+    ];
 
     return `
       <div class="cm-effects">
-        <fieldset><legend>Tracks — ${trackSpent} of ±${budgets.scoreModifier} points</legend>
+        <table class="cm-guidance">
+          <caption class="cm-meta">The printed tables — guidance for the whole
+            action, this band's column lit. Nothing here is enforced.</caption>
+          <thead><tr><th></th>${bands.map((entry, index) => `
+            <th data-band="${index === litColumn}">${escape(entry.label)}</th>`).join('')}
+            <th>Running</th></tr></thead>
+          <tbody>${guidanceRows.map(([label, byBand, running]) => `
+            <tr><th>${escape(label)}</th>${byBand.map((value, index) => `
+              <td data-band="${index === litColumn}">${value}</td>`).join('')}
+              <td class="cm-meta">${escape(running)}</td></tr>`).join('')}
+          </tbody>
+        </table>
+
+        <fieldset><legend>Tracks</legend>
           ${tracks.map((trackId) => `
             <label class="cm-effect-track">${escape(this._data.maps.tracks[trackId]?.name ?? trackId)}
               <input type="number" step="1" data-track="${escape(trackId)}"
@@ -203,11 +270,10 @@ export class CmAdjudication extends HTMLElement {
             </label>`).join('')}
         </fieldset>
 
-        <fieldset><legend>Regain — ${regainSpent} of ${budgets.regain}
-          <span class="cm-meta">(out-of-faction cards cost 2)</span></legend>
-          ${staged.regains.map(({ cardId, toCode }, index) => `
-            <span class="cm-card-chip">${escape(this._cardName(cardId))} → ${
-  escape(this._name(toCode))}
+        <fieldset><legend>Regain — to ${escape(this._name(action.actorCode))}
+          <span class="cm-meta">(out-of-faction cards count 2 in the guidance)</span></legend>
+          ${staged.regains.map((cardId, index) => `
+            <span class="cm-card-chip">${escape(this._cardName(cardId))}
               <button type="button" data-unregain="${index}" aria-label="Remove">×</button>
             </span>`).join('')}
           <div class="cm-row">
@@ -217,17 +283,14 @@ export class CmAdjudication extends HTMLElement {
                 <option value="${escape(card.id)}">${escape(this._cardName(card.id))} (${
   escape(card.ownerCode)})</option>`).join('')}
             </select>
-            <select data-regain-to>
-              ${recipients.map((code) => `
-                <option value="${escape(code)}">${escape(this._name(code))}</option>`).join('')}
-            </select>
             <button type="button" data-add-regain>Add</button>
           </div>
         </fieldset>
 
-        <fieldset><legend>Sabotage — ${staged.sabotage.length} of ${budgets.sabotage}</legend>
-          ${staged.sabotage.map((cardId, index) => `
-            <span class="cm-card-chip">${escape(this._cardName(cardId))}
+        <fieldset><legend>Sabotage</legend>
+          ${staged.sabotage.map(({ cardId, mode }, index) => `
+            <span class="cm-card-chip" data-mode="${escape(mode)}">${escape(this._cardName(cardId))}
+              · ${escape(mode)}
               <button type="button" data-unsabotage="${index}" aria-label="Remove">×</button>
             </span>`).join('')}
           <div class="cm-row">
@@ -237,19 +300,11 @@ export class CmAdjudication extends HTMLElement {
                 <option value="${escape(card.id)}">${escape(this._cardName(card.id))} — with ${
   escape(card.holderCode)}</option>`).join('')}
             </select>
-            <button type="button" data-add-sabotage>Add</button>
-          </div>
-        </fieldset>
-
-        <fieldset><legend>Future impact — of ${budgets.futureImpact}</legend>
-          <div class="cm-row">
-            <input type="number" min="0" max="${budgets.futureImpact}"
-              data-future-amount value="${staged.futureImpact}">
-            <select data-future-to>
-              ${recipients.map((code) => `
-                <option value="${escape(code)}" ${
-  code === staged.futureImpactTo ? 'selected' : ''}>${escape(this._name(code))}</option>`).join('')}
+            <select data-sabotage-mode>
+              <option value="discard">discard — recoverable</option>
+              <option value="destroy">destroy — gone for good</option>
             </select>
+            <button type="button" data-add-sabotage>Add</button>
           </div>
         </fieldset>
 
@@ -285,6 +340,27 @@ export class CmAdjudication extends HTMLElement {
     const roll = this.querySelector('[data-roll]');
     if (roll) roll.onclick = () => this._emit('facilitator:roll-consequence', { actionId: action.id });
 
+    // --- the ledger and the spoken bonus --------------------------------------
+    const addNote = this.querySelector('[data-add-note]');
+    if (addNote) {
+      addNote.onclick = () => {
+        const text = this.querySelector('[data-note-text]').value;
+        if (!text.trim()) return;
+        this._emit('facilitator:note', {
+          code: this.querySelector('[data-note-code]').value, text,
+        });
+        this.querySelector('[data-note-text]').value = '';
+      };
+    }
+    const setBonus = this.querySelector('[data-set-bonus]');
+    if (setBonus) {
+      setBonus.onclick = () => {
+        const bonus = Number(this.querySelector('[data-bonus]').value);
+        if (!Number.isInteger(bonus)) return;
+        this._emit('facilitator:set-bonus', { actionId: action.id, bonus });
+      };
+    }
+
     // --- the staged effects -------------------------------------------------
     for (const input of this.querySelectorAll('[data-track]')) {
       input.onchange = () => {
@@ -298,9 +374,8 @@ export class CmAdjudication extends HTMLElement {
     if (addRegain) {
       addRegain.onclick = () => {
         const cardId = this.querySelector('[data-regain-card]').value;
-        const toCode = this.querySelector('[data-regain-to]').value;
         if (!cardId) return;
-        staged.regains.push({ cardId, toCode });
+        staged.regains.push(cardId);
         this._render();
       };
     }
@@ -312,19 +387,13 @@ export class CmAdjudication extends HTMLElement {
       addSabotage.onclick = () => {
         const cardId = this.querySelector('[data-sabotage-card]').value;
         if (!cardId) return;
-        staged.sabotage.push(cardId);
+        staged.sabotage.push({ cardId, mode: this.querySelector('[data-sabotage-mode]').value });
         this._render();
       };
     }
     for (const button of this.querySelectorAll('[data-unsabotage]')) {
       button.onclick = () => { staged.sabotage.splice(Number(button.dataset.unsabotage), 1); this._render(); };
     }
-    const futureAmount = this.querySelector('[data-future-amount]');
-    if (futureAmount) {
-      futureAmount.onchange = () => { staged.futureImpact = Number(futureAmount.value) || 0; };
-    }
-    const futureTo = this.querySelector('[data-future-to]');
-    if (futureTo) futureTo.onchange = () => { staged.futureImpactTo = futureTo.value; };
 
     const apply = this.querySelector('[data-apply]');
     if (apply) {
@@ -335,7 +404,6 @@ export class CmAdjudication extends HTMLElement {
           .map(([trackId, delta]) => ({ trackId, delta })),
         regains: staged.regains,
         sabotage: staged.sabotage,
-        futureImpact: { amount: staged.futureImpact, toCode: staged.futureImpactTo },
       });
     }
 

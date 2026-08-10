@@ -19,10 +19,9 @@ describe('the smallest and the fullest table', () => {
     expect(state.rosterCodes).toEqual(roster);
     expect(Object.keys(state.roles).sort())
       .toEqual([...roster, ...NPC_CODES].sort());
-    // One action card, one bank slot and one perTurn allowance per player —
-    // none for the NPCs' action cards, which do not exist.
+    // One action card per player — none for the NPCs, whose influence is
+    // their hands.
     expect(Object.keys(state.actionCards).sort()).toEqual([...roster].sort());
-    expect(Object.keys(state.futureImpacts).sort()).toEqual([...roster].sort());
     // Five cards per player, nine per NPC, and not one card more: an absent
     // role's cards stay in the box.
     expect(Object.keys(state.cards)).toHaveLength(count * 5 + 18);

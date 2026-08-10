@@ -25,8 +25,9 @@ describe('the impact formula', () => {
     expect(impactOf({ turn: 1, dieFace: null }, data)).toBe(1);
   });
 
-  it('counts banked future impact spent into the total', () => {
-    expect(impactOf({ turn: 1, futureImpactSpent: 2 }, data)).toBe(3);
+  it('counts a spoken bonus into the total', () => {
+    expect(impactOf({ turn: 1, bonus: 2 }, data)).toBe(3);
+    expect(impactOf({ turn: 3, bonus: -1 }, data)).toBe(2);
   });
 
   it('names each die face as the printed table does', () => {

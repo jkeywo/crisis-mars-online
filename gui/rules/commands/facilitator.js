@@ -299,6 +299,29 @@ export const FACILITATOR_COMMANDS = {
     },
   },
 
+  /**
+   * Write a private note against a character.
+   *
+   * The author's replacement for a future-impact bank: "prepare for the
+   * future" earns a sentence in the umpire's ledger, not a public token.
+   * General-purpose on purpose — a promise, a grudge, a plot thread — and
+   * surfaced whenever that character stands in a spotlight.
+   */
+  'facilitator:note': {
+    phases: '*',
+    actor: 'facilitator',
+    admit(ctx) {
+      const { code, text } = ctx.cmd.payload ?? {};
+      if (!ctx.state.roles[code]) return no('no such character');
+      if (typeof text !== 'string' || !text.trim()) return no('write the note');
+      return ok();
+    },
+    effects(draft, ctx) {
+      const { code, text } = ctx.cmd.payload;
+      draft.notes[code] = [...(draft.notes[code] ?? []), { ts: ctx.now, text: text.trim() }];
+    },
+  },
+
   'facilitator:set': {
     phases: '*',
     actor: 'facilitator',
