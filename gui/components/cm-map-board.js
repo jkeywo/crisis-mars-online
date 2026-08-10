@@ -16,9 +16,10 @@
  * in this very projection flashes its delta, because a player glancing up
  * from a negotiation wants to know what just happened, not only what is true.
  *
- * Read-only. It renders a projection and decides nothing — the inspector is
- * where a facilitator moves a track, and the boards simply react like every
- * other cm- component.
+ * Read-only. It renders a projection and decides nothing. The replay page
+ * is its home now — both live consoles moved to cm-board-overlay, the
+ * printed sheet with chips — and it stays because the scrubber wants a
+ * compact board that needs no geometry file to be legible at speed.
  */
 
 export class CmMapBoard extends HTMLElement {

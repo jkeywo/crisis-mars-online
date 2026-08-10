@@ -192,7 +192,7 @@ messages, and test strings — see the note at the end.
 | clear confirm (role) | Clear {who} out of {role}? {role} stays in the game, with everything they hold, and anyone can take them. This person will have to join again. |
 | clear confirm (no role) | Clear {who} out? They have not taken a character. They will have to join again. |
 
-### cm-map-board
+### cm-map-board *(replay page only — the live consoles draw cm-board-overlay)*
 | Ref | Text |
 |---|---|
 | track delta chip | +{n} / −{n} |
