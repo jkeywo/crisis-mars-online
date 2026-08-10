@@ -518,3 +518,11 @@ messages, and test strings — see the note at the end.
 - **Console/log lines never surfaced in the UI** (wire validation errors,
   dev-facing throws).
 - **CSS-only content** (`::after` markers listed where they carry meaning).
+
+## Addendum — stale-version guard (2026-08-10)
+
+| Ref | Text |
+|---|---|
+| all pages `#stale-banner` | This page loaded only part of a freshly published version. |
+| all pages `#stale-reload` | Reload |
+| cm-connection-dot `idle` | No game yet |

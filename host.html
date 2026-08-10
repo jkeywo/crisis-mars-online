@@ -9,9 +9,34 @@
   <script src="vendor/peerjs.min.js"></script>
 </head>
 <body class="cm-shell">
+  <div id="stale-banner" class="cm-stale-banner" hidden>
+    This page loaded only part of a freshly published version.
+    <button type="button" id="stale-reload">Reload</button>
+  </div>
+  <script>
+    // Classic script on purpose: it must run even when the module graph
+    // cannot. A deploy mid-visit can pair cached old modules with new HTML
+    // (or vice versa); the failure used to be a silent skeleton.
+    (function () {
+      var reveal = function () {
+        var b = document.getElementById('stale-banner');
+        if (b) b.hidden = false;
+      };
+      document.getElementById('stale-reload').addEventListener('click', function () {
+        location.reload();
+      });
+      window.addEventListener('error', function (e) {
+        var t = e.target;
+        if (t && (t.tagName === 'SCRIPT' || t.tagName === 'LINK')) reveal();
+      }, true);
+      setTimeout(function () {
+        if (!document.body.dataset.booted) reveal();
+      }, 6000);
+    })();
+  </script>
   <header class="cm-bar">
     <span class="cm-brand">Crisis: Mars <span class="cm-tag">facilitator</span></span>
-    <cm-connection-dot id="connection" status="connecting"></cm-connection-dot>
+    <cm-connection-dot id="connection" status="idle"></cm-connection-dot>
   </header>
 
   <!-- The war, across the top of everything. Hidden on the start screen. -->
@@ -276,7 +301,11 @@
 
   <script type="module">
     import { startHostApp } from './gui/host/host-app.js';
-    startHostApp();
+    startHostApp().then(() => { document.body.dataset.booted = '1'; })
+      .catch((err) => {
+        console.error(err);
+        document.getElementById('stale-banner').hidden = false;
+      });
   </script>
 </body>
 </html>

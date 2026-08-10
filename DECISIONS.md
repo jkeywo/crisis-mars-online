@@ -262,3 +262,16 @@ erased the binding and took the live site (and every card image on it)
 down. The workflow now writes the CNAME into _site alongside VERSION, so
 the domain survives every deploy. README leads with the custom domain and
 keeps the github.io address as the fallback.
+
+## Stale-version guard (2026-08-10, coordinator)
+
+The author hit host.html stuck on "Reaching the game": a deploy landed
+mid-visit and their browser paired cached old modules with new HTML (GitHub
+Pages caches assets for ten minutes), so the module graph died silently and
+the connection dot's static default text was all that showed. Three changes:
+the dot now *starts* as `idle` ("No game yet") because the start screen is
+not reaching anything; each page carries a classic-script watchdog that
+reveals a reload banner when a script/stylesheet fails to load, when the app
+module rejects, or when boot has not completed within six seconds; and boot
+completion is signalled via `document.body.dataset.booted` by the page
+module. A hard refresh was always the cure; now the page says so itself.

@@ -9,6 +9,7 @@
  */
 
 const LABELS = {
+  idle: ['away', 'No game yet'],
   connecting: ['connecting', 'Reaching the game'],
   ready: ['ready', 'Connected'],
   disconnected: ['away', 'Lost the game — trying again'],

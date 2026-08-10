@@ -10,6 +10,31 @@
        file and draws it. -->
 </head>
 <body class="cm-shell">
+  <div id="stale-banner" class="cm-stale-banner" hidden>
+    This page loaded only part of a freshly published version.
+    <button type="button" id="stale-reload">Reload</button>
+  </div>
+  <script>
+    // Classic script on purpose: it must run even when the module graph
+    // cannot. A deploy mid-visit can pair cached old modules with new HTML
+    // (or vice versa); the failure used to be a silent skeleton.
+    (function () {
+      var reveal = function () {
+        var b = document.getElementById('stale-banner');
+        if (b) b.hidden = false;
+      };
+      document.getElementById('stale-reload').addEventListener('click', function () {
+        location.reload();
+      });
+      window.addEventListener('error', function (e) {
+        var t = e.target;
+        if (t && (t.tagName === 'SCRIPT' || t.tagName === 'LINK')) reveal();
+      }, true);
+      setTimeout(function () {
+        if (!document.body.dataset.booted) reveal();
+      }, 6000);
+    })();
+  </script>
   <header class="cm-bar">
     <span class="cm-brand">Crisis: Mars <span class="cm-tag">replay</span></span>
   </header>
@@ -88,7 +113,11 @@
 
   <script type="module">
     import { startReplayApp } from './gui/client/replay-app.js';
-    startReplayApp();
+    startReplayApp().then(() => { document.body.dataset.booted = '1'; })
+      .catch((err) => {
+        console.error(err);
+        document.getElementById('stale-banner').hidden = false;
+      });
   </script>
 </body>
 </html>

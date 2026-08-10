@@ -3021,3 +3021,19 @@ cm-board-overlay { display: block; }
   margin: 0 0 0.5rem 0.7rem;
   border-radius: 4px;
 }
+
+/* The stale-version banner: a deploy mid-visit can leave a mixed module
+   graph; the classic-script watchdog in each page reveals this. */
+.cm-stale-banner {
+  background: #7a2e2e;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+}
+.cm-stale-banner button {
+  font: inherit;
+  padding: 0.15rem 0.9rem;
+}
