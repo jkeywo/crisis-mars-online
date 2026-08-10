@@ -2775,6 +2775,13 @@ cm-board-overlay { display: block; }
   color: #10131f;
 }
 
+/* Readonly (the player page): the same chip, none of the pencil's cursor. */
+cm-board-overlay[readonly] .cm-board-chip-value {
+  cursor: default;
+  display: inline-block;
+  text-align: center;
+}
+
 .cm-board-chip[data-editing="true"] {
   z-index: 5;
   background: var(--cm-paper);

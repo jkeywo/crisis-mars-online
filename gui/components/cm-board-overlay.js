@@ -18,12 +18,15 @@
  * edit mode carries a third button, clear, which lifts the marker off the
  * boards entirely (warProgress back to null: the war has not begun).
  *
- * Read-only without a facilitator page around it in spirit, but the
- * component itself only ever emits `cm-facilitate`; admission decides.
+ * With the `readonly` attribute the chips are display and nothing else —
+ * no edit affordance in the DOM at all. That is the player page's mode:
+ * the same printed board, the same live chips, none of the pencil.
+ * Without it the component still only ever emits `cm-facilitate`;
+ * admission decides.
  */
 
 export class CmBoardOverlay extends HTMLElement {
-  static observedAttributes = ['map'];
+  static observedAttributes = ['map', 'readonly'];
 
   set data(value) { this._data = value; this._render(); }
 
@@ -38,6 +41,8 @@ export class CmBoardOverlay extends HTMLElement {
 
   /** geometry.json keys its boards 'earth'/'mars'/'belt'; state says *_map. */
   get boardId() { return (this.mapId ?? '').replace(/_map$/, ''); }
+
+  get readonly() { return this.hasAttribute('readonly'); }
 
   _emit(verb, payload) {
     this.dispatchEvent(new CustomEvent('cm-facilitate', {
@@ -64,6 +69,14 @@ export class CmBoardOverlay extends HTMLElement {
     if (!board || !live) { this.innerHTML = ''; return; }
 
     const chip = (id, value, anchor, label) => {
+      if (this.readonly) {
+        return `
+        <div class="cm-board-chip" data-chip="${escape(id)}"
+             style="left: ${anchor.x * 100}%; top: ${anchor.y * 100}%">
+          <span class="cm-board-chip-value" role="img"
+            aria-label="${escape(label)}: ${value}">${value}</span>
+        </div>`;
+      }
       const editing = this._editing === id;
       return `
         <div class="cm-board-chip" data-chip="${escape(id)}" data-editing="${editing}"
@@ -113,7 +126,7 @@ export class CmBoardOverlay extends HTMLElement {
   }).join('')}
       </div>`;
 
-    this._wire(live);
+    if (!this.readonly) this._wire(live);
   }
 
   _wire(live) {

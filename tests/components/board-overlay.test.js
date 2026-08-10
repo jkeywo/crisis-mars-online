@@ -176,6 +176,22 @@ describe('<cm-board-overlay>', () => {
     expect(overlay.querySelector('input')).toBeNull();   // edit closed
   });
 
+  it('readonly: the same chips with no edit affordance in the DOM at all', () => {
+    // The player page's mode: same board, same live values, none of the
+    // pencil — not disabled controls, no controls.
+    const overlay = mount('mars_map');
+    overlay.setAttribute('readonly', '');
+    overlay.data = data;
+    const view = fresh();
+    view.warProgress = 12;
+    view.maps.mars_map.tracks.senate_military = 9;
+    overlay.view = view;
+
+    expect(overlay.querySelectorAll('[data-chip]').length).toBe(7);   // 6 + war
+    expect(overlay.querySelector('[data-chip="senate_military"]').textContent.trim()).toBe('9');
+    expect(overlay.querySelector('button, input')).toBeNull();
+  });
+
   it('carries the placed action-card tokens under the image', () => {
     const overlay = mount('earth_map');
     overlay.data = data;
