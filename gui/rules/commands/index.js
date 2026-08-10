@@ -23,6 +23,7 @@ import { CARD_COMMANDS } from './cards.js';
 import { TEAM_COMMANDS } from './team.js';
 import { NEGOTIATION_COMMANDS } from './negotiation.js';
 import { ACTION_COMMANDS } from './actions.js';
+import { TURN_UPDATE_COMMANDS } from './turn-update.js';
 import { FACILITATOR_COMMANDS } from './facilitator.js';
 
 export const COMMANDS = {
@@ -31,6 +32,7 @@ export const COMMANDS = {
   ...TEAM_COMMANDS,
   ...NEGOTIATION_COMMANDS,
   ...ACTION_COMMANDS,
+  ...TURN_UPDATE_COMMANDS,
   ...FACILITATOR_COMMANDS,
 };
 

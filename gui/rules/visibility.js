@@ -111,6 +111,11 @@ export const FIELD_VISIBILITY = [
   },
   // The tithe is paid, or refused, in front of the whole table.
   { path: 'tithe.**', audience: PUBLIC },
+  // The end-of-turn worksheet is arithmetic over public tracks and printed
+  // rules — any player could compute every line of it, so hiding it would
+  // be theatre. What an opportunity SAYS stays scoped; that one is proposed
+  // is not a secret. See DECISIONS.md.
+  { path: 'turnUpdate.**', audience: PUBLIC },
 
   { path: 'aftermath.**', audience: PUBLIC },
 ];

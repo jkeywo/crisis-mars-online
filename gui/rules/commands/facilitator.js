@@ -125,6 +125,9 @@ export const FACILITATOR_COMMANDS = {
           draft.initiative = emptyInitiative();
           // A fresh turn owes a fresh tithe.
           draft.tithe = { paidCardIds: [], refused: false };
+          // An unfinished worksheet dies with its turn: what was not
+          // confirmed did not happen, which was the facilitator's call.
+          draft.turnUpdate = null;
         }
       } else {
         draft.phase.name = PHASES[at + 1];

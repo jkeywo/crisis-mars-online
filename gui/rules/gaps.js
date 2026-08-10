@@ -191,4 +191,20 @@ export const KNOWN_GAPS = [
       + 'are as standard; the guide licenses judgement based on how much '
       + 'tension the table needs". A rule would be inventing the numbers.',
   },
+  {
+    id: 'surrender-is-a-flag',
+    about: 'War Progress reaching a surrender boundary',
+    silent:
+      'The print says 0 means Earth surrenders and 20 or more means Mars '
+      + 'surrenders, and does not say whether the game ends there, or how.',
+    ruling:
+      'The end-of-turn worksheet flags the boundary and nothing more. The '
+      + 'facilitator narrates the surrender and calls time when the story '
+      + 'is told, with the same end-game verb as any other ending.',
+    because:
+      'A surrender is the biggest narrative moment the game can produce, '
+      + 'and an app that froze the boards mid-sentence would be taking the '
+      + 'ending away from the room. Adjudication is human here by design; '
+      + 'so is the curtain.',
+  },
 ];
