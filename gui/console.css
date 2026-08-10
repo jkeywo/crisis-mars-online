@@ -2975,11 +2975,20 @@ cm-board-overlay { display: block; }
   border-left: 3px solid var(--cm-gold);
 }
 
+/* The open row: three columns — the hand, the discard pile, and the
+   umpire's actions — stacking back into one below the breakpoint. */
 .cm-role-admin-panel {
   display: grid;
-  gap: 0.5rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem 1rem;
   padding: 0.4rem 0.6rem 0.7rem;
   border-top: 1px dashed var(--cm-rule);
+}
+
+.cm-role-admin-column { min-width: 0; display: grid; gap: 0.5rem; align-content: start; }
+
+@media (max-width: 75rem) {
+  .cm-role-admin-panel { grid-template-columns: 1fr; }
 }
 
 .cm-role-admin-panel fieldset {

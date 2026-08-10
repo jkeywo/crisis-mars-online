@@ -12,7 +12,7 @@
  */
 
 export class CmHand extends HTMLElement {
-  static observedAttributes = ['code', 'readonly', 'acts-for'];
+  static observedAttributes = ['code', 'readonly', 'acts-for', 'sections'];
 
   set data(value) { this._data = value; this._render(); }
 
@@ -30,6 +30,18 @@ export class CmHand extends HTMLElement {
   }
 
   get readonly() { return this.hasAttribute('readonly'); }
+
+  /**
+   * Which of the four sections to draw: a comma list of `held`, `loans`,
+   * `discard`, `destroyed`. Unset means all of them — the whole life of a
+   * role's cards in one column. Set, it lets a layout put the hand and the
+   * discard side by side as their own columns (the Roles tab does).
+   */
+  get sections() {
+    const listed = this.getAttribute('sections');
+    if (!listed) return null;
+    return new Set(listed.split(',').map((s) => s.trim()).filter(Boolean));
+  }
 
   _emit(verb, payload) {
     // Acting for somebody — the facilitator behind an NPC lanyard — names the
@@ -72,7 +84,11 @@ export class CmHand extends HTMLElement {
         <img src="assets/cards/${escape(card.id)}.png" alt="${escape(typeName(card))}" loading="lazy">
       </button>`;
 
+    const wanted = this.sections;
+    const wants = (section) => wanted === null || wanted.has(section);
+
     this.innerHTML = `
+      ${wants('held') ? `
       <section class="cm-hand-held">
         <h4>In hand <span class="cm-meta">${held.length}</span></h4>
         <ul class="cm-hand-cards">${held.map((card) => `
@@ -93,9 +109,9 @@ export class CmHand extends HTMLElement {
             </div>
           </li>`).join('') || '<li class="cm-empty">nothing in hand</li>'}
         </ul>
-      </section>
+      </section>` : ''}
 
-      ${onLoan.length ? `
+      ${wants('loans') && onLoan.length ? `
         <section class="cm-hand-loans">
           <h4>Out on loan <span class="cm-meta">${onLoan.length}</span></h4>
           <ul class="cm-hand-cards">${onLoan.map((card) => `
@@ -112,6 +128,7 @@ export class CmHand extends HTMLElement {
           </ul>
         </section>` : ''}
 
+      ${wants('discard') ? `
       <section class="cm-hand-discard">
         <h4>Discard pile <span class="cm-meta">${discarded.length}</span></h4>
         <ul class="cm-hand-cards cm-hand-spent">${discarded.map((card) => `
@@ -126,8 +143,8 @@ export class CmHand extends HTMLElement {
             </div>
           </li>`).join('') || '<li class="cm-empty">nothing spent</li>'}
         </ul>
-      </section>
-      ${destroyed.length ? `
+      </section>` : ''}
+      ${wants('destroyed') && destroyed.length ? `
         <section class="cm-hand-destroyed">
           <h4>Destroyed <span class="cm-meta">${destroyed.length}</span></h4>
           <p class="cm-meta">${destroyed.map((card) => escape(typeName(card))).join(', ')}

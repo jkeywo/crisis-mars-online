@@ -4,12 +4,15 @@
  *
  * The Roles tab: faction-grouped rows — lanyard thumb, printed name, code,
  * the seat wearing it (or "unclaimed") and whether that seat is connected.
- * Selecting a row opens the management panel: the player's hand read-only,
- * an add-a-card picker over every card NOT currently in that hand (from
- * another hand or a discard — moved by the explicit `facilitator:move-card`
- * verb, override-ledgered like everything the umpire does), removal to the
- * owner's discard or straight back to the owner, and the assign-action-card
- * buttons for the player who never placed.
+ * Selecting a row opens the management panel, three columns by the author's
+ * ruling: the player's hand (with their loans out), their discard pile, and
+ * the umpire's actions — an add-a-card picker over every card NOT currently
+ * in that hand (from another hand or a discard — moved by the explicit
+ * `facilitator:move-card` verb, override-ledgered like everything the umpire
+ * does), removal to the owner's discard or straight back to the owner, the
+ * assign-action-card buttons for the player who never placed, and the
+ * private note ledger (`facilitator:note` — the same ledger the
+ * adjudication panel reads back).
  *
  * NPC lanyards are not here — they have their own tab.
  */
@@ -92,10 +95,19 @@ export class CmRolesPanel extends HTMLElement {
       ? `discard (${card.ownerCode}'s)` : `with ${card.holderCode}`);
     const placed = this._view.actionCards?.[code]?.placed ?? null;
 
+    const notes = this._view.notes?.[code] ?? [];
+
     return `
       <div class="cm-role-admin-panel">
-        <cm-hand readonly code="${escape(code)}"></cm-hand>
+        <div class="cm-role-admin-column">
+          <cm-hand readonly code="${escape(code)}" sections="held,loans"></cm-hand>
+        </div>
 
+        <div class="cm-role-admin-column">
+          <cm-hand readonly code="${escape(code)}" sections="discard,destroyed"></cm-hand>
+        </div>
+
+        <div class="cm-role-admin-column cm-role-admin-actions">
         <fieldset><legend>Give them a card</legend>
           <div class="cm-row">
             <select data-give-card="${escape(code)}">
@@ -131,6 +143,17 @@ export class CmRolesPanel extends HTMLElement {
                 aria-pressed="${placed === mapId}">${escape(map.name)}</button>`).join('')}
           </div>
         </fieldset>
+
+        <fieldset><legend>Your notes <span class="cm-meta">${notes.length}</span></legend>
+          ${notes.map((note) => `<p class="cm-meta">${escape(note.text)}</p>`).join('')
+            || '<p class="cm-meta">Nothing written against them.</p>'}
+          <div class="cm-row">
+            <input data-note-text="${escape(code)}" maxlength="200"
+                   placeholder="Prepare for the future…">
+            <button type="button" data-note="${escape(code)}">Note it</button>
+          </div>
+        </fieldset>
+        </div>
       </div>`;
   }
 
@@ -142,11 +165,20 @@ export class CmRolesPanel extends HTMLElement {
         this._render();
       };
     }
-    // The read-only hand inside the open panel needs its projection.
-    const hand = this.querySelector('cm-hand');
-    if (hand) {
+    // The read-only hands inside the open panel need their projection —
+    // one column for the hand and loans, one for the discard.
+    for (const hand of this.querySelectorAll('cm-hand')) {
       hand.data = this._data;
       hand.view = this._view;
+    }
+    for (const button of this.querySelectorAll('[data-note]')) {
+      button.onclick = () => {
+        const code = button.dataset.note;
+        const input = this.querySelector(`[data-note-text="${code}"]`);
+        if (!input.value.trim()) return;
+        this._emit('facilitator:note', { code, text: input.value });
+        input.value = '';
+      };
     }
     for (const button of this.querySelectorAll('[data-give]')) {
       button.onclick = () => {

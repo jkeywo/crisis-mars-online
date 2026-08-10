@@ -486,6 +486,7 @@ messages, and test strings — see the note at the end.
 | take fieldset | Take one away / Card… / To the discard / Back to its owner |
 | take picker label | {card} — {owner}'s loan |
 | action card fieldset | Action card / Placed on {map name}. / Not placed. / {map name} buttons |
+| notes fieldset | Your notes {n} / Nothing written against them. / note input placeholder: Prepare for the future… / Note it |
 
 ### NPCs tab (host.html + host-app renderNpcBriefs)
 | Ref | Text |

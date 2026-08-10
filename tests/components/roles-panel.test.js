@@ -47,7 +47,7 @@ describe('<cm-roles-panel>', () => {
     expect(panel.querySelector('[data-code="C1"]').textContent).toContain('Alice — away');
   });
 
-  it('opens one management panel with the read-only hand inside', () => {
+  it('opens one management panel: hand, discard and actions in three columns', () => {
     const panel = mount();
     panel.data = data;
     panel.view = seated();
@@ -55,15 +55,46 @@ describe('<cm-roles-panel>', () => {
     panel.querySelector('[data-toggle="C1"]').click();
     const open = panel.querySelector('[data-open="true"]');
     expect(open.dataset.code).toBe('C1');
-    const hand = open.querySelector('cm-hand');
+    const columns = [...open.querySelectorAll('.cm-role-admin-column')];
+    expect(columns).toHaveLength(3);
+
+    // Column one is the hand (and loans), read-only, the borrowed card
+    // badged with its owner; column two is the discard pile alone.
+    const [handColumn, discardColumn] = columns;
+    const hand = handColumn.querySelector('cm-hand');
     expect(hand.hasAttribute('readonly')).toBe(true);
-    // The loan shows in the hand, badged with its owner.
+    expect(hand.getAttribute('sections')).toBe('held,loans');
     expect(hand.textContent).toContain('on loan from Viva Mars Hero');
+    expect(hand.querySelector('.cm-hand-discard')).toBeNull();
+    const discard = discardColumn.querySelector('cm-hand');
+    expect(discard.querySelector('.cm-hand-discard li').dataset.card).toBe('rc_c1_5');
+    expect(discard.querySelector('.cm-hand-held')).toBeNull();
 
     // Opening another closes the first.
     panel.querySelector('[data-toggle="V1"]').click();
     expect([...panel.querySelectorAll('[data-open="true"]')].map((r) => r.dataset.code))
       .toEqual(['V1']);
+  });
+
+  it('writes a private note against the character from the actions column', () => {
+    const panel = mount();
+    panel.data = data;
+    const view = seated();
+    view.notes.C1 = [{ ts: 0, text: 'Owes the Speaker a favour.' }];
+    panel.view = view;
+    const raised = [];
+    panel.addEventListener('cm-facilitate', (e) => raised.push(e.detail));
+
+    panel.querySelector('[data-toggle="C1"]').click();
+    expect(panel.querySelector('[data-open="true"]').textContent)
+      .toContain('Owes the Speaker a favour.');
+    const input = panel.querySelector('[data-note-text="C1"]');
+    input.value = 'Prepared for the future.';
+    panel.querySelector('[data-note="C1"]').click();
+    expect(raised).toEqual([{
+      verb: 'facilitator:note', payload: { code: 'C1', text: 'Prepared for the future.' },
+    }]);
+    expect(input.value).toBe('');
   });
 
   it('gives a card from anywhere through the explicit move verb', () => {
