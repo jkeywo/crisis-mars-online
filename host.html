@@ -39,11 +39,6 @@
     <cm-connection-dot id="connection" status="idle"></cm-connection-dot>
   </header>
 
-  <!-- The war, across the top of everything. Hidden on the start screen. -->
-  <div id="war-strip" class="cm-war-strip" hidden>
-    <cm-war-progress id="war"></cm-war-progress>
-  </div>
-
   <main class="cm-main">
     <!-- starting or resuming ---------------------------------------------- -->
     <section id="screen-start" class="cm-panel" hidden>
@@ -112,32 +107,38 @@
         <button id="take-over" type="button">Take over hosting</button>
       </section>
 
-      <section class="cm-run-control">
-        <cm-phase-clock id="clock"></cm-phase-clock>
-        <div class="cm-clock-buttons">
-          <button id="advance-phase" type="button" class="cm-primary">Next phase</button>
-          <button id="pause-clock" type="button">Pause</button>
-          <button id="extend-clock" type="button" data-minutes="1">+1 min</button>
-          <button id="shorten-clock" type="button" data-minutes="-1">−1 min</button>
-          <button id="end-game" type="button">Call time</button>
-        </div>
-        <p class="cm-meta">
-          The clock runs past zero rather than stopping. A phase ends when you
-          say it does — every negotiation overruns a little.
-        </p>
-        <!-- Placement is mandatory, so during the Negotiation Phase this
-             strip names who has not placed yet — the list to read out with
-             a minute on the clock. -->
-        <p id="unplaced" class="cm-meta" hidden></p>
-      </section>
+      <!-- The pinned header: two rows that stay put while the console
+           scrolls beneath them. Row one is the phase clock, its controls
+           and the war rail; row two is the six tabs. The connection dot
+           rides the brand bar above, which is sticky in its own right. -->
+      <div id="host-header" class="cm-host-header">
+        <section class="cm-run-control">
+          <cm-phase-clock id="clock"></cm-phase-clock>
+          <div class="cm-clock-buttons">
+            <button id="advance-phase" type="button" class="cm-primary">Next phase</button>
+            <button id="pause-clock" type="button">Pause</button>
+            <button id="extend-clock" type="button" data-minutes="1">+1 min</button>
+            <button id="shorten-clock" type="button" data-minutes="-1">−1 min</button>
+            <button id="end-game" type="button">Call time</button>
+          </div>
+          <!-- The war, on the strip that never leaves the screen. Says
+               nothing until the turn-two correspondence starts it. -->
+          <div id="war-strip" class="cm-war-strip" hidden>
+            <cm-war-progress id="war"></cm-war-progress>
+          </div>
+          <!-- Placement is mandatory, so during the Negotiation Phase this
+               strip names who has not placed yet — the list to read out with
+               a minute on the clock. -->
+          <p id="unplaced" class="cm-meta" hidden></p>
+        </section>
 
-      <!-- The console is tabs from here down: one per map (the printed
-           board with the live game overlaid, and that map's Action Phase
-           machinery), then Roles, NPCs, and Game. The map tab buttons and
-           panels are built by the app from maps.json; the clock strip above
-           stays put whichever tab is in front. -->
-      <nav id="host-tabs" class="cm-tabs cm-host-tabs" role="tablist"
-           aria-label="Console tabs"></nav>
+        <!-- The console is tabs from here down: one per map (the printed
+             board with the live game overlaid, and that map's Action Phase
+             machinery), then Roles, NPCs, and Game. The map tab buttons and
+             panels are built by the app from maps.json. -->
+        <nav id="host-tabs" class="cm-tabs cm-host-tabs" role="tablist"
+             aria-label="Console tabs"></nav>
+      </div>
 
       <div id="tab-panels">
         <!-- The three map panels are built here by the app. -->

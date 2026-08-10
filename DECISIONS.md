@@ -276,6 +276,21 @@ module rejects, or when boot has not completed within six seconds; and boot
 completion is signalled via `document.body.dataset.booted` by the page
 module. A hard refresh was always the cure; now the page says so itself.
 
+## 2026-08-10 — The pinned host header (author's ruling)
+
+**Two rows that never scroll away.** The author asked for the clock, its
+controls and the war rail on one pinned row with the six tabs on a second;
+`#host-header` is one sticky block under the brand bar (which already
+carries the connection dot, sticky in its own right). The run control gave
+up its own `position: sticky` to the wrapper, and the war strip moved from
+a page-wide band into row one of the header — same ids, same render calls.
+
+**The clock's explanatory sentence is gone.** "The clock runs past zero
+rather than stopping…" was worth a line on a scrolling page; on a header
+that is on screen for the whole evening it is furniture. A facilitator
+learns the behaviour the first time a phase overruns. The unplaced strip
+stays in the header — that one is live information with a deadline.
+
 ## HTTPS enforcement lives at Cloudflare, not GitHub (2026-08-10, coordinator)
 
 crisis-mars-online.kiwigamedesign.co.uk resolves to Cloudflare's proxy, so

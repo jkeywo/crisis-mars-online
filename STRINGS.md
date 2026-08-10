@@ -90,7 +90,6 @@ messages, and test strings — see the note at the end.
 | co-banner | **You are the co-facilitator.** The game is on the other machine and mirrored here. |
 | #take-over button | Take over hosting |
 | clock buttons | Next phase / Pause / +1 min / −1 min / Call time |
-| clock note | The clock runs past zero rather than stopping. A phase ends when you say it does — every negotiation overruns a little. |
 | epilogue h2 | The debrief |
 | epilogue note | Read from this. Print it, or save it as a page to send round the week after. |
 | epilogue buttons | Print it / Save as a page |

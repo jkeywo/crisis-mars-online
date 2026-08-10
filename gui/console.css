@@ -1118,22 +1118,40 @@ cm-phase-clock[data-state="over"] time { color: var(--cm-blood); }
 cm-phase-clock[data-state="paused"] time { color: var(--cm-muted); }
 cm-phase-clock[data-state="paused"] .cm-clock-time::after { content: ' paused'; font-size: 0.8rem; color: var(--cm-muted); }
 
+/* The pinned host header: the clock row and the tab strip together, stuck
+   directly under the brand bar, so the phase, its controls, the war rail
+   and the way between the tabs never scroll away. The connection dot is on
+   the brand bar above, sticky in its own right. */
+.cm-host-header {
+  position: sticky;
+  top: var(--cm-bar-height);
+  z-index: 20;
+  background: var(--cm-parchment);
+}
+
+/* Row one: clock, controls, and the war rail taking the space they leave. */
 .cm-run-control {
-  display: grid;
-  grid-template-columns: auto 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.4rem 1.5rem;
   align-items: center;
   background: var(--cm-parchment);
   border: 1px solid var(--cm-rule);
-  border-radius: 3px;
-  padding: 1rem 1.2rem;
-  margin-bottom: 1.5rem;
-  position: sticky;
-  top: var(--cm-bar-height);
-  z-index: 20;
+  border-radius: 3px 3px 0 0;
+  padding: 0.6rem 1.2rem;
 }
 
-.cm-run-control .cm-meta { grid-column: 1 / -1; margin: 0; }
+/* The war rail rides row one. Its own panel chrome goes: it is a region of
+   the header now, not a strip of the page. */
+.cm-run-control .cm-war-strip {
+  flex: 1 1 18rem;
+  min-width: 16rem;
+  background: transparent;
+  border-bottom: 0;
+  padding: 0;
+}
+
+.cm-run-control .cm-meta { flex-basis: 100%; margin: 0; }
 .cm-clock-buttons { display: flex; gap: 0.4rem; flex-wrap: wrap; }
 
 /* --- the game body: what you can do | the board | your sheet ------------- */
@@ -2764,7 +2782,7 @@ cm-initiative-queue { display: block; }
 /* The debrief prints: everything else on the console does not. */
 @media print {
   body.cm-shell > *:not(main),
-  .cm-run-control, .cm-boards-lanes, .cm-team-panel, .cm-columns,
+  .cm-host-header, .cm-boards-lanes, .cm-team-panel, .cm-columns,
   cm-turn-update, .cm-lobby-roles {
     display: none !important;
   }
@@ -2976,7 +2994,12 @@ cm-board-overlay { display: block; }
    -------------------------------------------------------------------------- */
 
 .cm-host-tabs {
-  margin: 1rem 0 0;
+  margin: 0;
+  padding: 0.4rem 1.2rem 0;
+  background: var(--cm-parchment);
+  border: 1px solid var(--cm-rule);
+  border-top: 0;
+  border-radius: 0 0 3px 3px;
   border-bottom: 1px solid var(--cm-rule);
   overflow-x: auto;
   flex-wrap: nowrap;
