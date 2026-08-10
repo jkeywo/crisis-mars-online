@@ -158,6 +158,19 @@ export function createInitialState({ joinCode, seed, data, playerCount, rosterCo
     // builds the queues from the turn's printed initiative row and the
     // placements the moment an Action Phase opens. See emptyInitiative().
     initiative: emptyInitiative(),
+    // The war correspondence, one slot per turn: null until the facilitator
+    // publishes (or, where the print allows, skips) it. That the news
+    // happened is public; the read-aloud text itself is facilitator data,
+    // spoken over voice rather than sent to anybody.
+    correspondence: Object.fromEntries(
+      Array.from({ length: Number(data.meta.turns) }, (_, i) => [`t${i + 1}`, null])),
+    // Threshold-and-lead opportunities, keyed o1, o2… and kept. The record
+    // is faction-scoped — the first TEAM-audience state in the game — and an
+    // NPC-targeted one reaches only the facilitator. See visibility.js.
+    opportunities: {},
+    // The turn's tithe: the Belt Union owes the U.N. Ambassador. One payment
+    // per turn, or one refusal; reset by advance-phase on rollover.
+    tithe: { paidCardIds: [], refused: false },
     // Every spotlight ever opened, keyed a1, a2… and kept — a closed action
     // is part of the story of the game, and the replay reads it back.
     actions: {},

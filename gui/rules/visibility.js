@@ -29,7 +29,11 @@
 export const PUBLIC = 'public';
 /** The owning role's seat, and nobody else's. */
 export const OWNER = 'owner';
-/** Everyone in the owning role's faction. */
+/**
+ * Everyone in one faction. The rule names the faction with a `faction(segments,
+ * state)` function; a null answer fails closed to the facilitator alone, which
+ * is exactly what an NPC-targeted record wants.
+ */
 export const TEAM = 'team';
 /** Facilitators only. */
 export const FACILITATOR = 'facilitator';
@@ -90,6 +94,23 @@ export const FIELD_VISIBILITY = [
   { path: 'initiative.**', audience: PUBLIC },
   { path: 'actions.**', audience: PUBLIC },
   { path: 'futureImpacts.**', audience: PUBLIC },
+
+  // --- the team phase --------------------------------------------------------
+  // That a turn's war correspondence was published (or skipped) is public —
+  // the whole room heard it read. The text lives in facilitator data and is
+  // never state.
+  { path: 'correspondence.**', audience: PUBLIC },
+  // An opportunity is a faction's own moment: the trigger fired for them,
+  // the two options are theirs to weigh, and the other factions finding out
+  // is what the Negotiation Phase is for. NPC-targeted records answer null
+  // here and so reach only the facilitator.
+  {
+    path: 'opportunities.**',
+    audience: TEAM,
+    faction: (segments, state) => state.opportunities[segments[1]]?.factionId ?? null,
+  },
+  // The tithe is paid, or refused, in front of the whole table.
+  { path: 'tithe.**', audience: PUBLIC },
 
   { path: 'aftermath.**', audience: PUBLIC },
 ];

@@ -123,6 +123,8 @@ export const FACILITATOR_COMMANDS = {
           // The old turn's call order is spent; the next Action Phase builds
           // its own from the new placements.
           draft.initiative = emptyInitiative();
+          // A fresh turn owes a fresh tithe.
+          draft.tithe = { paidCardIds: [], refused: false };
         }
       } else {
         draft.phase.name = PHASES[at + 1];

@@ -275,6 +275,26 @@ export async function validateData() {
     }
   }
 
+  // --- events, cross-checked against the rules' one transcription -------------
+  // The tithe schedule is duplicated into gui/rules/commands/team.js because
+  // player consoles admit payments without ever fetching the facilitator
+  // file. This is where that duplication would be caught drifting.
+  const events = loaded.events;
+  const transcribed = { 1: 1, 2: 1, 3: 2, 4: 2 };
+  for (const [turn, amount] of Object.entries(transcribed)) {
+    if (Number(events.tithe?.amountByTurn?.[turn]) !== amount) {
+      fail(`events tithe turn ${turn}: ${events.tithe?.amountByTurn?.[turn]}, rules transcribe ${amount}`);
+    }
+  }
+  if (events.tithe?.from !== 'belt_union') {
+    fail(`events tithe from '${events.tithe?.from}', rules transcribe belt_union`);
+  }
+  const correspondenceTurns = (events.correspondence ?? []).map((c) => c.turn).sort();
+  const allTurns = Array.from({ length: CHECKSUMS.turns }, (_, i) => i + 1);
+  if (JSON.stringify(correspondenceTurns) !== JSON.stringify(allTurns)) {
+    fail(`events correspondence covers turns ${correspondenceTurns.join(',')}, expected ${allTurns.join(',')}`);
+  }
+
   // --- the art ---------------------------------------------------------------
   // Every card the data deals must have a face to draw, by the naming
   // convention the installer uses. A card with no art is a blank rectangle in

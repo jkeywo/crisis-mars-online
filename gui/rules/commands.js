@@ -39,4 +39,8 @@ export {
   payloadFrom,
   probeFor,
   commandsInPhase,
+  titheOwed,
+  TITHE_SCHEDULE,
+  TITHE_FROM_FACTION,
+  TITHE_TO_CODE,
 } from './commands/index.js';

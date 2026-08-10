@@ -31,13 +31,16 @@ function permits(rule, segments, state, viewer) {
   // is what makes a simultaneous reveal simultaneous.
   if (rule.revealWhen?.(segments, state)) return true;
 
+  if (rule.audience === TEAM) {
+    // The rule names a faction; a null answer fails closed, so a record
+    // aimed at nobody's faction — an NPC's — reaches only the facilitator.
+    const faction = rule.faction?.(segments, state) ?? null;
+    return Boolean(faction) && viewer.teamId === faction;
+  }
+
   const ownerId = rule.owner?.(segments, state) ?? null;
   if (!ownerId) return false;
   if (rule.audience === OWNER) return viewer.roleId === ownerId;
-  if (rule.audience === TEAM) {
-    return viewer.roleId === ownerId || (Boolean(viewer.teamId)
-      && viewer.teamId === rule.teamOf?.(ownerId, state));
-  }
   return false;
 }
 

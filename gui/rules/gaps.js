@@ -146,4 +146,49 @@ export const KNOWN_GAPS = [
       + 'same story twice. The facilitator can still refuse one outright, '
       + 'which is all the printed sentence asks for.',
   },
+  {
+    id: 'opportunity-choice-is-a-record',
+    about: 'How a faction answers an opportunity',
+    silent:
+      'The print offers a triggered faction "a two-option team choice" and '
+      + 'never says who speaks for the team or how the answer is collected.',
+    ruling:
+      'Any player of the faction taps the option; the tap is a record of a '
+      + 'decision made out loud, overwritable until the facilitator '
+      + 'resolves. The last tap counts.',
+    because:
+      'A ballot would invent voting weights the print does not have. The '
+      + 'table talks, somebody taps, and if the tap misrepresents the table '
+      + 'that is a table problem — the same trust the paper game runs on.',
+  },
+  {
+    id: 'tithe-one-payment-per-turn',
+    about: 'Who pays the tithe, and from what',
+    silent:
+      'The print says the Belt Union owes the Ambassador 1, 1, 2, 2 cards '
+      + 'by turn, without naming which Belt player pays or whose cards go.',
+    ruling:
+      'Any one Belt Union player pays the whole turn\u2019s tithe from cards '
+      + 'in their own hand, once per turn for the faction.',
+    because:
+      'The debt is the faction\u2019s, so anybody\u2019s hand can settle it — '
+      + 'and cards are freely loanable, so the faction can move the burden '
+      + 'between hands first. One payment per turn is what "1, 1, 2, 2 by '
+      + 'turn" says.',
+  },
+  {
+    id: 'tithe-refusal-is-judgement',
+    about: 'What refusing the tithe costs',
+    silent:
+      'The print says refusal should "move Shipping Control towards Earth" '
+      + 'and bring "consequences for the stations if Earth has shipping '
+      + 'control", with amounts licensed to judgement.',
+    ruling:
+      'The app records the refusal and enforces nothing. Retaliation is the '
+      + 'facilitator moving tracks by hand, as themselves, in the log.',
+    because:
+      'The printed consequences have no numbers on purpose — "the amounts '
+      + 'are as standard; the guide licenses judgement based on how much '
+      + 'tension the table needs". A rule would be inventing the numbers.',
+  },
 ];

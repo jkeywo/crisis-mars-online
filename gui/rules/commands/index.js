@@ -8,8 +8,8 @@
  * about this directory: beside the other verbs about the same subject, and
  * beside the helpers only those verbs use.
  *
- * The chair, the cards, the Negotiation Phase, the Action Phase, and the
- * umpire — read roughly as a turn runs, which is the order availableTo
+ * The chair, the cards, then the three phases as a turn runs them — Team,
+ * Negotiation, Action — and the umpire last. That is the order availableTo
  * walks and so the order a player's action list appears in.
  *
  * The accessors below stay here rather than in a fragment because each of them
@@ -20,6 +20,7 @@
 
 import { LOBBY_COMMANDS } from './lobby.js';
 import { CARD_COMMANDS } from './cards.js';
+import { TEAM_COMMANDS } from './team.js';
 import { NEGOTIATION_COMMANDS } from './negotiation.js';
 import { ACTION_COMMANDS } from './actions.js';
 import { FACILITATOR_COMMANDS } from './facilitator.js';
@@ -27,6 +28,7 @@ import { FACILITATOR_COMMANDS } from './facilitator.js';
 export const COMMANDS = {
   ...LOBBY_COMMANDS,
   ...CARD_COMMANDS,
+  ...TEAM_COMMANDS,
   ...NEGOTIATION_COMMANDS,
   ...ACTION_COMMANDS,
   ...FACILITATOR_COMMANDS,
@@ -41,6 +43,7 @@ export const COMMANDS = {
  */
 export { subjectOf, roleName, pretty } from './shared.js';
 export { phaseEndsAt, phaseMinutes, remainingMs } from './facilitator.js';
+export { titheOwed, TITHE_SCHEDULE, TITHE_FROM_FACTION, TITHE_TO_CODE } from './team.js';
 
 /** @typedef {import('./shared.js').Field} Field */
 
