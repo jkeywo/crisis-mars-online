@@ -201,3 +201,41 @@ text explicitly excluded (that text is edited in the gamespec and
 re-exported). The inventory is hand-curated from a literal-extraction sweep
 of gui/ and the three pages; the extraction script was throwaway and is not
 committed.
+
+## 2026-08-10 — The tabbed host console
+
+**Six tabs, current one in the hash.** Map tabs are built from maps.json
+(labels are the printed map names — gamespec-owned strings); Roles, NPCs and
+Game are static panels. `location.hash` carries the tab so a refresh
+returns to it; the player page's hash still carries the join code — the two
+pages never share a hash convention. Arrow keys walk the tablist. Badges
+are deliberately minimal: a map with an open spotlight, Roles during the
+lobby, Game when the turn's news is unread or the debrief is up.
+
+**Board chips commit as deltas; the war marker commits as a set.** A chip
+edit pre-fills the current value and commits `facilitator:adjust` with
+typed−shown, so a player-driven change between look and commit survives —
+the inspector's own reasoning moved onto the board. The War Progress marker
+commits `facilitator:set` because a marker is placed, not nudged; setting
+the war back to null stays with the inspector's Deactivate.
+
+**Action-card tokens sit under the image, not over it.** The board is the
+author's drawing; the tokens are the evening's. A strip along the bottom
+edge outside the art keeps both legible and costs no geometry.
+
+**`facilitator:move-card` has no 'box'.** Undealt cards are not state, so
+the umpire's card mover reaches hands and discards only. Destroyed stays
+destroyed. Introducing an undealt card would be a state-shape change, not a
+move — the pencil could do it, but nothing invites it.
+
+**geometry.json is CORE data.** Board layout is public (the players look at
+the same printed sheets), so it loads with the other six files everywhere
+rather than being host-only; the player page simply does not use it yet.
+
+**The lobby role grid is gone.** The Roles tab shows claims better and
+lives one keystroke away; the old grid was a worse copy of it. The Roles
+tab badge during the lobby is the pointer.
+
+**cm-map-board survives for the player page only.** The host tabs use the
+overlay; the player's rail keeps the compact track list until a player-page
+tab pass (explicitly deferred by the author's request).

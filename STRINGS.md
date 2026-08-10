@@ -459,6 +459,50 @@ messages, and test strings — see the note at the end.
 
 ---
 
+## Addendum, 2026-08-10 — the tabbed host console
+
+### Tab strip (host.html + gui/host/host-app.js)
+| Ref | Text |
+|---|---|
+| tablist aria-label | Console tabs |
+| map tab labels | *(the printed map names — gamespec-owned, from maps.json)* |
+| static tab labels | Roles / NPCs / Game |
+
+### cm-board-overlay
+| Ref | Text |
+|---|---|
+| board image alt | {map name} board |
+| chip aria | {track name}: {n} — click to edit |
+| edit input aria | New value for {track name} |
+| commit / cancel | ✓ *(aria: Commit)* / ✕ *(aria: Cancel)* |
+| war marker chip aria | War Progress: {n} — click to edit |
+
+### Roles tab (host.html + cm-roles-panel)
+| Ref | Text |
+|---|---|
+| panel h2 / note | The lanyards / Who is wearing what. Open a row to manage that player's cards — every move lands on the override ledger — or to place their action card for them. |
+| claim column | {seat name} / {seat name} — away / unclaimed |
+| give fieldset | Give them a card / Card… / Add to hand |
+| give picker labels | {card} — discard ({owner}'s) / {card} — with {holder} |
+| take fieldset | Take one away / Card… / To the discard / Back to its owner |
+| take picker label | {card} — {owner}'s loan |
+| action card fieldset | Action card / Placed on {map name}. / Not placed. / {map name} buttons |
+
+### NPCs tab (host.html + host-app renderNpcBriefs)
+| Ref | Text |
+|---|---|
+| panel h2 / note | Your lanyards / The Ambassador and the Speaker are yours to roleplay. Their cards move through the same verbs the players use; every pass lands in the log like everything else. |
+| column headings | The tithe / Hand |
+| play notes fold | Play notes *(note text is facilitator-file data — gamespec-owned)* |
+| npc name/description | *(gamespec-owned, from factions.json)* |
+
+### New refusals (facilitator:move-card, gui/rules/commands/cards.js)
+| Verb | Text |
+|---|---|
+| facilitator:move-card | no such card in this game / that card was destroyed — it is out of the game / it is already in the discard / nobody by that code is in this game / it is already in that hand |
+
+---
+
 ## Deliberately left out
 
 - **Everything in `data/*.json`** — names, briefs, goals, flavour, the
