@@ -248,6 +248,28 @@ export const KNOWN_GAPS = [
       + 'so is the curtain.',
   },
   {
+    id: 'npc-regain-unbound',
+    status: 'author-ruled',
+    ruledOn: '2026-08-10',
+    about: 'The NPC hands getting discarded cards back',
+    silent:
+      'The recovery rule is written for players: "During the Negotiation '
+      + 'Phase you can reclaim one of your own discarded resource cards." '
+      + 'Nothing says whether the two facilitator-played lanyards are bound '
+      + 'by it.',
+    ruling:
+      'They are not. The U.N. Ambassador and the Senate Speaker are '
+      + 'Control’s lanyards, and the facilitator regains any of their '
+      + 'discarded cards with one click, in any phase, as often as the '
+      + 'evening needs — through facilitator:move-card, so every regain '
+      + 'lands on the override ledger.',
+    because:
+      'The author’s ruling. The once-per-negotiation limit is a '
+      + 'player-economy brake, and the NPCs are not players: their hands '
+      + 'are pacing tools the umpire spends and refills to keep the table '
+      + 'moving. A destroyed card stays destroyed for them too.',
+  },
+  {
     id: 'initiative-randomised',
     status: 'author-ruled',
     ruledOn: '2026-08-10',

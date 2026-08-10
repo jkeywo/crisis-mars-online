@@ -122,6 +122,25 @@ describe('the recover affordance', () => {
     ]);
   });
 
+  it('regain: the NPC hands restore any discard, any phase, as the umpire', () => {
+    // Control's lanyards are not bound by the players' once-per-negotiation
+    // recovery (gaps.js, npc-regain-unbound): with `regain` set, every
+    // discarded card carries a one-click restore that goes through the
+    // override-ledgered facilitator card mover, not the player verb.
+    const state = stateInPlay();
+    state.cards.rc_n1_1.state = 'spent';
+    const hand = mount('cm-hand', { 'acts-for': 'N1', regain: '' });
+    hand.data = data;
+    hand.view = state;                       // team phase, recovery unused
+
+    const raised = [];
+    hand.addEventListener('cm-command', (e) => raised.push(e.detail));
+    hand.querySelector('[data-regain="rc_n1_1"]').click();
+    expect(raised).toEqual([{
+      verb: 'facilitator:move-card', payload: { cardId: 'rc_n1_1', to: 'N1' },
+    }]);
+  });
+
   it('is not offered outside the phase, nor once the recovery is used', () => {
     const hand = mount('cm-hand');
     hand.data = data;

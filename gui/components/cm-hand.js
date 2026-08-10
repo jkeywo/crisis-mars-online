@@ -12,7 +12,7 @@
  */
 
 export class CmHand extends HTMLElement {
-  static observedAttributes = ['code', 'readonly', 'acts-for', 'sections'];
+  static observedAttributes = ['code', 'readonly', 'acts-for', 'sections', 'regain'];
 
   set data(value) { this._data = value; this._render(); }
 
@@ -77,6 +77,11 @@ export class CmHand extends HTMLElement {
     const recovery = !this.readonly
       && this._view.phase?.name === 'negotiation'
       && (this._view.roles?.[code]?.perTurn?.recovered ?? 0) < 1;
+    // `regain`: the umpire's one-click restore on the NPC hands — Control's
+    // lanyards are not bound by the players' once-per-negotiation recovery,
+    // so every discarded card carries the button in every phase, and the
+    // move lands on the override ledger. See gaps.js (npc-regain-unbound).
+    const regain = this.hasAttribute('regain');
 
     const thumb = (card) => `
       <button type="button" class="cm-card-thumb" data-view-card="${escape(card.id)}"
@@ -140,6 +145,10 @@ export class CmHand extends HTMLElement {
                 <div class="cm-hand-actions">
                   <button type="button" data-recover="${escape(card.id)}">Recover</button>
                 </div>` : ''}
+              ${regain ? `
+                <div class="cm-hand-actions">
+                  <button type="button" data-regain="${escape(card.id)}">Regain</button>
+                </div>` : ''}
             </div>
           </li>`).join('') || '<li class="cm-empty">nothing spent</li>'}
         </ul>
@@ -172,6 +181,15 @@ export class CmHand extends HTMLElement {
     }
     for (const button of this.querySelectorAll('[data-recover]')) {
       button.onclick = () => this._emit('recover-discard', { cardId: button.dataset.recover });
+    }
+    for (const button of this.querySelectorAll('[data-regain]')) {
+      // The umpire's card mover, not the players' recovery verb — so no
+      // roleId is stamped in: the payload names the card and the hand it
+      // returns to, and the log reads as what happened.
+      button.onclick = () => this.dispatchEvent(new CustomEvent('cm-command', {
+        bubbles: true,
+        detail: { verb: 'facilitator:move-card', payload: { cardId: button.dataset.regain, to: code } },
+      }));
     }
   }
 }

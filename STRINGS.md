@@ -250,7 +250,7 @@ messages, and test strings — see the note at the end.
 | empty states | nothing in hand / nothing spent |
 | loan badge | on loan from {owner name} |
 | loan line | {card} — with {holder name} |
-| actions | Hand to… / Discard / Reclaim / Recover |
+| actions | Hand to… / Discard / Reclaim / Recover / Regain *(NPC hands only — the umpire's restore)* |
 | thumb aria | Look at {card type name} |
 | destroyed line | {card names} — out of the game, never recoverable. |
 
