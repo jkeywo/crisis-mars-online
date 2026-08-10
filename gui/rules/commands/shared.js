@@ -39,8 +39,11 @@ export const roleName = (data, code) => data.roles.roles[code]?.name
  * needed one, without a single test going red.
  *
  * `fields` is plain data — `{name, label, kind, options, min, max, value}` —
- * so this is still a pure rules module. The DOM that renders it stays in
- * `gui/client/action-chooser.js`, and nothing here knows that file exists.
+ * so this is still a pure rules module. No DOM renders the fields anymore
+ * (the generic action list retired with the tabbed player page — every verb
+ * has a bespoke control now), but the admission probes still walk them, the
+ * replay history prints the labels, and a spec that declares its questions
+ * beside its `admit` is a spec that cannot drift from it.
  */
 
 /**

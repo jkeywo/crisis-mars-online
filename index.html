@@ -100,63 +100,64 @@
     </section>
 
     <!-- 4. the game ------------------------------------------------------- -->
+    <!-- Tabs, like the facilitator's console: the header above (clock, dot,
+         war rail) stays pinned, this strip is row two, and only the panel
+         beneath them scrolls. Map tabs and panels are built by the app from
+         maps.json; the Opportunities and Tithe tabs exist only for whoever
+         they concern. -->
     <section id="screen-game" class="cm-panel cm-full" hidden>
-      <div class="cm-game-body">
-        <!-- what you can do, always in view -->
-        <aside id="action-rail" class="cm-rail cm-action-rail">
-          <!-- Your faction's opportunity, when one is live. Redaction means
-               this element only ever receives your own faction's. -->
-          <cm-opportunity-card id="opportunities"></cm-opportunity-card>
+      <nav id="player-tabs" class="cm-tabs cm-host-tabs" role="tablist"
+           aria-label="Game tabs"></nav>
+      <p id="action-error" class="cm-error" role="alert"></p>
+      <div id="player-panels">
+        <!-- Once time is called: the public portrait of how it ended, above
+             whichever panel is open. No aftermath data here — that file is
+             the facilitator's. -->
+        <cm-epilogue id="epilogue-view" hidden></cm-epilogue>
 
-          <!-- The tithe, for Belt Union players while it is owed. -->
-          <div id="tithe" class="cm-tithe" hidden>
+        <!-- The three map panels are built here by the app. -->
+
+        <section class="cm-tab-panel" id="panel-news" role="tabpanel"
+                 aria-labelledby="tab-news" hidden>
+          <h2>The news</h2>
+          <!-- state.news newest-first: the published war correspondence and
+               whatever Control posts. -->
+          <div id="news-feed" class="cm-news-feed"></div>
+          <h2>Who is here</h2>
+          <cm-seat-roster id="game-roster"></cm-seat-roster>
+        </section>
+
+        <section class="cm-tab-panel" id="panel-opportunities" role="tabpanel"
+                 aria-labelledby="tab-opportunities" hidden>
+          <!-- Your faction's moment. Redaction means this element only ever
+               receives your own faction's records; the tab itself is only
+               built while one is live or was answered this turn. -->
+          <cm-opportunity-card id="opportunities"></cm-opportunity-card>
+        </section>
+
+        <section class="cm-tab-panel" id="panel-tithe" role="tabpanel"
+                 aria-labelledby="tab-tithe" hidden>
+          <!-- Belt Union only — the tab exists for nobody else. -->
+          <div id="tithe" class="cm-tithe">
             <h2>The tithe</h2>
             <p id="tithe-note" class="cm-meta"></p>
             <div id="tithe-cards"></div>
-            <button id="pay-tithe" type="button" class="cm-primary">Pay the tithe</button>
+            <button id="pay-tithe" type="button" class="cm-primary" hidden>Pay the tithe</button>
           </div>
+        </section>
 
-          <!-- The Negotiation Phase's one obligation, as its own control
-               rather than a row in the list: three map buttons and where
-               your card currently sits. -->
-          <div id="placement" class="cm-placement" hidden>
-            <h2>Your action card</h2>
-            <p id="placement-note" class="cm-meta"></p>
-            <div id="placement-buttons" class="cm-placement-buttons"></div>
+        <section class="cm-tab-panel" id="panel-role" role="tabpanel"
+                 aria-labelledby="tab-role" hidden>
+          <div class="cm-role-tab">
+            <div class="cm-role-tab-lanyard">
+              <cm-role-card id="role-card"></cm-role-card>
+              <!-- The briefing as words, always open: the flip-card is the
+                   artefact, this is the text you actually play from. -->
+              <div id="briefing" class="cm-briefing"></div>
+            </div>
+            <cm-hand id="hand"></cm-hand>
           </div>
-
-          <h2>What you can do</h2>
-          <p id="action-error" class="cm-error" role="alert"></p>
-          <cm-action-list id="actions"></cm-action-list>
-        </aside>
-
-        <!-- the three boards -->
-        <div id="game-main" class="cm-game-main">
-          <div class="cm-pane">
-            <!-- Once time is called: the public portrait of how it ended.
-                 No aftermath data here — that file is the facilitator's. -->
-            <cm-epilogue id="epilogue-view" hidden></cm-epilogue>
-
-            <!-- One lane per map, built from maps.json by the app so the row
-                 cannot disagree with the boards that exist. -->
-            <div id="boards" class="cm-boards-lanes"></div>
-            <!-- Hands are public — the paper game plays cards face up — so
-                 anybody can read anybody's. Folded, because your own hand is
-                 on the rail and this is for checking on the neighbours. -->
-            <details id="all-hands">
-              <summary>Everyone's hands</summary>
-              <div id="hands-list" class="cm-hands-list"></div>
-            </details>
-            <h2>Who is here</h2>
-            <cm-seat-roster id="game-roster"></cm-seat-roster>
-          </div>
-        </div>
-
-        <!-- your own lanyard and hand, always in view where there is room -->
-        <aside id="character-rail" class="cm-rail cm-character-rail">
-          <cm-role-card id="role-card"></cm-role-card>
-          <cm-hand id="hand"></cm-hand>
-        </aside>
+        </section>
       </div>
     </section>
   </main>

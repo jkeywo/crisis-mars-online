@@ -164,6 +164,7 @@ entities:
         - projected-player-view
       depends_on:
         - wire-protocol
+        - room-addressing
     implementation:
       status: declared
       paths:

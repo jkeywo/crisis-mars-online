@@ -3,9 +3,13 @@
  *
  * Four screens: the code, your name, the lobby, and then the game. The lobby
  * is the role grid — eighteen lanyards at most, drawn with their printed
- * fronts, claimed by pressing one. The game screen is a placeholder in this
- * phase: the clock, the roster, your own lanyard back and your hand of cards,
- * with the three maps to follow.
+ * fronts, claimed by pressing one. The game screen is tabs under a pinned
+ * header, like the facilitator's: one per map (the printed board, read-only,
+ * with that map's call order and spotlight, and the placement affordance
+ * during the Negotiation Phase), then News, then — only for whom they
+ * concern — Opportunities and the Tithe, then Role: the lanyard, the
+ * briefing as text, and the hand. Every player verb has a bespoke home;
+ * the generic action list is gone. See DECISIONS.md.
  *
  * Nothing here decides anything. It sends what the player asked for and
  * renders whatever the host sends back, including the reason a request was
@@ -28,8 +32,7 @@ import { createBeeper, createPhaseAnnouncer } from '../sound.js';
 import '../components/cm-connection-dot.js';
 import '../components/cm-seat-roster.js';
 import '../components/cm-phase-clock.js';
-import '../components/cm-action-list.js';
-import '../components/cm-map-board.js';
+import '../components/cm-board-overlay.js';
 import '../components/cm-war-progress.js';
 import '../components/cm-hand.js';
 import '../components/cm-role-card.js';
@@ -60,25 +63,109 @@ export async function startPlayerApp({ location = window.location, beeper = crea
   // shared one, which is what stops four tabs becoming one seat four times.
   const seat = seatFromLocation(location);
 
-  // One board lane per map, built from the data so the row cannot disagree
-  // with the boards that exist — and one placement button each, for the same
-  // reason.
+  // One tab panel per map, built from the data so the strip cannot disagree
+  // with the boards that exist: the printed board read-only, that map's call
+  // order and spotlight, and — during the Negotiation Phase — the placement
+  // affordance for this very map. Inserted before the static panels so the
+  // maps come first, in printed order.
+  const mapIds = Object.keys(data.maps.maps);
   for (const [mapId, map] of Object.entries(data.maps.maps)) {
-    const lane = document.createElement('div');
-    lane.className = 'cm-lane';
-    for (const tag of ['cm-map-board', 'cm-initiative-queue', 'cm-action-spotlight']) {
-      const element = document.createElement(tag);
-      element.setAttribute('map', mapId);
-      lane.append(element);
-    }
-    $('boards').append(lane);
+    const panel = document.createElement('section');
+    panel.className = 'cm-tab-panel';
+    panel.id = `panel-${mapId}`;
+    panel.setAttribute('role', 'tabpanel');
+    panel.setAttribute('aria-labelledby', `tab-${mapId}`);
+    panel.hidden = true;
 
+    const placement = document.createElement('div');
+    placement.className = 'cm-placement';
+    placement.dataset.placement = mapId;
+    placement.hidden = true;
+    const note = document.createElement('p');
+    note.className = 'cm-meta';
+    note.dataset.placementNote = mapId;
     const button = document.createElement('button');
     button.type = 'button';
     button.dataset.placeMap = mapId;
-    button.textContent = map.name;
+    button.textContent = `Place your action card on ${map.name}`;
     button.addEventListener('click', () => dispatch('place-action-card', { mapId }));
-    $('placement-buttons').append(button);
+    placement.append(note, button);
+    panel.append(placement);
+
+    for (const tag of ['cm-board-overlay', 'cm-initiative-queue', 'cm-action-spotlight']) {
+      const element = document.createElement(tag);
+      element.setAttribute('map', mapId);
+      if (tag === 'cm-board-overlay') element.setAttribute('readonly', '');
+      panel.append(element);
+    }
+    $('player-panels').insertBefore(panel, $('panel-news'));
+  }
+
+  // --- the tab strip --------------------------------------------------------
+  // Rebuilt whenever its labels change (the map counts move with the turn's
+  // placements) and stateful in memory only — the page's hash already
+  // belongs to the join code. Opportunities and Tithe appear in the order
+  // list only while they apply; a vanished tab falls back to the first map.
+  const TAB_ORDER = [...mapIds, 'news', 'opportunities', 'tithe', 'role'];
+  let currentTab = mapIds[0];
+  let tabSignature = '';
+
+  function selectTab(id, tabs = null) {
+    currentTab = id;
+    for (const tabId of TAB_ORDER) {
+      const tab = $(`tab-${tabId}`);
+      if (tab) tab.setAttribute('aria-selected', String(tabId === id));
+      $(`panel-${tabId}`).hidden = !tab || tabId !== id;
+    }
+  }
+
+  /** The strip: map names with this turn's placed-card counts, then the rest. */
+  function renderTabs(view) {
+    const placedOn = (mapId) => Object.values(view.actionCards ?? {})
+      .filter((card) => card.placed === mapId).length;
+    const labels = new Map(mapIds.map((mapId) => [
+      mapId, `${data.maps.maps[mapId].name} (${placedOn(mapId)})`]));
+    labels.set('news', 'News');
+    if (hasOpportunities(view)) labels.set('opportunities', 'Opportunities');
+    if (isBeltUnion()) labels.set('tithe', 'Tithe');
+    labels.set('role', 'Role');
+
+    const signature = JSON.stringify([...labels]);
+    if (signature === tabSignature) return;
+    tabSignature = signature;
+
+    $('player-tabs').innerHTML = [...labels].map(([id, label]) => `
+      <button type="button" role="tab" id="tab-${id}" aria-controls="panel-${id}"
+              aria-selected="false">${escape(label)}</button>`).join('');
+    if (!labels.has(currentTab)) currentTab = mapIds[0];
+    selectTab(currentTab);
+  }
+
+  $('player-tabs').addEventListener('click', (event) => {
+    const button = event.target.closest('[role="tab"]');
+    if (button) selectTab(button.id.slice(4));
+  });
+  // Arrow keys walk the strip, as a tablist should.
+  $('player-tabs').addEventListener('keydown', (event) => {
+    if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+    const tabs = [...$('player-tabs').querySelectorAll('[role="tab"]')]
+      .map((tab) => tab.id.slice(4));
+    const at = tabs.indexOf(currentTab);
+    const next = tabs[(at + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
+    selectTab(next);
+    $(`tab-${next}`).focus();
+  });
+
+  /** Whose console this is: the three Belt Union lanyards see the Tithe tab. */
+  function isBeltUnion() {
+    return data.roles.roles[client.roleId]?.factionId === TITHE_FROM_FACTION;
+  }
+
+  /** A live opportunity of yours, or one answered this very turn. */
+  function hasOpportunities(view) {
+    return Object.values(view.opportunities ?? {}).some((record) =>
+      record.title !== undefined
+      && (record.status === 'pending' || record.resolvedTurn === view.phase.turn));
   }
 
   const screens = {
@@ -225,14 +312,13 @@ export async function startPlayerApp({ location = window.location, beeper = crea
     $('bar-role').textContent = data.roles.roles[mine]?.name ?? mine;
     announcePhase(view.phase);
     $('clock').phase = view.phase;
-    $('actions').data = data;
-    $('actions').view = view;
     $('action-error').textContent = client.lastRefusal?.reason ?? '';
     $('war-strip').hidden = false;
     $('war').data = data;
     $('war').view = view;
-    for (const element of $('boards')
-      .querySelectorAll('cm-map-board, cm-initiative-queue, cm-action-spotlight')) {
+    renderTabs(view);
+    for (const element of $('player-panels')
+      .querySelectorAll('cm-board-overlay, cm-initiative-queue, cm-action-spotlight')) {
       element.data = data;
       element.view = view;
     }
@@ -242,55 +328,101 @@ export async function startPlayerApp({ location = window.location, beeper = crea
     $('hand').view = view;
     $('opportunities').data = data;
     $('opportunities').view = view;
+    renderBriefing(view, mine);
+    renderNews(view);
     renderPlacement(view, mine);
     renderTithe(view, mine);
-    // Time called: the public portrait of how it ended, above the boards.
+    // Time called: the public portrait of how it ended, above whichever
+    // panel is open.
     $('epilogue-view').hidden = view.phase.name !== 'epilogue';
     if (view.phase.name === 'epilogue') {
       $('epilogue-view').data = data;
       $('epilogue-view').view = view;
     }
-    renderAllHands(view, mine);
     $('game-roster').roles = data.roles.roles;
     $('game-roster').seats = seats;
   }
 
   /**
-   * The Negotiation Phase's one obligation, as its own control.
+   * The Negotiation Phase's one obligation, on the map tabs themselves.
    *
-   * Three buttons and a sentence: where your card sits, or that it does not
-   * yet. Re-placement is an overwrite until the facilitator calls the phase,
-   * so the buttons stay live and the current map reads pressed.
+   * Each map panel carries one button — place your card HERE — and the
+   * shared sentence saying where it currently sits. Re-placement is an
+   * overwrite until the facilitator calls the phase, so the buttons stay
+   * live and the map that holds the card reads pressed.
    */
   function renderPlacement(view, mine) {
     const card = view.actionCards?.[mine];
     const open = view.phase.name === 'negotiation' && Boolean(card);
-    $('placement').hidden = !open;
-    if (!open) return;
-    for (const button of $('placement-buttons').children) {
-      button.setAttribute('aria-pressed', String(button.dataset.placeMap === card.placed));
-    }
-    $('placement-note').textContent = card.placed
+    const sentence = !open ? '' : card.placed
       ? `On ${data.maps.maps[card.placed]?.name ?? card.placed} — you can move it until the phase ends.`
       : 'Not placed yet. Placement is mandatory — pick a map.';
+    for (const holder of $('player-panels').querySelectorAll('[data-placement]')) {
+      holder.hidden = !open;
+      if (!open) continue;
+      const mapId = holder.dataset.placement;
+      holder.querySelector(`[data-placement-note="${mapId}"]`).textContent = sentence;
+      holder.querySelector(`[data-place-map="${mapId}"]`)
+        .setAttribute('aria-pressed', String(mapId === card.placed));
+    }
+  }
+
+  /** The briefing as words: who you are, your goal, your faction's four. */
+  function renderBriefing(view, mine) {
+    const brief = view.brief;
+    if (!brief) { $('briefing').innerHTML = ''; return; }
+    const faction = data.factions.factions[data.roles.roles[mine]?.factionId];
+    $('briefing').innerHTML = `
+      <h4>Who you are</h4>
+      <p>${escape(brief.background ?? '')}</p>
+      <h4>Your personal goal</h4>
+      <p>${escape(brief.personalGoal ?? '')}</p>
+      <h4>${escape(faction?.name ?? 'Your faction')}'s goals</h4>
+      <ul>${(faction?.goals ?? []).map((goal) => `
+        <li>${escape(goal.statement)}</li>`).join('')}
+      </ul>`;
+  }
+
+  /** state.news newest-first: the read-aloud script and Control's posts. */
+  function renderNews(view) {
+    const items = [...(view.news ?? [])].reverse();
+    $('news-feed').innerHTML = items.length ? items.map((item) => `
+      <article class="cm-news-item" data-kind="${escape(item.kind)}">
+        <p>${escape(item.text)}</p>
+        <p class="cm-meta">Turn ${item.turn}</p>
+      </article>`).join('')
+      : '<p class="cm-empty">Nothing has made the news yet.</p>';
   }
 
   /**
-   * The tithe, for a Belt Union player while it is owed.
+   * The Tithe tab's contents, for the Belt Union player who has it.
    *
-   * The selection survives re-renders in a Set rather than in the DOM,
-   * because a projection arrives on every change anybody makes and would
-   * otherwise wipe half-ticked checkboxes.
+   * While a payment can be made — Team or Negotiation Phase, not refused,
+   * not yet covered — the pay flow: checkboxes over the hand and the button.
+   * Otherwise the tab stays (the debt is standing business) and says where
+   * the tithe stands instead. The selection survives re-renders in a Set
+   * rather than in the DOM, because a projection arrives on every change
+   * anybody makes and would otherwise wipe half-ticked checkboxes.
    */
   const titheSelection = new Set();
   function renderTithe(view, mine) {
+    if (!isBeltUnion()) return;
     const owed = titheOwed(view.phase.turn);
     const paid = view.tithe.paidCardIds.length;
-    const isBelt = data.roles.roles[mine]?.factionId === TITHE_FROM_FACTION;
     const inWindow = ['team', 'negotiation'].includes(view.phase.name);
-    const open = isBelt && inWindow && !view.tithe.refused && paid < owed;
-    $('tithe').hidden = !open;
-    if (!open) { titheSelection.clear(); return; }
+    const open = inWindow && !view.tithe.refused && paid < owed;
+    $('pay-tithe').hidden = !open;
+    if (!open) {
+      titheSelection.clear();
+      $('tithe-cards').innerHTML = '';
+      $('tithe-note').textContent = view.tithe.refused
+        ? `This turn's tithe was refused, with ${paid} paid.`
+        : paid >= owed
+          ? `Paid in full this turn — ${paid} card${paid === 1 ? '' : 's'}.`
+          : `The Ambassador is owed ${owed} card${owed === 1 ? '' : 's'} this turn — `
+            + `${paid} paid so far. Payments happen in the Team and Negotiation Phases.`;
+      return;
+    }
 
     const held = Object.values(view.cards ?? {})
       .filter((card) => card.holderCode === mine && card.state === 'held');
@@ -318,39 +450,6 @@ export async function startPlayerApp({ location = window.location, beeper = crea
     dispatch('pay-tithe', { cardIds: [...titheSelection] });
     titheSelection.clear();
   });
-
-  /**
-   * Everyone else's cards, one readonly hand per active lanyard.
-   *
-   * Rebuilt only when the roster of codes changes; on an ordinary render the
-   * existing hands are just handed the fresh projection. Hands are public in
-   * the paper game, so there is nothing here the manifest has not already
-   * let through.
-   */
-  let handsKey = '';
-  function renderAllHands(view, mine) {
-    const codes = Object.keys(view.roles ?? {}).filter((code) => code !== mine);
-    const key = codes.join(',');
-    if (key !== handsKey) {
-      handsKey = key;
-      $('hands-list').replaceChildren(...codes.map((code) => {
-        const block = document.createElement('div');
-        block.className = 'cm-hands-entry';
-        const name = document.createElement('h3');
-        name.textContent = data.roles.roles[code]?.name
-          ?? data.factions.npcs?.[code]?.name ?? code;
-        const hand = document.createElement('cm-hand');
-        hand.setAttribute('code', code);
-        hand.setAttribute('readonly', '');
-        block.append(name, hand);
-        return block;
-      }));
-    }
-    for (const hand of $('hands-list').querySelectorAll('cm-hand')) {
-      hand.data = data;
-      hand.view = view;
-    }
-  }
 
   /**
    * The lanyards, grouped by faction, each drawn with its printed front.

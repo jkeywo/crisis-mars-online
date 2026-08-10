@@ -79,4 +79,29 @@ describe('<cm-opportunity-card>', () => {
       { kind: 'player', roleId: 'C1', teamId: 'canopy_corp' });
     expect(other.innerHTML).toBe('');
   });
+
+  it('keeps an answered opportunity on screen, settled, for the rest of its turn', () => {
+    const resolved = apply(delivered(), data, {
+      verb: 'facilitator:resolve-opportunity',
+      payload: { opportunityId: 'o1', effects: [] },
+    }, FACILITATOR, { ts: 2 });
+    expect(resolved.ok).toBe(true);
+
+    const card = mount('cm-opportunity-card');
+    card.data = data;
+    card.view = projectView(resolved.state, data,
+      { kind: 'player', roleId: 'V1', teamId: 'viva_mars' });
+    // Still readable — title and both options — but nothing left to press.
+    expect(card.textContent).toContain('The garrison blinks');
+    expect(card.textContent).toContain('Resolved');
+    expect(card.querySelector('[data-choose]')).toBeNull();
+    expect(card.querySelector('.cm-opportunity').dataset.status).toBe('resolved');
+
+    // A turn later, the moment has passed: the card lets it go.
+    const later = projectView(resolved.state, data,
+      { kind: 'player', roleId: 'V1', teamId: 'viva_mars' });
+    later.phase = { ...later.phase, turn: later.phase.turn + 1 };
+    card.view = later;
+    expect(card.innerHTML).toBe('');
+  });
 });

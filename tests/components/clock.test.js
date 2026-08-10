@@ -1,14 +1,8 @@
 // @vitest-environment jsdom
 import { describe, it, expect, beforeEach } from 'vitest';
-import { loadData } from '../helpers/load-data.js';
-import { createInitialState } from '../../gui/rules/state.js';
-import { projectView } from '../../gui/rules/views.js';
-import { apply } from '../../gui/rules/reducer.js';
 import { formatDuration } from '../../gui/components/cm-phase-clock.js';
 import '../../gui/components/cm-phase-clock.js';
-import '../../gui/components/cm-action-list.js';
 
-const data = await loadData();
 const MINUTE = 60_000;
 
 const mount = (tag) => {
@@ -177,53 +171,5 @@ describe('<cm-phase-clock>', () => {
     expect(formatDuration(0)).toBe('0:00');
     expect(formatDuration(65_000)).toBe('1:05');
     expect(formatDuration(10 * MINUTE)).toBe('10:00');
-  });
-});
-
-describe('<cm-action-list>', () => {
-  /** A seated player, projected, with the game moved to a chosen phase. */
-  function seated(phaseName) {
-    let state = createInitialState({ joinCode: 'MARS42X', seed: 1, data });
-    state.seats.s1 = { id: 's1', token: 't', name: 'A', roleId: 'C1', kind: 'player', connected: true, lastSeen: 0 };
-    state.seats.s9 = { id: 's9', token: 'f', name: 'F', roleId: null, kind: 'facilitator', connected: true, lastSeen: 0 };
-    state.roles.C1.claimedBySeat = 's1';
-    const facilitator = { seatId: 's9', kind: 'facilitator', roleId: null };
-    while (state.phase.name !== phaseName) {
-      state = apply(state, data, { verb: 'facilitator:advance-phase', payload: {} },
-        facilitator, { ts: 0 }).state;
-    }
-    return projectView(state, data, {
-      kind: 'player', seatId: 's1', roleId: 'C1', teamId: 'canopy_corp',
-    });
-  }
-
-  it('never offers a facilitator command to a player', () => {
-    const list = mount('cm-action-list');
-    list.data = data;
-    list.view = seated('team');
-    const verbs = [...list.querySelectorAll('[data-verb]')].map((b) => b.dataset.verb);
-    expect(verbs.some((v) => v.startsWith('facilitator:'))).toBe(false);
-  });
-
-  it('offers the card verbs in a playing phase, with reclaim refused for want of a loan', () => {
-    const list = mount('cm-action-list');
-    list.data = data;
-    list.view = seated('negotiation');
-    const verbs = [...list.querySelectorAll('[data-verb]')].map((b) => b.dataset.verb);
-    expect(verbs).toContain('hand-card');
-    expect(verbs).toContain('discard-card');
-    // Nothing is out on loan in a fresh game, so reclaiming sits under
-    // "Not right now" rather than vanishing — a player who cannot see it
-    // cannot learn that loans come back.
-    expect(list.querySelector('.cm-actions-unavailable [data-verb="reclaim-card"]')).toBeTruthy();
-  });
-
-  it('says the game is over in the epilogue\'s own words', () => {
-    const list = mount('cm-action-list');
-    list.data = data;
-    const view = seated('team');
-    view.phase = { ...view.phase, name: 'epilogue' };
-    list.view = view;
-    expect(list.textContent).toContain('Time has been called');
   });
 });

@@ -43,12 +43,14 @@ messages, and test strings — see the note at the end.
 | #screen-lobby lede | Game {CODE}. {message} |
 | #screen-lobby h2 | Who is here |
 | #start-over button | Not this game — start over |
+| tablist aria-label | Game tabs |
+| static tab labels | News / Opportunities *(faction's live or this-turn-answered only)* / Tithe *(Belt Union only)* / Role |
+| map tab labels | *(the printed map names — gamespec-owned)* ({n}) *(count of action cards placed there this turn)* |
+| news h2 | The news |
+| news tab h2 | Who is here |
 | #tithe h2 | The tithe |
 | #pay-tithe button | Pay the tithe |
-| #placement h2 | Your action card |
-| #action-rail h2 | What you can do |
 | war strip comment target (visible when running) | *(cm-war-progress, see §6)* |
-| #game-main h2 | Who is here |
 
 ## 3. Player page — dynamic (gui/client/player-app.js)
 
@@ -62,11 +64,16 @@ messages, and test strings — see the note at the end.
 | role picker, taken badge | taken |
 | claim error, not connected | Not connected yet — try again in a moment. |
 | dispatch error, not connected | Not connected — try again in a moment. |
+| placement button (per map tab) | Place your action card on {map name} |
 | placement note, placed | On {map name} — you can move it until the phase ends. |
 | placement note, unplaced | Not placed yet. Placement is mandatory — pick a map. |
-| tithe note | The Ambassador is owed {n} card(s) this turn — {paid} paid so far. Any Belt player can pay, in instalments. |
-| all-hands fold summary (index.html) | Everyone's hands |
-| all-hands note (index.html) | *(comment-only; visible text is the summary above)* |
+| news item meta | Turn {n} *(item text is state.news — the read-aloud script or Control's post)* |
+| news empty | Nothing has made the news yet. |
+| briefing headings (Role tab) | Who you are / Your personal goal / {faction name}'s goals |
+| tithe note (payable) | The Ambassador is owed {n} card(s) this turn — {paid} paid so far. Any Belt player can pay, in instalments. |
+| tithe note (outside the window) | The Ambassador is owed {n} card(s) this turn — {paid} paid so far. Payments happen in the Team and Negotiation Phases. |
+| tithe note (paid) | Paid in full this turn — {n} card(s). |
+| tithe note (refused) | This turn's tithe was refused, with {n} paid. |
 
 ## 4. Host page — static (host.html)
 
@@ -271,8 +278,10 @@ messages, and test strings — see the note at the end.
 ### cm-opportunity-card
 | Ref | Text |
 |---|---|
-| lede | An opportunity for {faction name} — talk it over, then vote. Every claimed seat agreeing is consensus. |
+| lede (pending) | An opportunity for {faction name} — talk it over, then vote. Every claimed seat agreeing is consensus. |
+| lede (resolved) | An opportunity for {faction name}. |
 | votes line | Votes: {name} — {A/B}; … **Consensus on {A/B}.** / No consensus yet. |
+| resolved line | Resolved — the facilitator has ruled. |
 
 ### cm-turn-update
 | Ref | Text |
@@ -415,23 +424,20 @@ messages, and test strings — see the note at the end.
 | facilitator:confirm/override-update-step | no such step on the worksheet / that step is already answered / nothing to override — confirm it / movement is whole points / {track} would go negative / that track is gone / the war is no longer running / war progress cannot go below zero |
 | facilitator:finish-turn-update | no update has begun / already finished |
 
-### Verb labels and notes (buttons the action list prints)
-| Verb | Label — note |
+### Verb labels (gui/rules/commands — printed by the replay history; the
+### action list that used to print them retired with the tabbed player page)
+| Verb | Label |
 |---|---|
 | claim-role | Take a lanyard |
-| hand-card | Hand a card to somebody — A loan, not a gift — the owner can always take it back. |
-| reclaim-card | Take a loaned card back — Yours until it is spent, wherever it is. |
-| discard-card | Discard a card — Spent cards go to their owner's discard pile until recovered. |
-| pay-tithe | Pay the tithe — The Belt Union owes the U.N. Ambassador — 1, 1, 2, 2 cards by turn. |
+| hand-card | Hand a card to somebody |
+| reclaim-card | Take a loaned card back |
+| discard-card | Discard a card |
+| pay-tithe | Pay the tithe |
 | choose-opportunity | Vote on your faction's opportunity |
-| place-action-card | Place your action card — Mandatory. On a map, not a place — you say where the story goes when you are called. |
-| recover-discard | Recover a discarded card — One per Negotiation Phase, from your own pile. |
+| place-action-card | Place your action card |
+| recover-discard | Recover a discarded card |
 | declare-action | Declare your action |
 | confirm-ally / decline-ally | Join as an ally / Decline to ally |
-| chooser fields | Which card / To whom / Which map / Which cards / Which card — with {holder} |
-| chooser buttons (action-chooser.js) | Do it / Cancel / nothing available |
-| action list heading (cm-action-list) | Not right now |
-| action list empty | The game has not begun. Take a lanyard and wait to be called on. / Time has been called. Nothing more can be played. / Nothing to do in the {phase} phase — this one is for talking. |
 
 ## 9. Network and persistence (seen in the connection dot, log, or dialogs)
 

@@ -54,7 +54,7 @@ describe('<cm-hand>', () => {
     expect(hand.querySelector('[data-card="rc_v1_1"] .cm-hand-loan-badge')).toBeNull();
   });
 
-  it('raises the three commands from its affordances', () => {
+  it('raises the loan commands from its affordances, with no player discard', () => {
     const hand = mount('cm-hand');
     hand.data = data;
     hand.view = viewFor('C1');
@@ -64,14 +64,16 @@ describe('<cm-hand>', () => {
     const select = hand.querySelector('[data-hand-to="rc_c1_3"]');
     select.value = 'V1';
     select.dispatchEvent(new Event('change'));
-    hand.querySelector('[data-discard="rc_c1_3"]').click();
     hand.querySelector('[data-reclaim="rc_c1_1"]').click();
 
     expect(raised).toEqual([
       { verb: 'hand-card', payload: { cardId: 'rc_c1_3', toCode: 'V1' } },
-      { verb: 'discard-card', payload: { cardId: 'rc_c1_3' } },
       { verb: 'reclaim-card', payload: { cardId: 'rc_c1_1' } },
     ]);
+    // The arbitrary discard retired from the player console: a player's
+    // cards are spent by the flows that spend them (the spotlight's offers,
+    // the tithe). Only the acts-for NPC hands keep the button.
+    expect(hand.querySelector('[data-discard]')).toBeNull();
   });
 
   it('offers nothing to press when readonly', () => {

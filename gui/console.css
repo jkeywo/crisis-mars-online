@@ -2252,26 +2252,6 @@ cm-hand h4 {
   flex-wrap: wrap;
 }
 
-.cm-hands-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-  gap: 1rem;
-  margin: 0.6rem 0;
-}
-
-.cm-hands-entry {
-  background: var(--cm-paper);
-  border: 1px solid var(--cm-rule);
-  border-radius: 6px;
-  padding: 0.5rem 0.7rem;
-}
-
-.cm-hands-entry h3 {
-  margin: 0 0 0.3rem;
-  font-size: 1em;
-  font-family: var(--cm-serif);
-}
-
 .cm-npc-hands {
   background: var(--cm-paper);
   border: 1px solid var(--cm-rule);
@@ -2932,3 +2912,66 @@ cm-board-overlay[readonly] .cm-board-chip-value {
   font: inherit;
   padding: 0.15rem 0.9rem;
 }
+
+/* --------------------------------------------------------------------------
+   The tabbed player console.
+
+   The player shell already pins the brand bar and the war strip by locking
+   the viewport and scrolling .cm-main; inside the game screen the tab strip
+   is a fixed row and only #player-panels scrolls, so the whole header —
+   clock, dot, war rail, tabs — stays put.
+   -------------------------------------------------------------------------- */
+
+.cm-shell-player #player-tabs { flex: none; }
+
+.cm-shell-player #action-error { flex: none; margin: 0.2rem 1.2rem; }
+
+.cm-shell-player #player-panels {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0.8rem 1.2rem;
+}
+
+/* The Role tab: the lanyard and its briefing beside the hand, stacking
+   back into one column below the breakpoint. */
+.cm-role-tab {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 75rem) {
+  .cm-role-tab { grid-template-columns: 1fr; }
+}
+
+.cm-role-tab-lanyard { display: grid; gap: 0.8rem; }
+
+.cm-briefing h4 {
+  margin: 0.6rem 0 0.2rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cm-muted);
+}
+
+.cm-briefing p, .cm-briefing ul { margin: 0 0 0.4rem; }
+
+/* The news feed, newest first. The correspondence script carries its own
+   line breaks, so they are honoured. */
+.cm-news-feed { display: grid; gap: 0.8rem; }
+
+.cm-news-item {
+  background: var(--cm-paper);
+  border: 1px solid var(--cm-rule);
+  border-radius: 6px;
+  padding: 0.5rem 0.8rem;
+}
+
+.cm-news-item p { margin: 0 0 0.2rem; white-space: pre-line; }
+.cm-news-item .cm-meta { margin: 0; }
+
+/* A settled opportunity, kept on screen for the rest of its turn. */
+.cm-opportunity[data-status="resolved"] { opacity: 0.7; }
+.cm-opportunity-option { margin: 0.2rem 0; }

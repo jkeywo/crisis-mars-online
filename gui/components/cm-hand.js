@@ -6,6 +6,11 @@
  * is the affordances: with `readonly` it is a display and nothing else; with
  * `acts-for` set it acts for that role and stamps `roleId` into every payload
  * (the facilitator driving the NPC hands); bare, it acts as the viewer.
+ * The Discard button belongs to `acts-for` alone — spending an NPC card is
+ * the umpire's bookkeeping, while a player's cards leave their hand through
+ * the flows that spend them (the spotlight's offers, the tithe), so the
+ * arbitrary discard was retired from the player console. The verb stays;
+ * see DECISIONS.md.
  *
  * It raises `cm-command` for the page to send and `cm-view-card` for the
  * page's card viewer. It decides nothing — admission does, on the host.
@@ -109,7 +114,8 @@ export class CmHand extends HTMLElement {
                     <option value="">Hand to…</option>
                     ${others.map((c) => `<option value="${escape(c)}">${escape(whoIs(c))}</option>`).join('')}
                   </select>
-                  <button type="button" data-discard="${escape(card.id)}">Discard</button>
+                  ${this.getAttribute('acts-for') ? `
+                  <button type="button" data-discard="${escape(card.id)}">Discard</button>` : ''}
                 </div>`}
             </div>
           </li>`).join('') || '<li class="cm-empty">nothing in hand</li>'}

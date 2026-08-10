@@ -316,6 +316,58 @@ price of letting the moment pass in their own words. A template is a
 draft, not a delivery; every field stays editable and Deliver is still
 the only send.
 
+## 2026-08-10 — The tabbed player console (author's ruling)
+
+**The tabs, and what counts.** Earth / Mars / Asteroid Belt / News /
+Opportunities / Tithe / Role, under the same pinned-header bargain as the
+host: the brand bar, war strip and tab strip never move, only the panel
+scrolls. A map tab's "(n)" is read as the count of action cards placed on
+that map this turn — the thing a player weighing a placement wants to
+know — and resets with the turn because placements do. The strip lives in
+memory, not the hash: the player page's hash already carries the join
+code.
+
+**Map tabs mount cm-board-overlay readonly**, the same component the host
+edits through, with that map's call order and spotlight below it and the
+per-map placement button during the Negotiation Phase ("Place your action
+card on {map}"). cm-map-board now serves the replay page alone.
+
+**The Opportunities tab exists only while it matters:** the faction has a
+pending record, or one whose resolvedTurn is the current turn — the
+answered moment stays readable, settled and dimmed, until the turn ends.
+The Tithe tab exists for the three Belt Union lanyards and nobody else,
+and stays up between payment windows showing where the debt stands; the
+tab disappearing and reappearing within a turn would read as a bug.
+
+**Role holds the hand.** The author asked Role to "include the existing
+card interface"; with the side rails gone the hand sits beside the
+lanyard and the briefing text (background, personal goal, the faction's
+four goals — the flip-card's back, printed in the open because a goal you
+squint at is a goal you play wrong). The in-game "Who is here" roster
+moved to the News tab — the room's tab.
+
+**"Everyone's hands" is gone as UI only.** Card state visibility is
+unchanged — hands remain PUBLIC in the manifest, exactly as the paper
+game plays cards face up; there is simply no grid rendering the
+neighbours' cards any more.
+
+**The action list retired only after every player verb was rehomed:**
+place-action-card = the map tabs; declare-action, confirm-ally,
+decline-ally = the spotlight; hand-card, reclaim-card, recover-discard =
+the hand; choose-opportunity = the Opportunities tab; pay-tithe = the
+Tithe tab; claim-role = the lobby grid. cm-action-list and
+action-chooser.js are deleted; the command specs keep their labels (the
+replay history prints them) and their fields (the admission probes walk
+them).
+
+**discard-card stays a verb, loses its player button.** No remaining
+player flow needs an arbitrary discard — the spotlight's accepted offers
+and the tithe spend cards through their own paths — but the facilitator
+drives the NPC hands through the same player verbs, and spending an NPC
+card mid-roleplay IS an arbitrary discard. So the button now renders only
+on an `acts-for` hand, and the verb stands for players too: a legal,
+harmless act nobody is invited to.
+
 ## HTTPS enforcement lives at Cloudflare, not GitHub (2026-08-10, coordinator)
 
 crisis-mars-online.kiwigamedesign.co.uk resolves to Cloudflare's proxy, so
