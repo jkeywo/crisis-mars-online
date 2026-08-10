@@ -120,8 +120,15 @@ describe('opportunities', () => {
       ['canopy', { kind: 'player', roleId: 'C1', teamId: 'canopy_corp' }],
       ['spectator', { kind: 'spectator', roleId: null, teamId: null }],
     ]) {
-      expect(JSON.stringify(projectView(state, data, viewer)), name)
-        .not.toContain('SECRET::opportunity');
+      const seen = projectView(state, data, viewer);
+      expect(JSON.stringify(seen), name).not.toContain('SECRET::opportunity');
+      // That it exists, whose it is and where it stands is public — the
+      // worksheet already says as much — so the pump can announce it.
+      expect(seen.opportunities.o1, name).toMatchObject({
+        id: 'o1', status: 'pending', factionId: 'viva_mars',
+      });
+      expect(seen.opportunities.o1.title, name).toBeUndefined();
+      expect(seen.opportunities.o1.choice, name).toBeUndefined();
     }
     expect(JSON.stringify(projectView(state, data, { kind: 'facilitator' })))
       .toContain('SECRET::opportunity.title');
@@ -140,8 +147,11 @@ describe('opportunities', () => {
       { kind: 'player', roleId: 'V1', teamId: 'viva_mars' },
       { kind: 'spectator', roleId: null, teamId: null },
     ]) {
-      expect(JSON.stringify(projectView(state, data, viewer)))
-        .not.toContain('SECRET::npc.opportunity');
+      const seen = projectView(state, data, viewer);
+      expect(JSON.stringify(seen)).not.toContain('SECRET::npc.opportunity');
+      // Existence and target are public here too; the content is not.
+      expect(seen.opportunities.o1).toMatchObject({ npcCode: 'N1', status: 'pending' });
+      expect(seen.opportunities.o1.optionA).toBeUndefined();
     }
     expect(JSON.stringify(projectView(state, data, { kind: 'facilitator' })))
       .toContain('SECRET::npc.opportunity');

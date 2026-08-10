@@ -25,8 +25,11 @@ export class CmOpportunityCard extends HTMLElement {
 
   _render() {
     if (!this.isConnected || !this._data || !this._view) return;
+    // A record's existence and status are public; its words are the
+    // faction's. Render only the ones whose words arrived — which is
+    // exactly the viewer's own faction's, by redaction.
     const pending = Object.values(this._view.opportunities ?? {})
-      .filter((record) => record.status === 'pending');
+      .filter((record) => record.status === 'pending' && record.title !== undefined);
     if (!pending.length) { this.innerHTML = ''; return; }
 
     this.innerHTML = pending.map((record) => `

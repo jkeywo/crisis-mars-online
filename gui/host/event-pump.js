@@ -87,7 +87,7 @@ export function pumpUrlFrom(location) {
  * and never branch on it themselves.
  */
 export function eventPumpFor({
-  location, now, onLog,
+  location, now, onLog, data = null,
   WebSocketImpl = globalThis.WebSocket,
   fetchImpl = globalThis.fetch,
 } = {}) {
@@ -101,7 +101,7 @@ export function eventPumpFor({
   // Said out loud on the console. A facilitator who turned this on should be
   // able to see that it is on, and one who did not should never see this line.
   onLog?.(`[events] streaming to ${url.href}`);
-  return new EventPump({ url, now, onLog, WebSocketImpl, fetchImpl });
+  return new EventPump({ url, now, onLog, data, WebSocketImpl, fetchImpl });
 }
 
 export class EventPump {
@@ -109,10 +109,13 @@ export class EventPump {
    * @param {object} args
    * @param {URL} args.url  already parsed and scheme-checked
    */
-  constructor({ url, now = () => Date.now(), onLog, WebSocketImpl, fetchImpl }) {
+  constructor({ url, now = () => Date.now(), onLog, data = null, WebSocketImpl, fetchImpl }) {
     this.url = url.href;
     this.mode = WS_PROTOCOLS.has(url.protocol) ? 'websocket' : 'http';
     this._now = now;
+    // The static dataset, for the band label on action.closed. Optional:
+    // without it the digest simply carries null bands.
+    this._data = data;
     this._log = onLog ?? (() => {});
     this._WebSocket = WebSocketImpl;
     this._fetch = fetchImpl;
@@ -144,7 +147,7 @@ export class EventPump {
   observe(view) {
     if (this._closed) return 0;
     try {
-      const next = publicDigest(view);
+      const next = publicDigest(view, this._data);
       const events = deriveEvents(this._last, next);
       this._last = next;
       if (events.length === 0) return 0;

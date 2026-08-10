@@ -67,8 +67,9 @@ describe('<cm-opportunity-card>', () => {
     expect(card.querySelector('[data-choose="o1|B"]').getAttribute('aria-pressed')).toBe('true');
     expect(card.textContent).toContain('Recorded: option B');
 
-    // A Canopy player's projection simply has no record — redaction, not
-    // component politeness — so the card renders empty.
+    // A Canopy player's projection carries the record's existence but none
+    // of its words — redaction, not component politeness — so the card
+    // renders nothing it cannot read.
     const other = mount('cm-opportunity-card');
     other.data = data;
     other.view = projectView(chosen.state, data,

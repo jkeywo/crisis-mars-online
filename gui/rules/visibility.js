@@ -100,10 +100,19 @@ export const FIELD_VISIBILITY = [
   // the whole room heard it read. The text lives in facilitator data and is
   // never state.
   { path: 'correspondence.**', audience: PUBLIC },
-  // An opportunity is a faction's own moment: the trigger fired for them,
-  // the two options are theirs to weigh, and the other factions finding out
-  // is what the Negotiation Phase is for. NPC-targeted records answer null
-  // here and so reach only the facilitator.
+  // An opportunity's CONTENT is the faction's own moment: the title, the two
+  // options, the choice being weighed. That it EXISTS is not a secret — the
+  // end-of-turn worksheet already proposes deliveries in public, because the
+  // triggers are arithmetic over public tracks — so the record's identity and
+  // status are public (which is also what lets the event pump announce a
+  // resolution), while everything else stays faction-scoped. NPC-targeted
+  // records answer null on the faction and so keep even their content to the
+  // facilitator.
+  { path: 'opportunities.*.id', audience: PUBLIC },
+  { path: 'opportunities.*.turn', audience: PUBLIC },
+  { path: 'opportunities.*.status', audience: PUBLIC },
+  { path: 'opportunities.*.factionId', audience: PUBLIC },
+  { path: 'opportunities.*.npcCode', audience: PUBLIC },
   {
     path: 'opportunities.**',
     audience: TEAM,

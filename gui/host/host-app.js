@@ -68,7 +68,7 @@ export async function startHostApp({ location = window.location, beeper = create
   // of the integration's off-switch. Built once per tab rather than per game,
   // because it is a property of how this console was launched and not of the
   // game it happens to be running.
-  const pump = eventPumpFor({ location, onLog: (line) => appendLog(line) });
+  const pump = eventPumpFor({ location, data, onLog: (line) => appendLog(line) });
 
   // Fixed for the whole game, so it is written once rather than on every
   // projection. Empty in this phase — the first real gaps arrive with the
