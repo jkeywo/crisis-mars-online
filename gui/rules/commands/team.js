@@ -112,6 +112,37 @@ export const TEAM_COMMANDS = {
       }
       draft.correspondence[`t${turn}`] = 'published';
       applyEffects(draft, ctx.cmd.payload.effects ?? []);
+      // Publishing IS the players' copy now: the read-aloud text travels in
+      // the payload (the rules never read the facilitator file) and lands
+      // on the public feed for the News tab to render.
+      if (typeof ctx.cmd.payload.text === 'string' && ctx.cmd.payload.text.trim()) {
+        draft.news.push({
+          turn, ts: ctx.now, kind: 'correspondence', text: ctx.cmd.payload.text.trim(),
+        });
+      }
+    },
+  },
+
+  /**
+   * Anything else the room should read: a made-the-news action, a rumour
+   * Control wants circulating, a correction. Public, append-only, on the
+   * same feed the correspondence lands on.
+   */
+  'facilitator:post-news': {
+    phases: '*',
+    actor: 'facilitator',
+    admit(ctx) {
+      const { text } = ctx.cmd.payload ?? {};
+      if (typeof text !== 'string' || !text.trim()) return no('write the news');
+      return ok();
+    },
+    effects(draft, ctx) {
+      draft.news.push({
+        turn: draft.phase.turn,
+        ts: ctx.now,
+        kind: 'posted',
+        text: ctx.cmd.payload.text.trim(),
+      });
     },
   },
 

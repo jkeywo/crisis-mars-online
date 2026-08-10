@@ -68,6 +68,45 @@ describe('the war correspondence', () => {
     expect(rebuilt.maps).toEqual(state.maps);
   });
 
+  it('lands the read-aloud words on the public feed when it publishes', () => {
+    // The rules never read the facilitator file: the text travels in the
+    // payload, exactly as the host console submits it, and every seat —
+    // spectators included — can read the feed.
+    let state = teamPhase(2);
+    state = run(state, [[FACILITATOR, 'facilitator:publish-correspondence',
+      { turn: 2, effects: [], text: t2.readAloud }]]);
+    expect(state.news).toHaveLength(1);
+    expect(state.news[0]).toMatchObject({ turn: 2, kind: 'correspondence' });
+    expect(state.news[0].text).toContain('declares war');
+
+    const spectator = projectView(state, data,
+      { kind: 'spectator', roleId: null, teamId: null });
+    expect(spectator.news[0].text).toContain('declares war');
+
+    // A skip publishes nothing to read.
+    let skipped = teamPhase(3);
+    skipped = run(skipped, [[FACILITATOR, 'facilitator:publish-correspondence',
+      { turn: 3, skip: true }]]);
+    expect(skipped.news).toEqual([]);
+  });
+
+  it('lets Control post the news directly, replayably', () => {
+    let state = teamPhase(1);
+    state = run(state, [
+      [FACILITATOR, 'facilitator:post-news', { text: 'The docks are burning.' }],
+      [FACILITATOR, 'facilitator:post-news', { text: '  A correction: one dock.  ' }],
+    ]);
+    expect(state.news.map((entry) => entry.text))
+      .toEqual(['The docks are burning.', 'A correction: one dock.']);
+    expect(state.news[0]).toMatchObject({ turn: 1, kind: 'posted' });
+    expect(admit(state, data, {
+      verb: 'facilitator:post-news', payload: { text: '   ' },
+    }, FACILITATOR).reason).toContain('write the news');
+    const { state: rebuilt, refused } = replay(toSave(state), data);
+    expect(refused).toEqual([]);
+    expect(rebuilt.news).toEqual(state.news);
+  });
+
   it('refuses publishing the same turn twice', () => {
     let state = teamPhase(1);
     state = run(state, [[FACILITATOR, 'facilitator:publish-correspondence',

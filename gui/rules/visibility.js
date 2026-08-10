@@ -124,6 +124,9 @@ export const FIELD_VISIBILITY = [
   },
   // The tithe is paid, or refused, in front of the whole table.
   { path: 'tithe.**', audience: PUBLIC },
+  // The news is news: published correspondence and Control's posts exist to
+  // be read by everyone.
+  { path: 'news.**', audience: PUBLIC },
   // The end-of-turn worksheet is arithmetic over public tracks and printed
   // rules — any player could compute every line of it, so hiding it would
   // be theatre. What an opportunity SAYS stays scoped; that one is proposed

@@ -524,7 +524,10 @@ export async function startHostApp({ location = window.location, beeper = create
     const publish = $('correspondence-card').querySelector('[data-publish]');
     if (publish) {
       publish.onclick = () => asFacilitator('facilitator:publish-correspondence', {
-        turn, effects: entry.effects.map((e) => ({ ...e })),
+        turn,
+        effects: entry.effects.map((e) => ({ ...e })),
+        // The read-aloud text rides along, onto the public news feed.
+        text: entry.readAloud ?? '',
       });
     }
     const skip = $('correspondence-card').querySelector('[data-skip-news]');
@@ -656,6 +659,13 @@ export async function startHostApp({ location = window.location, beeper = create
       };
     }
   }
+
+  $('post-news').addEventListener('click', () => {
+    const text = $('news-text').value;
+    if (!text.trim()) return;
+    asFacilitator('facilitator:post-news', { text });
+    $('news-text').value = '';
+  });
 
   function renderTitheTracker(state) {
     const owed = titheOwed(state.phase.turn);

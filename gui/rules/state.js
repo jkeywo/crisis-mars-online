@@ -169,6 +169,9 @@ export function createInitialState({ joinCode, seed, data, playerCount, rosterCo
     // The turn's tithe: the Belt Union owes the U.N. Ambassador. One payment
     // per turn, or one refusal; reset by advance-phase on rollover.
     tithe: { paidCardIds: [], refused: false },
+    // The public news feed: published war correspondence and anything the
+    // facilitator posts. Append-only, newest read first by the consoles.
+    news: [],
     // The end-of-turn worksheet: null until facilitator:begin-turn-update
     // computes this turn's proposals into it; cleared by the rollover.
     turnUpdate: null,
