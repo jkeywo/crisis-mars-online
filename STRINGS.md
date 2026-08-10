@@ -142,7 +142,8 @@ messages, and test strings — see the note at the end.
 | role grid, away | {player name} — away |
 | correspondence card | *(read-aloud and note text come from events.json — gamespec-owned)* effect lines: {track}: set to {n} / {track}: {±n}; Already {published/skipped}. ; buttons: Publish / Skip it ; no-script line: Nothing scripted to read this turn. |
 | composer labels | Trigger / Free-form / For / U.N. Ambassador (you) / Senate Speaker (you) / Title / Option A / Option B / Deliver it |
-| composer guidance | {principle} e.g. {first example} *(text gamespec-owned)* |
+| composer guidance | {principle} *(text gamespec-owned)* |
+| composer templates | *(buttons — each the trigger's guide example sentence verbatim, gamespec-owned; a click drafts title + Option A from it)* |
 | opportunity list empty | None delivered yet. |
 | opportunity row status | — CONSENSUS on {A/B} ({n} claimed) / — {code}:{A} …, no consensus of {n} claimed / — no votes yet |
 | opportunity resolve controls | Track… / +/- placeholder / Add / Resolve |

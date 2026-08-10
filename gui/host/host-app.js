@@ -550,6 +550,7 @@ export async function startHostApp({ location = window.location, beeper = create
         </select>
       </label>
       <p id="op-guidance" class="cm-meta"></p>
+      <div id="op-templates" class="cm-op-templates"></div>
       <label>For
         <select id="op-target">
           ${Object.entries(data.factions.factions).map(([id, f]) =>
@@ -566,8 +567,23 @@ export async function startHostApp({ location = window.location, beeper = create
     const guidanceFor = () => {
       const picked = $('op-trigger').value;
       const guide = events.opportunityGuidance.find((g) => picked.startsWith(g.trigger));
-      $('op-guidance').textContent = guide
-        ? guide.principle + ' e.g. ' + guide.examples[0] : '';
+      $('op-guidance').textContent = guide ? guide.principle : '';
+      // The guide's example sentences, each a one-click template. A click
+      // copies the sentence into the draft — the fiction clause before the
+      // dash becomes the title, the mechanics after it become Option A, and
+      // Option B stays the facilitator's to write (usually the price of
+      // letting the moment pass). A draft, not a delivery: every field is
+      // still theirs to edit. See DECISIONS.md.
+      $('op-templates').innerHTML = (guide?.examples ?? []).map((example, i) => `
+        <button type="button" data-template="${i}">${escape(example)}</button>`).join('');
+      for (const button of $('op-templates').querySelectorAll('[data-template]')) {
+        button.onclick = () => {
+          const sentence = guide.examples[Number(button.dataset.template)];
+          const [fiction, mechanics] = sentence.split(/\s+--\s+(.*)/s);
+          $('op-title').value = fiction.replace(/[.\s]+$/, '');
+          $('op-a').value = mechanics ?? '';
+        };
+      }
     };
     $('op-trigger').onchange = guidanceFor;
     guidanceFor();

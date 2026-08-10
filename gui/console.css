@@ -2544,6 +2544,18 @@ cm-initiative-queue { display: block; }
 
 #opportunity-composer input { width: 100%; }
 
+/* The chosen trigger's guide examples, each a one-click template into the
+   draft. Sentences, so they read as prose on a button: left-aligned and
+   allowed to wrap. */
+.cm-op-templates { display: grid; gap: 0.25rem; }
+
+.cm-op-templates button {
+  text-align: left;
+  font-size: 0.8rem;
+  white-space: normal;
+  line-height: 1.35;
+}
+
 .cm-opportunity-row[data-status="resolved"] { opacity: 0.65; }
 
 .cm-tithe { border-color: var(--cm-amber); }

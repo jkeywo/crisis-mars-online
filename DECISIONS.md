@@ -303,6 +303,19 @@ is hereby superseded. The component file, its CSS and its STRINGS rows are
 gone; the facilitator:set / facilitator:adjust verbs it drove are untouched
 and remain the pencil under every chip.
 
+## 2026-08-10 — Opportunity templates split at the printed dash
+
+The composer now shelves the chosen trigger's guide examples as one-click
+templates (author's ruling). The split is the guide's own punctuation:
+every example sentence reads "fiction — mechanics" around a ` -- `, so a
+click puts the clause before the dash in the Title (trailing period
+dropped) and the clause after it in Option A, verbatim. Option B is left
+empty on purpose: the guide never writes the alternative, and prefilling
+one would be the app inventing rules text — the facilitator writes the
+price of letting the moment pass in their own words. A template is a
+draft, not a delivery; every field stays editable and Deliver is still
+the only send.
+
 ## HTTPS enforcement lives at Cloudflare, not GitHub (2026-08-10, coordinator)
 
 crisis-mars-online.kiwigamedesign.co.uk resolves to Cloudflare's proxy, so

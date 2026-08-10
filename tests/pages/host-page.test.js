@@ -42,6 +42,29 @@ describe('host.html boots', () => {
     expect($('op-deliver').textContent).toContain('Deliver');
   });
 
+  it('offers the trigger\'s guide examples as one-click templates', () => {
+    // Free-form: no trigger, no templates.
+    expect($('op-templates').children).toHaveLength(0);
+
+    $('op-trigger').value = 'war_support_high';
+    $('op-trigger').dispatchEvent(new Event('change'));
+    const templates = [...$('op-templates').querySelectorAll('[data-template]')];
+    expect(templates.length).toBeGreaterThanOrEqual(4);
+
+    // A click copies the sentence into the draft: fiction to the title,
+    // mechanics to Option A, Option B left for the facilitator to write.
+    templates[0].click();
+    expect($('op-title').value).toBe('Convert a moon base into a military facility');
+    expect($('op-a').value)
+      .toBe('move Luna Prosperity to Earth Gov Military.');
+    expect($('op-b').value).toBe('');
+
+    // Back to free-form clears the shelf.
+    $('op-trigger').value = '';
+    $('op-trigger').dispatchEvent(new Event('change'));
+    expect($('op-templates').children).toHaveLength(0);
+  });
+
   it('filled the NPC briefs from the facilitator file', () => {
     for (const id of ['npc-brief-n1', 'npc-brief-n2']) {
       expect($(id).textContent.length).toBeGreaterThan(40);
