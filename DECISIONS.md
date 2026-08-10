@@ -275,3 +275,15 @@ reveals a reload banner when a script/stylesheet fails to load, when the app
 module rejects, or when boot has not completed within six seconds; and boot
 completion is signalled via `document.body.dataset.booted` by the page
 module. A hard refresh was always the cure; now the page says so itself.
+
+## HTTPS enforcement lives at Cloudflare, not GitHub (2026-08-10, coordinator)
+
+crisis-mars-online.kiwigamedesign.co.uk resolves to Cloudflare's proxy, so
+TLS terminates at Cloudflare's edge and GitHub can never provision its own
+certificate for the domain -- its https_enforced flag will stay false
+forever and chasing it is wasted API calls. HTTPS already works via
+Cloudflare's cert. The http-to-https redirect is currently OFF at the edge
+(plain http serves 200): flipping it is one toggle in the author's
+Cloudflare dashboard -- SSL/TLS > Edge Certificates > "Always Use HTTPS" --
+and "Full" SSL mode is the right companion so the Cloudflare-to-GitHub hop
+is encrypted too. Both are account settings only the author can reach.
