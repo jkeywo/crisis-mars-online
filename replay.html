@@ -65,9 +65,13 @@
           <ol id="history" class="cm-replay-history"></ol>
         </aside>
 
-        <!-- all three maps' tracks together: the whole war at once -->
+        <!-- all three boards together: the whole war at once -->
         <div class="cm-replay-main">
-          <div id="boards" class="cm-boards"></div>
+          <cm-war-progress id="replay-war"></cm-war-progress>
+          <div id="boards" class="cm-boards-lanes"></div>
+          <h2>The actions</h2>
+          <p class="cm-meta">Every spotlight up to the cursor, as it was told.</p>
+          <ol id="replay-actions" class="cm-replay-actions"></ol>
         </div>
 
         <aside class="cm-rail cm-replay-side">

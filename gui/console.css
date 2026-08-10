@@ -2798,3 +2798,25 @@ cm-initiative-queue { display: block; }
   border-bottom: 1px dashed var(--cm-rule);
   padding-bottom: 0.25rem;
 }
+
+
+/* --- the replay's action record (Phase B8) ---------------------------------- */
+
+.cm-replay-actions {
+  list-style: none;
+  margin: 0.4rem 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.cm-replay-actions li {
+  border-left: 3px solid var(--cm-rule);
+  padding-left: 0.6rem;
+  display: grid;
+  gap: 0.1rem;
+}
+
+.cm-replay-actions li[data-status="closed"] { border-left-color: var(--cm-green); }
+
+.cm-replay-actions li[data-status="skipped"] { opacity: 0.55; }

@@ -25,7 +25,10 @@ import { Persistence, parseSave } from '../host/persistence.js';
 import { ReplayCursor } from '../rules/replay-cursor.js';
 import { projectView } from '../rules/views.js';
 import { labelFor } from '../rules/commands.js';
+import { actionImpact, bandFor } from '../rules/derive.js';
 import { loadData } from './load-data.js';
+import '../components/cm-map-board.js';
+import '../components/cm-war-progress.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -123,24 +126,37 @@ export async function startReplayApp() {
   // --- the boards -----------------------------------------------------------
 
   /**
-   * Three maps' tracks as three tables, plus the War Progress marker.
-   *
-   * Plain rows rather than artwork, in this phase: the replay's whole claim
-   * is fidelity to the reducer, not to the printed sheets, and a table cannot
-   * disagree with the state it prints.
+   * The same boards the consoles draw, plus the war rail — scrubbing is
+   * watching the real components react, delta flashes and all — and the
+   * spotlight record up to wherever the cursor stands.
    */
+  let boardsBuilt = false;
   function renderBoards(view) {
-    $('boards').innerHTML = Object.entries(view.maps ?? {}).map(([mapId, board]) => `
-      <figure class="cm-board">
-        <figcaption>${escape(data.maps.maps[mapId]?.name ?? mapId)}</figcaption>
-        <table class="cm-tracks">
-          ${Object.entries(board.tracks).map(([trackId, value]) => `
-            <tr><th>${escape(data.maps.tracks[trackId]?.name ?? trackId)}</th>
-                <td>${value}</td></tr>`).join('')}
-        </table>
-      </figure>`).join('')
-      + `<p class="cm-meta">War Progress: ${view.warProgress === null
-        ? 'not active' : view.warProgress}</p>`;
+    if (!boardsBuilt) {
+      boardsBuilt = true;
+      for (const mapId of Object.keys(data.maps.maps)) {
+        const board = document.createElement('cm-map-board');
+        board.setAttribute('map', mapId);
+        $('boards').append(board);
+      }
+    }
+    $('replay-war').data = data;
+    $('replay-war').view = view;
+    for (const board of $('boards').children) {
+      board.data = data;
+      board.view = view;
+    }
+
+    const told = Object.values(view.actions ?? {}).sort((a, b) => a.seq - b.seq);
+    $('replay-actions').innerHTML = told.map((action) => `
+      <li data-status="${escape(action.status)}">
+        <strong>#${action.seq} ${escape(nameOf(action.actorCode))}</strong>
+        <span class="cm-meta">${escape(data.maps.maps[action.mapId]?.name ?? action.mapId)}
+          · ${escape(action.status)}${action.status === 'closed'
+    ? ` · ${escape(bandFor(actionImpact(view, data, action), data)?.label ?? '')}` : ''}</span>
+        ${action.declaration ? `<em>${escape(action.declaration)}</em>` : ''}
+        ${action.narration ? `<span>${escape(action.narration)}</span>` : ''}
+      </li>`).join('') || '<li class="cm-empty">Nothing has been called yet.</li>';
   }
 
   // --- the history ----------------------------------------------------------
