@@ -156,7 +156,7 @@ describe('<cm-action-spotlight>', () => {
     let state = run(actionPhase(),
       [[FACILITATOR, 'facilitator:call-next', { mapId: 'earth_map' }]]);
     const actor = state.actions.a1.actorCode;
-    const ally = state.initiative.queues.mars_map[0];
+    const ally = state.initiative.queues.earth_map[0];   // same map, next up
     state = run(state, [[asPlayer(actor), 'declare-action',
       { actionId: 'a1', text: 'together', allyCodes: [ally], cardIds: [] }]]);
 

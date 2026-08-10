@@ -92,6 +92,50 @@ export const ACTION_COMMANDS = {
   },
 
   /**
+   * Place a player's action card for them — before, during or after the
+   * Negotiation Phase.
+   *
+   * The author's ruling on the unplaced: a player who never placed cannot
+   * act, and this is the door back in. Used mid-Action-Phase it appends
+   * them to the BACK of the chosen map's queue — the turn order already
+   * ran without them, so the back is where they join it.
+   */
+  'facilitator:assign-action-card': {
+    phases: '*',
+    actor: 'facilitator',
+    admit(ctx) {
+      const { code, mapId } = ctx.cmd.payload ?? {};
+      const card = ctx.state.actionCards[code];
+      if (!card) return no(`${roleName(ctx.data, code)} has no action card`);
+      if (card.spent) return no('their action is already spent this turn');
+      if (!ctx.state.maps[mapId]) return no('no such map');
+      const initiative = ctx.state.initiative;
+      if (initiative.queues[mapId]) {
+        for (const done of Object.values(initiative.done)) {
+          if (done.includes(code)) return no('they have already been called this turn');
+        }
+        for (const openId of Object.values(initiative.current)) {
+          if (openId && ctx.state.actions[openId]?.actorCode === code) {
+            return no('their spotlight is open right now');
+          }
+        }
+      }
+      return ok();
+    },
+    effects(draft, ctx) {
+      const { code, mapId } = ctx.cmd.payload;
+      draft.actionCards[code].placed = mapId;
+      if (!draft.initiative.queues[mapId]) return;
+      draft.initiative.unplaced = draft.initiative.unplaced.filter((c) => c !== code);
+      for (const queue of Object.values(draft.initiative.queues)) {
+        const at = queue.indexOf(code);
+        if (at !== -1) queue.splice(at, 1);
+      }
+      draft.initiative.queues[mapId].push(code);
+    },
+  },
+
+  /**
    * The actor says what they are doing, and with what.
    *
    * Re-declarable while the facilitator has not started ruling: the fiction
@@ -111,13 +155,25 @@ export const ACTION_COMMANDS = {
         return no('the facilitator has started ruling — talk to them');
       }
 
+      // The author's ruling: an ally is somebody at the SAME map whose
+      // action has not yet been resolved — later in this queue, unspent,
+      // unskipped. There is no advance declaration; the invitation happens
+      // when the action is called, which is here.
       const allyCodes = cmd.payload?.allyCodes ?? [];
       for (const code of allyCodes) {
         if (code === subject) return no('you cannot be your own ally');
         if (!state.roles[code] || state.roles[code].npc) {
           return no(`${roleName(data, code)} cannot be an ally`);
         }
-        if (!state.actionCards[code]) return no(`${roleName(data, code)} has no action card`);
+        const allyCard = state.actionCards[code];
+        if (!allyCard) return no(`${roleName(data, code)} has no action card`);
+        if (allyCard.placed !== action.mapId) {
+          return no(`${roleName(data, code)} is not at this map — allies act where their card sits`);
+        }
+        if (allyCard.spent) return no(`${roleName(data, code)} has already acted this turn`);
+        if (state.initiative.done[action.mapId]?.includes(code)) {
+          return no(`${roleName(data, code)} has already been called`);
+        }
       }
 
       const cardIds = cmd.payload?.cardIds ?? [];
@@ -175,8 +231,13 @@ export const ACTION_COMMANDS = {
       if (['closed', 'skipped'].includes(action.status)) return no('that action is over');
       if (action.allies[subject] !== 'invited') return no('you have not been asked');
       const card = state.actionCards[subject];
-      if (!card?.placed) return no('an ally needs a placed action card');
+      if (card?.placed !== action.mapId) {
+        return no('your action card is not at this map — allies act where their card sits');
+      }
       if (card.spent) return no('your action is already spent this turn');
+      if (state.initiative.done[action.mapId]?.includes(subject)) {
+        return no('you have already been called this turn');
+      }
       return ok();
     },
     effects(draft, ctx) {
@@ -460,9 +521,16 @@ export const ACTION_COMMANDS = {
       const confirmed = confirmedAllies(action);
 
       // The actor's and every confirmed ally's action cards are spent — that
-      // is the printed price of acting and of allying.
+      // is the printed price of acting and of allying — and a spent ally is
+      // struck from the queue they were waiting in: they have had their
+      // action, with this one, and the call must never reach them again.
       draft.actionCards[action.actorCode].spent = true;
-      for (const code of confirmed) draft.actionCards[code].spent = true;
+      for (const code of confirmed) {
+        draft.actionCards[code].spent = true;
+        const queue = draft.initiative.queues[action.mapId];
+        const at = queue.indexOf(code);
+        if (at !== -1) queue.splice(at, 1);
+      }
 
       // Accepted cards are spent where they stand; the discard pile is the
       // owner's by definition, so no card needs moving to reach it.
@@ -492,7 +560,10 @@ export const ACTION_COMMANDS = {
 
       action.status = 'closed';
       action.endsAt = null;
+      // The actor enters the record first, then the allies struck with them
+      // — the order the room heard it.
       draft.initiative.done[action.mapId].push(action.actorCode);
+      for (const code of confirmed) draft.initiative.done[action.mapId].push(code);
       draft.initiative.current[action.mapId] = null;
     },
   },

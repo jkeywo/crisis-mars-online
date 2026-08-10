@@ -14,11 +14,19 @@
  * This is not for rules the app enforces because they are printed. It is for
  * the gaps.
  *
- * @type {{id: string, about: string, silent: string, ruling: string, because: string}[]}
+ * On 2026-08-10 the author reviewed this ledger and ruled on every entry.
+ * A ruled entry carries `status: 'author-ruled'` and its ruling text is the
+ * author's — settled behaviour now, kept here with its printed citation so
+ * the reasoning survives.
+ *
+ * @type {{id: string, about: string, silent: string, ruling: string,
+ *   because: string, status?: string, ruledOn?: string}[]}
  */
 export const KNOWN_GAPS = [
   {
     id: 'action-card-map-anchor',
+    status: 'author-ruled',
+    ruledOn: '2026-08-10',
     about: 'Where a placed action card sits',
     silent:
       'The handbook says an action card is placed "on a map" during the '
@@ -35,35 +43,42 @@ export const KNOWN_GAPS = [
   },
   {
     id: 'unplaced-players-at-action',
+    status: 'author-ruled',
+    ruledOn: '2026-08-10',
     about: 'A player with no placed action card when the Action Phase opens',
     silent:
       'The handbook makes placing an action card in the Negotiation Phase '
       + 'mandatory, and never says what happens to a player who somehow did '
       + 'not — dropped, distracted, or mid-reconnect when the phase turned.',
     ruling:
-      'They join no queue. The app lists them in an unplaced bucket the '
-      + 'facilitator can see, and never invents a placement for them.',
+      'They join no queue and cannot act — but the facilitator may place '
+      + 'for them at any moment (facilitator:assign-action-card), and a '
+      + 'mid-Action-Phase assignment joins the back of that map\u2019s queue.',
     because:
-      'A mandate is not a crash barrier. Auto-placing them somewhere would '
-      + 'be the app deciding where their story goes, and dropping them '
-      + 'silently would lose a player. Listing them hands the judgement to '
-      + 'the person the game trusts with judgement.',
+      'The author\u2019s ruling. A mandate is not a crash barrier, and the '
+      + 'app never invents a placement — but the person the game trusts '
+      + 'with judgement gets a one-click door back in for the player who '
+      + 'was mid-reconnect when the phase turned.',
   },
   {
     id: 'ally-card-any-map',
+    status: 'author-ruled',
+    ruledOn: '2026-08-10',
     about: 'Where an ally\u2019s action card may sit',
     silent:
       'The ally rule reads "an ally spends their own action with yours: +1 '
       + 'impact and +1 to the resource limit. Bring them with you when '
       + 'called" — and never says whether their card must sit on the same map.',
     ruling:
-      'Any map. Confirming as an ally spends the card wherever it was '
-      + 'placed; the ally simply never gets called at their own map.',
+      'The same map, and only there. When an action is called the actor may '
+      + 'invite players whose cards sit at that map and whose actions are '
+      + 'still unresolved; joining spends their action, and the queue '
+      + 'strikes them. Nothing is declared in advance.',
     because:
-      '"Bring them with you" reads as bodies at a table, not tokens on a '
-      + 'board — and requiring same-map placement would make allying nearly '
-      + 'impossible to plan during a Negotiation Phase in which placements '
-      + 'move until the clock runs out.',
+      'The author\u2019s ruling, reversing the build\u2019s first reading. '
+      + 'Placement is the commitment: where your card sits is where your '
+      + 'action happens, allies included — which makes the Negotiation '
+      + 'Phase\u2019s map choice mean something for the whole table.',
   },
   {
     id: 'score-modifier-total-budget',
@@ -193,6 +208,8 @@ export const KNOWN_GAPS = [
   },
   {
     id: 'surrender-is-a-flag',
+    status: 'author-ruled',
+    ruledOn: '2026-08-10',
     about: 'War Progress reaching a surrender boundary',
     silent:
       'The print says 0 means Earth surrenders and 20 or more means Mars '

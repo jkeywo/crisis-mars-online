@@ -101,9 +101,13 @@ export class CmActionSpotlight extends HTMLElement {
   /** The declaration form, for the actor while the record is still theirs. */
   _actorForm(action, me) {
     if (me !== action.actorCode || action.status !== 'declaring') return '';
+    // Exactly the rules' eligibility: same map, unspent, not yet called.
+    const done = this._view.initiative?.done?.[action.mapId] ?? [];
     const candidates = Object.keys(this._view.actionCards ?? {})
       .filter((code) => code !== me
-        && this._view.actionCards[code].placed && !this._view.actionCards[code].spent);
+        && this._view.actionCards[code].placed === action.mapId
+        && !this._view.actionCards[code].spent
+        && !done.includes(code));
     const held = Object.values(this._view.cards ?? {})
       .filter((card) => card.holderCode === me && card.state === 'held');
     const bank = this._view.futureImpacts?.[me] ?? 0;

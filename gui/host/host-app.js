@@ -372,26 +372,7 @@ export async function startHostApp({ location = window.location, beeper = create
       $(id).view = session.state;
     }
 
-    // Who has not placed, said out loud where the clock is. Every action
-    // card is mandatory, so with a minute left this is the list to read out.
-    if (phase.name === 'negotiation') {
-      const waiting = Object.entries(session.state.actionCards)
-        .filter(([, card]) => card.placed === null)
-        .map(([code]) => data.roles.roles[code]?.name ?? code);
-      $('unplaced').hidden = false;
-      $('unplaced').textContent = waiting.length
-        ? `Still to place their action card: ${waiting.join(', ')}.`
-        : 'Every action card is placed.';
-    } else if (phase.name === 'action' && session.state.initiative.unplaced.length) {
-      // The gaps ruling made flesh: the never-placed join no queue, and this
-      // is where the facilitator finds out who they are.
-      $('unplaced').hidden = false;
-      $('unplaced').textContent = 'Never placed, in no queue: '
-        + session.state.initiative.unplaced
-          .map((code) => data.roles.roles[code]?.name ?? code).join(', ') + '.';
-    } else {
-      $('unplaced').hidden = true;
-    }
+    renderUnplaced(session.state, phase);
 
     renderTeamPanel(session.state);
     $('turn-update').data = data;
@@ -456,6 +437,38 @@ export async function startHostApp({ location = window.location, beeper = create
   }
 
   // --- the Team Phase table --------------------------------------------------
+
+  /**
+   * Who has not placed — and, by the author's ruling, the way to place for
+   * them. Each name carries the three map buttons; a click assigns their
+   * card, and mid-Action-Phase the rules append them to the back of that
+   * map's queue.
+   */
+  function renderUnplaced(state, phase) {
+    const waiting = phase.name === 'action'
+      ? state.initiative.unplaced
+      : phase.name === 'negotiation'
+        ? Object.keys(state.actionCards).filter((code) => state.actionCards[code].placed === null)
+        : [];
+    $('unplaced').hidden = !['negotiation', 'action'].includes(phase.name);
+    if ($('unplaced').hidden) return;
+    if (!waiting.length) {
+      $('unplaced').textContent = 'Every action card is placed.';
+      return;
+    }
+    $('unplaced').innerHTML = `Still to place: ${waiting.map((code) => `
+      <span class="cm-unplaced-entry">${escape(data.roles.roles[code]?.name ?? code)}
+        ${Object.entries(data.maps.maps).map(([mapId, map]) => `
+          <button type="button" data-assign="${escape(code)}|${escape(mapId)}">${
+  escape(map.name)}</button>`).join('')}
+      </span>`).join(' ')}`;
+    for (const button of $('unplaced').querySelectorAll('[data-assign]')) {
+      button.onclick = () => {
+        const [code, mapId] = button.dataset.assign.split('|');
+        asFacilitator('facilitator:assign-action-card', { code, mapId });
+      };
+    }
+  }
 
   /**
    * The correspondence card, the opportunity ledger and the tithe tracker.

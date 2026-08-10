@@ -158,7 +158,7 @@ describe('declaring', () => {
     const { state, actor } = called();
     const mine = Object.values(state.cards)
       .filter((c) => c.holderCode === actor).map((c) => c.id);
-    const ally = state.initiative.queues.mars_map[0];
+    const ally = state.initiative.queues.earth_map[0];   // same map, next up
     const theirs = Object.values(state.cards)
       .filter((c) => c.holderCode === ally).map((c) => c.id);
 
@@ -195,7 +195,7 @@ describe('allies', () => {
   const invited = () => {
     let state = actionPhase();
     const actor = state.initiative.queues.earth_map[0];
-    const ally = state.initiative.queues.mars_map[0];
+    const ally = state.initiative.queues.earth_map[1];   // same map, later call
     state = run(state, [
       [FACILITATOR, 'facilitator:call-next', { mapId: 'earth_map' }],
       [asPlayer(actor), 'declare-action',
@@ -204,12 +204,39 @@ describe('allies', () => {
     return { state, actor, ally };
   };
 
-  it('confirms from any map — the card is spent wherever it sits', () => {
-    // The gaps ruling: "bring them with you" is bodies, not tokens. The ally
-    // here is placed on Mars and confirms into an Earth action.
-    let { state, ally } = invited();
-    state = run(state, [[asPlayer(ally), 'confirm-ally', { actionId: 'a1' }]]);
-    expect(state.actions.a1.allies[ally]).toBe('confirmed');
+  it('invites only from the same map — placement is the commitment', () => {
+    // The author's ruling: allies act where their card sits. A Mars-placed
+    // player cannot be named into an Earth action at all.
+    let state = actionPhase();
+    const actor = state.initiative.queues.earth_map[0];
+    const elsewhere = state.initiative.queues.mars_map[0];
+    state = run(state, [[FACILITATOR, 'facilitator:call-next', { mapId: 'earth_map' }]]);
+    const verdict = admit(state, data, {
+      verb: 'declare-action',
+      payload: { actionId: 'a1', text: 'x', allyCodes: [elsewhere], cardIds: [] },
+    }, asPlayer(actor));
+    expect(verdict.ok).toBe(false);
+    expect(verdict.reason).toContain('not at this map');
+  });
+
+  it('confirms a same-map invitation, and strikes the ally at close', () => {
+    let { state, actor, ally } = invited();
+    state = run(state, [
+      [asPlayer(ally), 'confirm-ally', { actionId: 'a1' }],
+      [FACILITATOR, 'facilitator:roll-consequence', { actionId: 'a1' }],
+      [FACILITATOR, 'facilitator:close-action', { actionId: 'a1' }],
+    ]);
+    // Both actions are spent, and the queue must never call the ally.
+    expect(state.actionCards[actor].spent).toBe(true);
+    expect(state.actionCards[ally].spent).toBe(true);
+    expect(state.initiative.queues.earth_map).not.toContain(ally);
+    expect(state.initiative.done.earth_map).toEqual([actor, ally]);
+    // The next call goes to whoever was third.
+    if (state.initiative.queues.earth_map.length) {
+      const next = state.initiative.queues.earth_map[0];
+      state = run(state, [[FACILITATOR, 'facilitator:call-next', { mapId: 'earth_map' }]]);
+      expect(state.actions.a2.actorCode).toBe(next);
+    }
   });
 
   it('declines, and only the named may answer', () => {
@@ -221,16 +248,74 @@ describe('allies', () => {
     expect(state.actions.a1.allies[ally]).toBe('declined');
   });
 
-  it('needs a placed, unspent action card to confirm', () => {
+  it('refuses a confirm once the card moved or was spent', () => {
     const { state, ally } = invited();
     const spent = structuredClone(state);
     spent.actionCards[ally].spent = true;
     expect(admit(spent, data, { verb: 'confirm-ally', payload: { actionId: 'a1' } },
       asPlayer(ally)).reason).toContain('already spent');
-    const unplaced = structuredClone(state);
-    unplaced.actionCards[ally].placed = null;
-    expect(admit(unplaced, data, { verb: 'confirm-ally', payload: { actionId: 'a1' } },
-      asPlayer(ally)).reason).toContain('placed action card');
+    const moved = structuredClone(state);
+    moved.actionCards[ally].placed = 'mars_map';
+    expect(admit(moved, data, { verb: 'confirm-ally', payload: { actionId: 'a1' } },
+      asPlayer(ally)).reason).toContain('not at this map');
+  });
+});
+
+describe('assigning the unplaced', () => {
+  it('places for a player before the queues exist, like any placement', () => {
+    let state = actionPhase({ leaveUnplaced: ['U2'] });
+    // Roll back to negotiation is not possible; instead assign during the
+    // Action Phase's own negotiation — covered below — and here check the
+    // any-phase half on a fresh turn: assign during team.
+    let fresh = createInitialState({ joinCode: 'ASSIGN', seed: 3, data, playerCount: 12 });
+    fresh.seats.s9 = { id: 's9', token: 'f', name: 'F', roleId: null, kind: 'facilitator', connected: true, lastSeen: 0 };
+    fresh = run(fresh, [
+      [FACILITATOR, 'facilitator:advance-phase', {}],   // team
+      [FACILITATOR, 'facilitator:assign-action-card', { code: 'C1', mapId: 'belt_map' }],
+    ]);
+    expect(fresh.actionCards.C1.placed).toBe('belt_map');
+    void state;
+  });
+
+  it('appends a late assignment to the back of a built queue', () => {
+    let state = actionPhase({ leaveUnplaced: ['U2'] });
+    expect(state.initiative.unplaced).toEqual(['U2']);
+    const before = [...state.initiative.queues.earth_map];
+    state = run(state, [[FACILITATOR, 'facilitator:assign-action-card',
+      { code: 'U2', mapId: 'earth_map' }]]);
+    // The back of the queue, not their printed initiative slot: the order
+    // already ran without them.
+    expect(state.initiative.queues.earth_map).toEqual([...before, 'U2']);
+    expect(state.initiative.unplaced).toEqual([]);
+    expect(state.actionCards.U2.placed).toBe('earth_map');
+  });
+
+  it('moves a queued player to another map\u2019s back, and refuses the called', () => {
+    let state = actionPhase();
+    const mover = state.initiative.queues.earth_map[1];
+    state = run(state, [[FACILITATOR, 'facilitator:assign-action-card',
+      { code: mover, mapId: 'belt_map' }]]);
+    expect(state.initiative.queues.earth_map).not.toContain(mover);
+    expect(state.initiative.queues.belt_map.at(-1)).toBe(mover);
+
+    // Somebody already called cannot be re-placed into a queue.
+    state = run(state, [
+      [FACILITATOR, 'facilitator:call-next', { mapId: 'earth_map' }],
+      [FACILITATOR, 'facilitator:skip-action', { mapId: 'earth_map' }],
+    ]);
+    const skipped = state.initiative.done.earth_map[0];
+    expect(admit(state, data, {
+      verb: 'facilitator:assign-action-card', payload: { code: skipped, mapId: 'mars_map' },
+    }, FACILITATOR).reason).toContain('already been called');
+  });
+
+  it('replays an assignment like everything else', () => {
+    let state = actionPhase({ leaveUnplaced: ['U2'] });
+    state = run(state, [[FACILITATOR, 'facilitator:assign-action-card',
+      { code: 'U2', mapId: 'mars_map' }]]);
+    const { state: rebuilt, refused } = replay(toSave(state), data);
+    expect(refused).toEqual([]);
+    expect(rebuilt.initiative).toEqual(state.initiative);
   });
 });
 
@@ -517,7 +602,7 @@ describe('closing', () => {
     // the close is where that comes home to roost.
     let state = actionPhase();
     const actor = state.initiative.queues.earth_map[0];
-    const ally = state.initiative.queues.mars_map[0];
+    const ally = state.initiative.queues.earth_map[1];   // same map, later call
     const loans = Object.values(state.cards)
       .filter((c) => c.holderCode === ally).map((c) => c.id).slice(0, 2);
     state = run(state, [
@@ -575,6 +660,7 @@ describe('the record', () => {
     // rebuild every table exactly.
     let state = actionPhase();
     const e1 = state.initiative.queues.earth_map[0];
+    const e2 = state.initiative.queues.earth_map[1];
     const m1 = state.initiative.queues.mars_map[0];
     const b1 = state.initiative.queues.belt_map[0];
     const cardsOf = (code) => Object.values(state.cards)
@@ -586,9 +672,9 @@ describe('the record', () => {
       [FACILITATOR, 'facilitator:call-next', { mapId: 'earth_map' }],       // a1
       [FACILITATOR, 'facilitator:call-next', { mapId: 'mars_map' }],        // a2
       [asPlayer(e1), 'declare-action',
-        { actionId: 'a1', text: 'strike the port', allyCodes: [m1], cardIds: [ec] }],
+        { actionId: 'a1', text: 'strike the port', allyCodes: [e2], cardIds: [ec] }],
       [FACILITATOR, 'facilitator:call-next', { mapId: 'belt_map' }],        // a3
-      [asPlayer(m1), 'confirm-ally', { actionId: 'a1' }],
+      [asPlayer(e2), 'confirm-ally', { actionId: 'a1' }],
       [asPlayer(m1), 'declare-action',
         { actionId: 'a2', text: 'rally the senate', allyCodes: [], cardIds: [mc] }],
       [FACILITATOR, 'facilitator:rule-resources',
@@ -602,7 +688,7 @@ describe('the record', () => {
       [FACILITATOR, 'facilitator:apply-effects', {
         actionId: 'a1',
         effects: [{ trackId: 'war_support', delta: -2 }],
-        futureImpact: { amount: 1, toCode: m1 },
+        futureImpact: { amount: 1, toCode: e2 },
       }],
       [FACILITATOR, 'facilitator:narrate', { actionId: 'a1', text: 'Flames over the port.' }],
       [FACILITATOR, 'facilitator:close-action', { actionId: 'a1' }],
@@ -623,8 +709,10 @@ describe('the record', () => {
     expect(state.actions.a1.status).toBe('closed');
     expect(state.actions.a2.status).toBe('closed');
     expect(state.rngCursor).toBe(2);
-    expect(state.actionCards[m1].spent).toBe(true);
-    expect(state.futureImpacts[m1]).toBe(1);
+    // The same-map ally spent their action with e1's and left the queue.
+    expect(state.actionCards[e2].spent).toBe(true);
+    expect(state.initiative.queues.earth_map).not.toContain(e2);
+    expect(state.futureImpacts[e2]).toBe(1);
   });
 
   it('classifies every path of a mid-action state', () => {
