@@ -41,6 +41,7 @@ import '../components/cm-hand.js';
 import '../components/cm-card-viewer.js';
 import '../components/cm-initiative-queue.js';
 import '../components/cm-adjudication.js';
+import '../components/cm-turn-update.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -311,6 +312,8 @@ export async function startHostApp({ location = window.location, beeper = create
     }
 
     renderTeamPanel(session.state);
+    $('turn-update').data = data;
+    $('turn-update').view = session.state;
 
     const ended = phase.name === 'epilogue';
     $('advance-phase').textContent = phase.name === 'lobby' ? 'Begin the game'

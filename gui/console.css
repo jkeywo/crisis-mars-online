@@ -2687,3 +2687,39 @@ cm-initiative-queue { display: block; }
 .cm-tithe { border-color: var(--cm-amber); }
 
 #tithe-cards { display: grid; gap: 0.2rem; margin: 0.4rem 0; }
+
+
+/* --------------------------------------------------------------------------
+   The end-of-turn worksheet (Phase B7).
+   -------------------------------------------------------------------------- */
+
+.cm-worksheet {
+  background: var(--cm-paper);
+  border: 1px solid var(--cm-rule);
+  border-radius: 6px;
+  padding: 0.6rem 0.9rem;
+  margin: 0.8rem 0;
+}
+
+.cm-worksheet[data-finished="true"] { opacity: 0.75; }
+
+.cm-worksheet-steps {
+  list-style: none;
+  margin: 0.4rem 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.cm-worksheet-steps li {
+  border-left: 3px solid var(--cm-rule);
+  padding-left: 0.6rem;
+}
+
+.cm-worksheet-steps li[data-status="confirmed"] { border-left-color: var(--cm-green); }
+
+.cm-worksheet-steps li[data-status="overridden"] { border-left-color: var(--cm-amber); }
+
+.cm-worksheet-steps li[data-kind="surrender"] { border-left-color: var(--cm-blood); }
+
+.cm-warn { color: var(--cm-blood); }
