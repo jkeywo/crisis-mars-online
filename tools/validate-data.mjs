@@ -48,7 +48,7 @@ export const CHECKSUMS = {
 
 /** Every file the exporter writes, all required, all marked generated. */
 const FILES = ['factions', 'roles', 'resources', 'maps', 'meta', 'scaling',
-  'events', 'aftermath'];
+  'events', 'aftermath', 'geometry'];
 
 export async function dataExists() {
   try {
@@ -64,6 +64,15 @@ const load = async (name) => JSON.parse(await readFile(join(DATA_DIR, `${name}.j
 const artExists = async (name) => {
   try {
     await access(join(CARDS_DIR, name));
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const artExistsAt = async (path) => {
+  try {
+    await access(path);
     return true;
   } catch {
     return false;
@@ -272,6 +281,41 @@ export async function validateData() {
     }
     for (const code of roster) {
       if (!roles[code]) fail(`rosterAt[${count}]: '${code}' is not a role`);
+    }
+  }
+
+  // --- geometry: every printed value has somewhere to sit ---------------------
+  // The board overlay positions a chip at each anchor; a track with no
+  // anchor would render its value nowhere, and an anchor off the image
+  // would render it in the void.
+  const boards = loaded.geometry.boards;
+  const anchored = [];
+  for (const [boardId, board] of Object.entries(boards)) {
+    for (const [trackId, anchor] of Object.entries(board.tracks)) {
+      anchored.push(trackId);
+      if (!(anchor.x > 0 && anchor.x < 1 && anchor.y > 0 && anchor.y < 1)) {
+        fail(`geometry ${boardId}/${trackId}: anchor (${anchor.x}, ${anchor.y}) outside the image`);
+      }
+      if (!tracks[trackId]) fail(`geometry ${boardId}: '${trackId}' is not a track`);
+    }
+    for (const band of board.warProgressBands ?? []) {
+      if (!(band.x > 0 && band.x < 1 && band.y > 0 && band.y < 1)) {
+        fail(`geometry ${boardId}: war band at ${band.range[0]} anchored outside the image`);
+      }
+    }
+  }
+  const valued = Object.keys(tracks).filter((id) => tracks[id].initial !== null);
+  if (anchored.sort().join('|') !== valued.sort().join('|')) {
+    fail(`geometry anchors ${anchored.length} tracks; the maps carry ${valued.length} with printed values`);
+  }
+  const geometryBands = Object.values(boards)
+    .flatMap((board) => board.warProgressBands ?? []);
+  if (geometryBands.length !== (loaded.maps.warProgress.locationBands ?? []).length) {
+    fail(`geometry carries ${geometryBands.length} war-progress bands; the route prints ${loaded.maps.warProgress.locationBands.length}`);
+  }
+  for (const boardId of Object.keys(boards)) {
+    if (!(await artExistsAt(join(HERE, '..', boards[boardId].image)))) {
+      fail(`${boards[boardId].image} missing`);
     }
   }
 

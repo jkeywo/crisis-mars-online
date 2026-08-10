@@ -10,7 +10,7 @@
  * import assertions are a compatibility question nobody needs to answer.
  */
 
-const CORE = ['factions', 'roles', 'resources', 'maps', 'meta', 'scaling'];
+const CORE = ['factions', 'roles', 'resources', 'maps', 'meta', 'scaling', 'geometry'];
 
 /**
  * The two files only the facilitator's console has any business fetching:

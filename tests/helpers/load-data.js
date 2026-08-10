@@ -12,7 +12,7 @@ import { dirname, join } from 'node:path';
 
 const DATA_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'data');
 
-const FILES = ['factions', 'roles', 'resources', 'maps', 'meta', 'scaling'];
+const FILES = ['factions', 'roles', 'resources', 'maps', 'meta', 'scaling', 'geometry'];
 
 let cached = null;
 
