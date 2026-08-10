@@ -31,12 +31,12 @@ messages, and test strings — see the note at the end.
 | Ref | Text |
 |---|---|
 | #screen-code h1 | Join the game |
-| #screen-code lede | Your facilitator will read out a seven-character code. |
+| #screen-code lede | Your facilitator will provide you with a seven-character code. |
 | #screen-code label | Join code |
 | #join-code placeholder | MARS42X |
 | #screen-code button | Continue |
 | #screen-name h1 | Who are you? |
-| #screen-name lede | Your own name, not your character's — you will choose a lanyard next. This is what the others see on the roster. |
+| #screen-name lede | YYour own name, not your character's — you will choose a character next. |
 | #screen-name label | Your name |
 | #screen-name button | Join |
 | #screen-lobby h1 | The Solar System, 2225 |
@@ -44,7 +44,7 @@ messages, and test strings — see the note at the end.
 | #screen-lobby h2 | Who is here |
 | #start-over button | Not this game — start over |
 | tablist aria-label | Game tabs |
-| static tab labels | News / Opportunities *(faction's live or this-turn-answered only)* / Tithe *(Belt Union only)* / Role |
+| static tab labels | News / Opportunities / Tithe / Role |
 | map tab labels | *(the printed map names — gamespec-owned)* ({n}) *(count of action cards placed there this turn)* |
 | news h2 | The news |
 | news tab h2 | Who is here |
@@ -80,49 +80,49 @@ messages, and test strings — see the note at the end.
 | Ref | Text |
 |---|---|
 | #screen-start h1 | Run a game |
-| #screen-start lede | The game lives in this tab. Keep it open, keep the laptop plugged in, and turn off sleep. |
+| #screen-start lede | The game runs in this tab. Keep it open and active or the game will pause. |
 | player-count label | How many players? |
 | player-count option (18) | 18 — the full game |
 | player-count options (9–17) | {n} |
 | player-count option (8) | 8 — the smallest table |
-| scaling note | The scaling table is applied for you: the gamespec names the exact roster for every head count, and only those lanyards — and their resource cards — are dealt in. The two NPC lanyards are always yours. |
+| scaling note | The variable available roles are applied automatically. |
 | #new-game button | Start a new game |
 | resume h2 | Or pick up where you left off |
 | co h2 | Or help run somebody else's |
-| co note | The other facilitator holds the game. You get the same console over the wire, and a full copy of the game on this machine — so if their laptop dies, you can pick it up without anybody re-entering anything. |
+| co note | The other facilitator's computer runs the game, but you get the same interface and can continue running the game if something happens to their session. |
 | co labels | Game code / Facilitator PIN / Your name |
 | co submit | Join as co-facilitator |
 | import h2 | Or open a saved game |
-| import note | A downloaded save can be opened on any machine — this is how a game survives a laptop dying. |
-| co-banner | **You are the co-facilitator.** The game is on the other machine and mirrored here. |
+| import note | A downloaded save can be opened on any machine. |
+| co-banner | **You are the co-facilitator.** The game is on the main facilitators machine and mirrored here. |
 | #take-over button | Take over hosting |
 | clock buttons | Next phase / Pause / +1 min / −1 min / Call time |
 | epilogue h2 | The debrief |
-| epilogue note | Read from this. Print it, or save it as a page to send round the week after. |
+| epilogue note | Use as the basis for the post game debrief. |
 | epilogue buttons | Print it / Save as a page |
 | team panel h2 | The Team Phase table |
 | team panel h3s | War correspondence / The tithe / Compose an opportunity / Opportunities |
-| lobby-roles h2 | Choosing lanyards |
-| lobby-roles note | The same picker every player has open right now. Begin the game above once enough of the table has sat down — a lanyard can still be claimed or re-claimed after that, same as any late arrival. |
+| lobby-roles h2 | Choosing roles |
+| lobby-roles note | Begin the game above once all players have selected a role - a role can still be claimed or re-claimed after that, same as any late arrival. |
 | join h1 | Game {CODE} |
 | join lede | Read the code out. Paste the link. |
-| link label / button | Player link / Copy |
+| link label / button | Read the code out and/or paste the link. |
 | testing fold summary | Testing on one machine |
-| testing note | Opens tabs that each take a seat of their own rather than sharing this machine's. For trying the game out alone — not something to reach for at a real table. |
+| testing note | Opens tabs that each take a role of their own. For testing. |
 | testing controls | How many / Open test players |
-| PIN line | Facilitator PIN {pin} — Only the other facilitator gets this. Anyone with it can edit the game. |
+| PIN line | Facilitator PIN {pin} — Only the other facilitator should be sent this. Anyone with it can edit the game. |
 | saves h2 | Keeping the game |
-| saves note | Saved automatically as you go. Download one before anything important — it is the only copy that survives this machine. |
+| saves note | Saved automatically as you go. |
 | #download-save button | Download save |
 | #save-warning | Could not save to this browser — storage is full or blocked. Download a save instead. |
 | roster h2 | Who is here |
-| clear-seat note | Clearing a seat empties the chair, not the character: whoever was in it can no longer resume, and their lanyard stays on the wall with everything it holds for somebody else to take. |
+| clear-seat note | Clearing a seat empties the chair, not the character: whoever was in it can no longer resume, and their role stays available for somebody else to take. |
 | connections h2 | Connections |
 | NPC h2 | The NPC hands |
-| NPC note | The U.N. Ambassador and the Martian Senate Speaker are yours to roleplay. Hand their cards out — the tithe, a bribe, a favour — through the same verbs the players use; every pass lands in the log like everything else. |
+| NPC note | The U.N. Ambassador and the Martian Senate Speaker are facilitators to roleplay. Split these roles between the game's facilitators. |
 | NPC h3s | Unified Nations Ambassador / Martian Senate Speaker |
-| gaps fold summary | Where the rules are silent |
-| gaps note | The printed rules were written for a room with you in it, so a few questions are never answered on paper. The app had to pick something before anybody sat down. Here is what it picked — overrule any of it on the boards themselves: every chip is the pencil. |
+| gaps fold summary | Where the rules aren't implemented yet |
+| gaps note | These rules have not been converted online yet and need to be resolved manually. |
 
 ## 5. Host page — dynamic (gui/host/host-app.js)
 

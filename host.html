@@ -44,8 +44,8 @@
     <section id="screen-start" class="cm-panel" hidden>
       <h1>Run a game</h1>
       <p class="cm-lede">
-        The game lives in this tab. Keep it open, keep the laptop plugged in,
-        and turn off sleep.
+        The game runs in this tab. Keep it open and active or the game will
+        pause.
       </p>
       <label for="player-count">How many players?</label>
       <select id="player-count">
@@ -62,9 +62,7 @@
         <option value="8">8 — the smallest table</option>
       </select>
       <p class="cm-meta">
-        The scaling table is applied for you: the gamespec names the exact
-        roster for every head count, and only those lanyards — and their
-        resource cards — are dealt in. The two NPC lanyards are always yours.
+        The variable available roles are applied automatically.
       </p>
 
       <button id="new-game" type="button" class="cm-primary">Start a new game</button>
@@ -77,9 +75,9 @@
 
       <h2>Or help run somebody else's</h2>
       <p class="cm-meta">
-        The other facilitator holds the game. You get the same console over
-        the wire, and a full copy of the game on this machine — so if their
-        laptop dies, you can pick it up without anybody re-entering anything.
+        The other facilitator's computer runs the game, but you get the same
+        interface and can continue running the game if something happens to
+        their session.
       </p>
       <form id="join-as-co" class="cm-co-form">
         <label>Game code <input id="co-code" maxlength="8" autocomplete="off"></label>
@@ -90,8 +88,7 @@
 
       <h2>Or open a saved game</h2>
       <p class="cm-meta">
-        A downloaded save can be opened on any machine — this is how a game
-        survives a laptop dying.
+        A downloaded save can be opened on any machine.
       </p>
       <input id="import-file" type="file" accept="application/json,.json">
     </section>
@@ -101,7 +98,7 @@
       <section id="co-banner" class="cm-co-banner" hidden>
         <p>
           <strong>You are the co-facilitator.</strong>
-          The game is on the other machine and mirrored here.
+          The game is on the main facilitators machine and mirrored here.
           <span id="co-mirror" class="cm-meta"></span>
         </p>
         <button id="take-over" type="button">Take over hosting</button>
@@ -158,9 +155,9 @@
                  aria-labelledby="tab-npcs" hidden>
           <h2>Your lanyards</h2>
           <p class="cm-meta">
-            The Ambassador and the Speaker are yours to roleplay. Their cards
-            move through the same verbs the players use; every pass lands in
-            the log like everything else.
+            The U.N. Ambassador and the Martian Senate Speaker are
+            facilitators to roleplay. Split these roles between the game's
+            facilitators.
           </p>
           <div class="cm-npc-grid">
             <article class="cm-npc-column">
@@ -188,8 +185,7 @@
            so it cannot disagree with the maps the players are looking at. -->
       <section id="epilogue-panel" class="cm-epilogue-panel" hidden>
         <h2>The debrief</h2>
-        <p class="cm-meta">Read from this. Print it, or save it as a page to
-          send round the week after.</p>
+        <p class="cm-meta">Use as the basis for the post game debrief.</p>
         <div class="cm-row">
           <button id="print-epilogue" type="button" class="cm-primary">Print it</button>
           <button id="save-epilogue" type="button">Save as a page</button>
@@ -226,7 +222,7 @@
       <div class="cm-columns">
         <div>
           <h1>Game <span id="join-code" class="cm-code"></span></h1>
-          <p class="cm-lede">Read the code out. Paste the link.</p>
+          <p class="cm-lede">Read the code out and/or paste the link.</p>
 
           <label for="player-link">Player link</label>
           <div class="cm-row">
@@ -237,9 +233,7 @@
           <details class="cm-testing">
             <summary>Testing on one machine</summary>
             <p class="cm-meta">
-              Opens tabs that each take a seat of their own rather than
-              sharing this machine's. For trying the game out alone — not
-              something to reach for at a real table.
+              Opens tabs that each take a role of their own. For testing.
             </p>
             <div class="cm-row">
               <label for="test-seats">How many</label>
@@ -251,14 +245,13 @@
           <p class="cm-pin">
             Facilitator PIN <strong id="facilitator-pin"></strong>
             <span class="cm-meta">
-              Only the other facilitator gets this. Anyone with it can edit the game.
+              Only the other facilitator should be sent this. Anyone with it can edit the game.
             </span>
           </p>
 
           <h2>Keeping the game</h2>
           <p class="cm-meta">
-            Saved automatically as you go. Download one before anything
-            important — it is the only copy that survives this machine.
+            Saved automatically as you go.
           </p>
           <button id="download-save" type="button">Download save</button>
           <p id="save-warning" class="cm-error" role="alert" hidden>
@@ -271,8 +264,8 @@
           <p id="seated-count" class="cm-meta"></p>
           <p class="cm-meta">
             Clearing a seat empties the chair, not the character: whoever was
-            in it can no longer resume, and their lanyard stays on the wall
-            with everything it holds for somebody else to take.
+            in it can no longer resume, and their role stays available for
+            somebody else to take.
           </p>
           <!-- `editable` is the whole of what separates this roster from the
                identical one every player has open. -->
@@ -285,13 +278,10 @@
         <div>
           <section id="gaps-panel" class="cm-gaps-panel" hidden>
             <details>
-              <summary>Where the rules are silent</summary>
+              <summary>Where the rules aren't implemented yet</summary>
               <p class="cm-meta">
-                The printed rules were written for a room with you in it, so a
-                few questions are never answered on paper. The app had to pick
-                something before anybody sat down. Here is what it picked —
-                overrule any of it on the boards themselves: every chip is
-                the pencil.
+                These rules have not been converted online yet and need to be
+                resolved manually.
               </p>
               <dl id="rules-gaps" class="cm-gaps"></dl>
             </details>
