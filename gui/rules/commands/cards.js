@@ -31,6 +31,44 @@ const heldBy = (state, data, roleId) => Object.values(state.cards ?? {})
   }));
 
 export const CARD_COMMANDS = {
+  /**
+   * The umpire moves any card anywhere — a mis-deal corrected, a reward
+   * granted, a loan unwound without asking. One explicit verb rather than
+   * pencil-poking card records, so the ledger reads as what happened.
+   *
+   * `to` is a role code (into that hand, held) or 'discard' (spent where it
+   * stands, landing in its owner's pile). There is no 'box': undealt cards
+   * are not state, and a destroyed card stays destroyed. See DECISIONS.md.
+   */
+  'facilitator:move-card': {
+    phases: '*',
+    actor: 'facilitator',
+    admit(ctx) {
+      const { cardId, to } = ctx.cmd.payload ?? {};
+      const card = ctx.state.cards[cardId];
+      if (!card) return no('no such card in this game');
+      if (card.state === 'destroyed') return no('that card was destroyed — it is out of the game');
+      if (to === 'discard') {
+        return card.state === 'spent' ? no('it is already in the discard') : ok();
+      }
+      if (!ctx.state.roles[to]) return no('nobody by that code is in this game');
+      if (card.holderCode === to && card.state === 'held') {
+        return no('it is already in that hand');
+      }
+      return ok();
+    },
+    effects(draft, ctx) {
+      const { cardId, to } = ctx.cmd.payload;
+      const card = draft.cards[cardId];
+      if (to === 'discard') {
+        card.state = 'spent';
+        return;
+      }
+      card.state = 'held';
+      card.holderCode = to;
+    },
+  },
+
   'hand-card': {
     phases: '*',
     actor: 'player',

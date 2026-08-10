@@ -2915,3 +2915,57 @@ cm-board-overlay { display: block; }
 .cm-board-chip [data-commit] { color: var(--cm-green); font-weight: 700; }
 
 .cm-board-chip [data-cancel] { color: var(--cm-blood); font-weight: 700; }
+
+
+/* --- the Roles tab ----------------------------------------------------------- */
+
+.cm-roles-admin-faction {
+  border-left: 4px solid var(--faction-colour, var(--cm-rule));
+  background: var(--cm-paper);
+  border-radius: 6px;
+  padding: 0.5rem 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.cm-roles-admin-faction h3 {
+  margin: 0 0 0.3rem;
+  font-family: var(--cm-serif);
+  color: var(--faction-colour, var(--cm-ink));
+}
+
+.cm-role-admin-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--cm-rule);
+  padding: 0.35rem 0.2rem;
+  color: var(--cm-ink);
+  cursor: pointer;
+}
+
+.cm-role-admin-row img { width: 2.6rem; border-radius: 3px; }
+
+.cm-role-admin-name { flex: 1; }
+
+.cm-role-admin-seat { color: var(--cm-muted); }
+
+.cm-role-admin[data-open="true"] .cm-role-admin-row {
+  border-left: 3px solid var(--cm-gold);
+}
+
+.cm-role-admin-panel {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem 0.7rem;
+  border-top: 1px dashed var(--cm-rule);
+}
+
+.cm-role-admin-panel fieldset {
+  border: 1px solid var(--cm-rule);
+  border-radius: 4px;
+  padding: 0.3rem 0.5rem;
+}

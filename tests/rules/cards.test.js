@@ -170,6 +170,52 @@ describe('the NPC hands', () => {
   });
 });
 
+describe('the umpire moving cards', () => {
+  it('moves any card into any hand, or to the discard, on the ledger', () => {
+    let state = playing();
+    // A discard restored to a different player entirely.
+    state = run(state, [
+      [CANOPY, 'discard-card', { cardId: 'rc_c1_1' }],
+      [FACILITATOR, 'facilitator:move-card', { cardId: 'rc_c1_1', to: 'V1' }],
+    ]);
+    expect(state.cards.rc_c1_1).toMatchObject({ holderCode: 'V1', state: 'held', ownerCode: 'C1' });
+    // A held card sent to the discard: spent where it stands, its owner's pile.
+    state = run(state, [[FACILITATOR, 'facilitator:move-card',
+      { cardId: 'rc_c1_1', to: 'discard' }]]);
+    expect(state.cards.rc_c1_1.state).toBe('spent');
+    // And every move is an override in the log.
+    expect(state.log.filter((e) => e.verb === 'facilitator:move-card')
+      .every((e) => e.override)).toBe(true);
+  });
+
+  it('refuses the destroyed, the absent, and the no-op', () => {
+    let state = playing();
+    expect(admit(state, data, {
+      verb: 'facilitator:move-card', payload: { cardId: 'rc_zz_9', to: 'C1' },
+    }, FACILITATOR).reason).toContain('no such card');
+    expect(admit(state, data, {
+      verb: 'facilitator:move-card', payload: { cardId: 'rc_c1_1', to: 'C1' },
+    }, FACILITATOR).reason).toContain('already in that hand');
+    state = run(state, [[FACILITATOR, 'facilitator:set',
+      { path: ['cards', 'rc_c1_1', 'state'], value: 'destroyed' }]]);
+    expect(admit(state, data, {
+      verb: 'facilitator:move-card', payload: { cardId: 'rc_c1_1', to: 'V1' },
+    }, FACILITATOR).reason).toContain('destroyed');
+  });
+
+  it('replays a shuffle of moves exactly', () => {
+    let state = playing();
+    state = run(state, [
+      [FACILITATOR, 'facilitator:move-card', { cardId: 'rc_c1_2', to: 'B1' }],
+      [FACILITATOR, 'facilitator:move-card', { cardId: 'rc_c1_2', to: 'discard' }],
+      [FACILITATOR, 'facilitator:move-card', { cardId: 'rc_c1_2', to: 'N1' }],
+    ]);
+    const { state: rebuilt, refused } = replay(toSave(state), data);
+    expect(refused).toEqual([]);
+    expect(rebuilt.cards).toEqual(state.cards);
+  });
+});
+
 describe('replay', () => {
   it('rebuilds a game of loans and discards exactly', () => {
     let state = playing();
