@@ -141,3 +141,17 @@ are thin wiring over components and sessions that are each tested, and a
 DOM-level page harness was judged not worth its weight before a first
 playtest. Also unported: RBO's sound.test (the beeper is copied verbatim),
 and everything about map artwork (this game has no map artwork yet).
+
+## Publication (2026-08-10, coordinator)
+
+- The pasm model was validated locally before first push (`uv run pasm
+  validate/scan`): three schema mismatches fixed in
+  `architecture/state-and-views.yaml` (`implemented`→`declared` — vellum's
+  vocabulary; a stray `pure` field removed; two scalar `derived_from`
+  values made lists), and the player console's observed dependency on the
+  wire protocol declared rather than left as a scan warning.
+- Repo published as **public** `github.com/jkeywo/crisis-mars-online`
+  (matching the-raven-banner-online), per the author's explicit
+  authorization before going AFK. Code MIT; `assets/**` remains
+  © John Keyworth, all rights reserved, as the README states.
+- GitHub Pages serves the `gh-pages` branch, which only CI writes.

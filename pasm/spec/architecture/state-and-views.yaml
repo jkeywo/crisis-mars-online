@@ -22,7 +22,7 @@ entities:
         - projected-player-view
         - projected-facilitator-view
     implementation:
-      status: implemented
+      status: declared
       paths:
         - gui/rules/state.js
       symbols:
@@ -54,7 +54,7 @@ entities:
       runs_in:
         - facilitator-browser-runtime
     implementation:
-      status: implemented
+      status: declared
       paths:
         - gui/host/game-host.js
       symbols:
@@ -75,12 +75,12 @@ entities:
         - A refusal is a sentence rather than a boolean, because the reason is the whole value of enforcing rules for players.
     architecture:
       kind: rules-gate
-      pure: "true"
+
       runs_in:
         - facilitator-browser-runtime
         - player-browser-runtime
     implementation:
-      status: implemented
+      status: declared
       paths:
         - gui/rules/admission.js
       symbols:
@@ -103,14 +103,14 @@ entities:
         - A lanyard's private back is static data attached to its owner's projection rather than a state path, the same accepted trade RBO made for briefs.
     architecture:
       kind: projection
-      pure: "true"
+
       reads:
         - authoritative-game-state
       produces:
         - projected-player-view
         - projected-facilitator-view
     implementation:
-      status: implemented
+      status: declared
       paths:
         - gui/rules/views.js
         - gui/rules/visibility.js
@@ -130,7 +130,8 @@ entities:
         public, plus that seat's own lanyard back.
     architecture:
       classification: replica
-      derived_from: authoritative-game-state
+      derived_from:
+        - authoritative-game-state
 
   - state: projected-facilitator-view
     core:
@@ -142,7 +143,8 @@ entities:
         mirrors, and therefore everything a takeover needs.
     architecture:
       classification: replica
-      derived_from: authoritative-game-state
+      derived_from:
+        - authoritative-game-state
 
   - component: player-console
     core:
@@ -160,8 +162,10 @@ entities:
         - player-browser-runtime
       reads:
         - projected-player-view
+      depends_on:
+        - wire-protocol
     implementation:
-      status: implemented
+      status: declared
       paths:
         - gui/client/player-app.js
       tests:
