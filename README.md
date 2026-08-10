@@ -7,12 +7,14 @@ Play runs about two hours across four turns. Everyone talks on voice —
 Discord or similar — and uses this app for the three boards, their lanyard,
 their cards, the clock, and the spotlight.
 
-The current build will be live at
-**[jkeywo.github.io/crisis-mars-online](https://jkeywo.github.io/crisis-mars-online/)**
+The current build is live at
+**[crisis-mars-online.kiwigamedesign.co.uk](https://crisis-mars-online.kiwigamedesign.co.uk/)**
 — players land on that page, facilitators want
-[host.html](https://jkeywo.github.io/crisis-mars-online/host.html). It is
-published from `gh-pages` by CI, so whatever is up there is a revision whose
-tests passed.
+[host.html](https://crisis-mars-online.kiwigamedesign.co.uk/host.html).
+(The fallback address is
+[jkeywo.github.io/crisis-mars-online](https://jkeywo.github.io/crisis-mars-online/).)
+It is published from `gh-pages` by CI, so whatever is up there is a revision
+whose tests passed.
 
 ## Playing
 

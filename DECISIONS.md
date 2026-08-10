@@ -239,3 +239,26 @@ tab badge during the lobby is the pointer.
 **cm-map-board survives for the player page only.** The host tabs use the
 overlay; the player's rail keeps the compact track list until a player-page
 tab pass (explicitly deferred by the author's request).
+
+## 2026-08-10 — The page-boot smoke tests, and a retired exemption
+
+The tab refactor deleted nine functions the host page still called; every
+unit suite stayed green and the page died at boot with a ReferenceError in
+the browser. The 'page-level integration untested' exemption recorded
+earlier is hereby retired: tests/pages/ now boots each of the three pages
+for real — the actual HTML body, the actual start function, the real
+dataset served over a disk-backed fetch, the transport tests' own PeerJS
+fake — and asserts the boot completes and the landmark containers filled
+(the tab strip, the composer, the NPC briefs, a started game's console,
+the player join flow, the replay open screen). A call to a function that
+no longer exists is a red test from now on, not a browser surprise.
+
+## 2026-08-10 — The custom domain is written into every publish
+
+GitHub Pages stores a custom domain as a CNAME file on the served branch,
+and our publish job force-pushes gh-pages fresh every run — so the first
+publish after the author bound crisis-mars-online.kiwigamedesign.co.uk
+erased the binding and took the live site (and every card image on it)
+down. The workflow now writes the CNAME into _site alongside VERSION, so
+the domain survives every deploy. README leads with the custom domain and
+keeps the github.io address as the fallback.
