@@ -134,3 +134,16 @@ Gotchas, both of which produce confusing errors:
 - **The roster is authored, not computed.** `data/scaling.json` names the
   exact role codes dealt in at every head count from 8 to 18. Cards belonging
   to absent roles stay in the box — they are not state.
+- **TEAM audience means a faction function.** A faction-scoped manifest rule
+  computes its audience with `faction(segments, state)`; a null answer fails
+  closed to the facilitator alone, which is what NPC-targeted records want.
+  An opportunity's existence and status are PUBLIC (the worksheet already
+  proposes deliveries in the open); its words are the faction's.
+- **Facilitator-only static files are host-page-only loads.** `events.json`
+  and `aftermath.json` are fetched by `loadFacilitatorData()` in host code
+  and never by a player page. Effects from those files always travel in
+  command payloads, so a replay is a function of the log alone.
+- **End-of-turn proposals are computed inside the reducer.**
+  `facilitator:begin-turn-update` derives the checklist from state and CORE
+  data in its own effects, so a replay recomputes the identical worksheet.
+  Steps land on confirm; nothing is gated on the update finishing.

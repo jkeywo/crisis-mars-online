@@ -21,9 +21,8 @@ entities:
         - rules-core-is-pure
         - human-adjudication
       open_questions:
-        - How the Action Phase spotlight is surfaced — a queue the app runs, or a call order the facilitator reads.
-        - Whether an Opportunity's two-option team choice is an in-app ballot or a facilitator adjudication.
-        - How the turn-two war correspondence activates War Progress in the app.
+        - Whether the Discord bot contract (docs and a conformance test, as RBO has) is worth writing before the first live run.
+        - What a first playtest changes about the adjudication panel's density.
 
   - decision: browser-host-authority
     core:

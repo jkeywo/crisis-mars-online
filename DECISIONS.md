@@ -91,3 +91,53 @@ trade-route damage and prosperity caps say "negatively affected" and
 "reduced" with magnitude left to judgement, so their steps surface the
 printed sentence and a zero suggestion for the facilitator to overwrite.
 The app never invents the number.
+
+## Phase B8 — Epilogue and polish
+
+**The favicon is committed, not built.** `tools/make-favicon.py` squares the
+gamespec logo and writes 32/16px frames; the output is committed because
+this repo has no build step by design, and CI copies files rather than
+transforming them. Re-run the script if the logo changes.
+
+**The epilogue degrades by inputs, not by role checks.** `cm-epilogue`
+renders the goal walk only when handed `aftermath.json` (host-only load)
+and the override ledger only when the projection carries `log`
+(facilitator-only path). The same element serves both consoles with no
+"am I the facilitator?" branch to get wrong.
+
+**Opportunity existence went public in the pump phase.** `opportunities.*.
+{id,turn,status,factionId,npcCode}` are PUBLIC; title, options, choice and
+effects stay faction-scoped. The end-of-turn worksheet already announced
+proposed deliveries publicly (triggers are arithmetic over public tracks),
+so this leaked nothing new — and it is what lets the event pump announce a
+resolution. The player card renders only records whose words arrived.
+
+**The pump carries the dataset and stamps schema v2.** `action.closed`
+events name the band, which needs the meta ladder, so `eventPumpFor` takes
+`data`. The digest-equality test (projection vs raw state) remains the
+structural guarantee that the pump reads only PUBLIC paths.
+
+**Co-facilitator model.** One authoritative host tab, always. The PIN
+grants facilitator authority over the wire; the co console mirrors the
+full projection (state-shaped, so it is a save), and take-over rebuilds
+from that mirror's log — never adopts a snapshot — with the derived peer
+id as the guard against two live hosts. `?role=co` just focuses the form.
+
+**Stack-on-narrow instead of rails-become-tabs.** RBO's player page turned
+its side rails into tabs below 75rem; this game's player page has no tab
+bar, so below the same breakpoint the three columns stack and the main
+column scrolls. Cheaper, and honest about how much UI this page has. The
+copied tab plumbing stays in console.css unused, for whoever adds tabs.
+
+**Replay draws the live components.** The replay page mounts the same
+cm-map-board and cm-war-progress the consoles use rather than bespoke
+tables, so scrubbing exercises the components' own change-detection. The
+fidelity guarantee stays in the rules layer (the scrub suite checks the
+cursor against the reducer's replay at every stop).
+
+**Still uncovered, knowingly.** Page-level integration tests for
+player-app.js / host-app.js (RBO's pages/player-lobby suites) — the apps
+are thin wiring over components and sessions that are each tested, and a
+DOM-level page harness was judged not worth its weight before a first
+playtest. Also unported: RBO's sound.test (the beeper is copied verbatim),
+and everything about map artwork (this game has no map artwork yet).

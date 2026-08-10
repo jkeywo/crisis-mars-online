@@ -2820,3 +2820,35 @@ cm-initiative-queue { display: block; }
 .cm-replay-actions li[data-status="closed"] { border-left-color: var(--cm-green); }
 
 .cm-replay-actions li[data-status="skipped"] { opacity: 0.55; }
+
+
+/* --------------------------------------------------------------------------
+   The B8 theming sweep: focus you can see, and a stack-on-narrow layout.
+
+   RBO's rails-become-tabs pattern was not ported — this game's player page
+   has no tab bar — so below the copied 75rem breakpoint the three columns
+   simply stack: boards, then actions, then your sheet, with the page's own
+   main column doing the scrolling. Recorded in DECISIONS.md.
+   -------------------------------------------------------------------------- */
+
+:focus-visible {
+  outline: 2px solid var(--cm-gold);
+  outline-offset: 1px;
+}
+
+@media (max-width: 75rem) {
+  /* The copied rules sized stacked children for a tabbed layout where only
+     one child is visible; with everything visible they must size naturally
+     and let .cm-main scroll the lot. */
+  .cm-game-body > :not([hidden]) {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+  .cm-rail { margin-bottom: 1rem; }
+}
+
+@media (max-width: 56rem) {
+  .cm-columns { gap: 1.2rem; }
+  .cm-boards-lanes { grid-template-columns: 1fr; }
+}
