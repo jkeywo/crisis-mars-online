@@ -113,11 +113,13 @@
 
   <script type="module">
     import { startReplayApp } from './gui/client/replay-app.js';
+    import { checkVersion } from './gui/version-check.js';
     startReplayApp().then(() => { document.body.dataset.booted = '1'; })
       .catch((err) => {
         console.error(err);
         document.getElementById('stale-banner').hidden = false;
       });
+    checkVersion();
   </script>
 </body>
 </html>

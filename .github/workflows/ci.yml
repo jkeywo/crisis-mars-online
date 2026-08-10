@@ -76,6 +76,12 @@ jobs:
           cp -r gui data assets vendor _site/
           # A marker so a confusing bug report can be tied to a revision.
           printf '%s\n%s\n' "$GITHUB_SHA" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > _site/VERSION
+          # The same commit stamped into the module graph. Cloudflare serves
+          # JS with a four-hour TTL but HTML with ten minutes, so a browser
+          # can pair stale modules with fresh markup and render nothing. Each
+          # page compares this against VERSION at boot and, on a mismatch,
+          # shows the reload banner instead of a silent blank. See DECISIONS.md.
+          printf 'export const BUILD = %s;\n' "\"$GITHUB_SHA\"" > _site/gui/build.js
           # The custom domain. gh-pages is force-pushed fresh every publish,
           # so the CNAME must be written into every copy or GitHub forgets
           # the domain binding — which is exactly what took the live site

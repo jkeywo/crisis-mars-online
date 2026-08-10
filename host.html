@@ -297,11 +297,13 @@
 
   <script type="module">
     import { startHostApp } from './gui/host/host-app.js';
+    import { checkVersion } from './gui/version-check.js';
     startHostApp().then(() => { document.body.dataset.booted = '1'; })
       .catch((err) => {
         console.error(err);
         document.getElementById('stale-banner').hidden = false;
       });
+    checkVersion();
   </script>
 </body>
 </html>

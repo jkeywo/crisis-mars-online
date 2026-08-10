@@ -165,11 +165,13 @@
 
   <script type="module">
     import { startPlayerApp } from './gui/client/player-app.js';
+    import { checkVersion } from './gui/version-check.js';
     startPlayerApp().then(() => { document.body.dataset.booted = '1'; })
       .catch((err) => {
         console.error(err);
         document.getElementById('stale-banner').hidden = false;
       });
+    checkVersion();
   </script>
 </body>
 </html>

@@ -379,3 +379,26 @@ Cloudflare's cert. The http-to-https redirect is currently OFF at the edge
 Cloudflare dashboard -- SSL/TLS > Edge Certificates > "Always Use HTTPS" --
 and "Full" SSL mode is the right companion so the Cloudflare-to-GitHub hop
 is encrypted too. Both are account settings only the author can reach.
+
+## The half-deploy guard (2026-08-10, coordinator)
+
+The author reported the maps, roles and NPC cards "disappeared" — while a
+cache-busted load of the same URL rendered everything. The cause: Cloudflare
+serves this site's JS with a four-hour browser TTL (max-age=14400) but the
+HTML and JSON with ten minutes (max-age=600). A browser that visited within
+the last few hours re-fetches fresh HTML but keeps stale modules; after the
+tabbed-console and player-restructure deploys reshaped both pages, those old
+modules query DOM that no longer exists, find nothing, and render blank —
+without throwing, so the existing boot watchdog (errors + 6s timeout) never
+fires.
+
+Fix: every deploy stamps its commit SHA into both VERSION and gui/build.js
+(CI assemble step). Each page imports build.js and, at boot, fetches VERSION
+uncached and compares; a mismatch means the running module graph is stale,
+so it reveals the same reload banner. build.js is 'dev' in the tree, making
+the check a no-op for a plain checkout. This catches the silent-blank class
+the error/timeout guard cannot. The deeper cause is unhashed assets on a
+no-build site with split cache TTLs; the alternative durable fix — lowering
+the JS Browser Cache TTL to match HTML — is a Cloudflare dashboard setting
+only the author can reach (SSL/TLS is not it; it is Caching > Configuration
+> Browser Cache TTL, or a cache rule scoped to *.js).
