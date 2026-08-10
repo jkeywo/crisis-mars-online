@@ -1,0 +1,440 @@
+{
+ "_generated": "crisis_mars gamespec @ analogue-projects 91b1903 via tools/export_web_data.py",
+ "_doNotEdit": true,
+ "maps": {
+  "earth_map": {
+   "name": "Earth",
+   "locations": [
+    {
+     "id": "earth_gov_capital",
+     "name": "Earth Gov Capital"
+    },
+    {
+     "id": "earth_space_port",
+     "name": "Space Port"
+    },
+    {
+     "id": "earth_low_orbit",
+     "name": "Low Orbit"
+    },
+    {
+     "id": "earth_upper_orbit",
+     "name": "Upper Orbit"
+    },
+    {
+     "id": "luna",
+     "name": "Luna"
+    },
+    {
+     "id": "starport_alpha",
+     "name": "Starport Alpha"
+    }
+   ],
+   "trackIds": [
+    "war_support",
+    "earth_gov_military",
+    "canopy_shares",
+    "un_oversight",
+    "luna_prosperity"
+   ]
+  },
+  "mars_map": {
+   "name": "Mars",
+   "locations": [
+    {
+     "id": "phobos",
+     "name": "Phobos"
+    },
+    {
+     "id": "deimos",
+     "name": "Deimos"
+    },
+    {
+     "id": "mars_upper_orbit",
+     "name": "Upper Orbit"
+    },
+    {
+     "id": "mars_low_orbit",
+     "name": "Low Orbit"
+    },
+    {
+     "id": "starport_m",
+     "name": "Starport M"
+    },
+    {
+     "id": "capital_city",
+     "name": "Capital City"
+    },
+    {
+     "id": "senate_building",
+     "name": "Senate Building"
+    }
+   ],
+   "trackIds": [
+    "senate_military",
+    "deimos_rising_valuation",
+    "senate_control_politicians",
+    "senate_control_people",
+    "senate_control_corporate",
+    "terraforming_project"
+   ]
+  },
+  "belt_map": {
+   "name": "Asteroid Belt",
+   "locations": [
+    {
+     "id": "ceres",
+     "name": "Ceres"
+    },
+    {
+     "id": "vesta",
+     "name": "Vesta"
+    },
+    {
+     "id": "pallas",
+     "name": "Pallas"
+    }
+   ],
+   "trackIds": [
+    "earth_trade_route",
+    "mars_trade_route",
+    "ceres_prosperity",
+    "vesta_and_pallas_prosperity",
+    "shipping_control_un",
+    "shipping_control_belt_union",
+    "shipping_control_free_federation",
+    "shipping_control_martian_speaker"
+   ]
+  }
+ },
+ "tracks": {
+  "war_support": {
+   "name": "War Support",
+   "map": "earth_map",
+   "initial": 16,
+   "endOfTurn": []
+  },
+  "earth_gov_military": {
+   "name": "Earth Gov Military",
+   "map": "earth_map",
+   "initial": 4,
+   "endOfTurn": []
+  },
+  "canopy_shares": {
+   "name": "Canopy Shares",
+   "map": "earth_map",
+   "initial": 12,
+   "endOfTurn": []
+  },
+  "un_oversight": {
+   "name": "UN Oversight",
+   "map": "earth_map",
+   "initial": 4,
+   "endOfTurn": []
+  },
+  "luna_prosperity": {
+   "name": "Luna Prosperity",
+   "map": "earth_map",
+   "initial": 16,
+   "endOfTurn": [
+    {
+     "when": "earth_trade_route < 4",
+     "effect": "negatively_affected",
+     "magnitude": "facilitator_judgement",
+     "printed": "If a Trade Route is <4 a score will be negatively affected: Earth Trade Route : Luna Prosperity."
+    }
+   ]
+  },
+  "senate_military": {
+   "name": "Senate Military",
+   "map": "mars_map",
+   "initial": 0,
+   "endOfTurn": []
+  },
+  "deimos_rising_valuation": {
+   "name": "Deimos Rising Valuation",
+   "map": "mars_map",
+   "initial": 0,
+   "endOfTurn": []
+  },
+  "senate_control_politicians": {
+   "name": "Senate Control - Politicians",
+   "map": "mars_map",
+   "initial": 12,
+   "endOfTurn": []
+  },
+  "senate_control_people": {
+   "name": "Senate Control - People",
+   "map": "mars_map",
+   "initial": 0,
+   "endOfTurn": []
+  },
+  "senate_control_corporate": {
+   "name": "Senate Control - Corporate",
+   "map": "mars_map",
+   "initial": 0,
+   "endOfTurn": []
+  },
+  "terraforming_project": {
+   "name": "Terraforming Project",
+   "map": "mars_map",
+   "initial": 20,
+   "endOfTurn": [
+    {
+     "when": "mars_trade_route < 4",
+     "effect": "negatively_affected",
+     "magnitude": "facilitator_judgement",
+     "printed": "If a Trade Route is <4 a score will be negatively affected: Mars Trade Route : Terraforming Project."
+    }
+   ]
+  },
+  "earth_trade_route": {
+   "name": "Earth Trade Route",
+   "map": "belt_map",
+   "initial": 16,
+   "endOfTurn": []
+  },
+  "mars_trade_route": {
+   "name": "Mars Trade Route",
+   "map": "belt_map",
+   "initial": 12,
+   "endOfTurn": []
+  },
+  "ceres_prosperity": {
+   "name": "Ceres Prosperity",
+   "map": "belt_map",
+   "initial": 12,
+   "endOfTurn": [
+    {
+     "when": "ceres_prosperity > earth_trade_route + mars_trade_route",
+     "effect": "reduced",
+     "magnitude": "facilitator_judgement",
+     "printed": "If Ceres Prosperity is greater than (Earth Trade Route + Mars Trade Route) it will be reduced."
+    }
+   ]
+  },
+  "vesta_and_pallas_prosperity": {
+   "name": "Vesta and Pallas Prosperity",
+   "map": "belt_map",
+   "initial": 8,
+   "endOfTurn": [
+    {
+     "when": "vesta_and_pallas_prosperity > earth_trade_route + mars_trade_route",
+     "effect": "reduced",
+     "magnitude": "facilitator_judgement",
+     "printed": "The same is true for Vesta and Pallas Prosperity."
+    }
+   ]
+  },
+  "shipping_control_un": {
+   "name": "Shipping Control - UN",
+   "map": "belt_map",
+   "initial": 12,
+   "endOfTurn": []
+  },
+  "shipping_control_belt_union": {
+   "name": "Shipping Control - Belt Union",
+   "map": "belt_map",
+   "initial": 4,
+   "endOfTurn": []
+  },
+  "shipping_control_free_federation": {
+   "name": "Shipping Control - Free Federation",
+   "map": "belt_map",
+   "initial": 0,
+   "endOfTurn": []
+  },
+  "shipping_control_martian_speaker": {
+   "name": "Shipping Control - Martian Speaker",
+   "map": "belt_map",
+   "initial": 0,
+   "endOfTurn": []
+  },
+  "war_progress": {
+   "name": "War Progress",
+   "map": null,
+   "initial": null,
+   "endOfTurn": [
+    {
+     "formula": {
+      "add": [
+       "game.earth_gov_military"
+      ],
+      "subtract": [
+       "game.senate_military"
+      ]
+     },
+     "constraints": [
+      {
+       "when": "earth_trade_route < 4",
+       "rule": "cannot_end_higher_than_it_started"
+      },
+      {
+       "when": "mars_trade_route < 4",
+       "rule": "cannot_end_lower_than_it_started"
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "warProgress": {
+  "activatedBy": "war_correspondence_t2",
+  "min": 0,
+  "boundaries": [
+   {
+    "when": "value <= 0",
+    "outcome": "earth_surrenders"
+   },
+   {
+    "when": "value >= 20",
+    "outcome": "mars_surrenders"
+   }
+  ],
+  "locationBands": [
+   {
+    "range": [
+     0,
+     0
+    ],
+    "location": "earth_gov_capital",
+    "note": "Surrender"
+   },
+   {
+    "range": [
+     1,
+     3
+    ],
+    "location": "earth_space_port"
+   },
+   {
+    "range": [
+     4,
+     6
+    ],
+    "location": "earth_low_orbit"
+   },
+   {
+    "range": [
+     7,
+     9
+    ],
+    "location": "earth_upper_orbit"
+   },
+   {
+    "range": [
+     10,
+     12
+    ],
+    "location": "mars_upper_orbit"
+   },
+   {
+    "range": [
+     13,
+     15
+    ],
+    "location": "mars_low_orbit"
+   },
+   {
+    "range": [
+     16,
+     17
+    ],
+    "location": "starport_m"
+   },
+   {
+    "range": [
+     18,
+     19
+    ],
+    "location": "capital_city"
+   },
+   {
+    "range": [
+     20,
+     null
+    ],
+    "location": "senate_building",
+    "note": "Surrender"
+   }
+  ]
+ },
+ "opportunityTriggers": [
+  {
+   "id": "war_support_high",
+   "kind": "threshold",
+   "track": "war_support",
+   "comparison": ">",
+   "value": 18,
+   "actor": "unss"
+  },
+  {
+   "id": "war_support_low",
+   "kind": "threshold",
+   "track": "war_support",
+   "comparison": "<",
+   "value": 8,
+   "actor": "viva_mars"
+  },
+  {
+   "id": "un_oversight_high",
+   "kind": "threshold",
+   "track": "un_oversight",
+   "comparison": ">",
+   "value": 16,
+   "actor": "unss"
+  },
+  {
+   "id": "un_oversight_low",
+   "kind": "threshold",
+   "track": "un_oversight",
+   "comparison": "<",
+   "value": 2,
+   "actor": "canopy_corp"
+  },
+  {
+   "id": "senate_control_lead",
+   "kind": "lead",
+   "margin": 4,
+   "tracks": [
+    {
+     "track": "senate_control_politicians",
+     "actor": "martian_senate_speaker"
+    },
+    {
+     "track": "senate_control_people",
+     "actor": "viva_mars"
+    },
+    {
+     "track": "senate_control_corporate",
+     "actor": "deimos_rising"
+    }
+   ],
+   "otherwise": "unrest will impact Mars in some way"
+  },
+  {
+   "id": "shipping_control_lead",
+   "kind": "lead",
+   "margin": 4,
+   "tracks": [
+    {
+     "track": "shipping_control_un",
+     "actor": "unified_nations_ambassador"
+    },
+    {
+     "track": "shipping_control_belt_union",
+     "actor": "belt_union"
+    },
+    {
+     "track": "shipping_control_free_federation",
+     "actor": "free_federation"
+    },
+    {
+     "track": "shipping_control_martian_speaker",
+     "actor": "martian_senate_speaker"
+    }
+   ],
+   "otherwise": "the resulting chaos will impact the Asteroid Belt in some way"
+  }
+ ]
+}

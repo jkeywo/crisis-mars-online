@@ -1,0 +1,430 @@
+/**
+ * <cm-adjudication> — one map's lane of the facilitator's table.
+ *
+ * The whole printed procedure as one panel: call, read the declaration, rule
+ * the cards, set difficulty, roll, rule the effects, narrate, close. Every
+ * control emits a `cm-facilitate` command and decides nothing itself.
+ *
+ * By the author's rulings the effect tables are guidance, not law: the panel
+ * draws the four printed rows with the action's band column lit and the
+ * running totals beside them, and nothing is clamped. The umpire's private
+ * ledger rides along — every note against the actor and each confirmed ally
+ * is on screen at the moment of ruling, a new note is one box away
+ * ("Prepare for the Future" is a sentence here, not a token), and a note
+ * honoured becomes a spoken, public, flat bonus on the action.
+ *
+ * The effect pickers stage locally (per action, in `_staged`) and commit as
+ * one `facilitator:apply-effects` — the same shape a paper facilitator works
+ * in: decide the whole ruling, then say it.
+ */
+
+import {
+  actionImpact, bandFor, bandIndexOf, consequenceOf, regainCost, confirmedAllies,
+} from '../rules/derive.js';
+
+export class CmAdjudication extends HTMLElement {
+  static observedAttributes = ['map'];
+
+  set data(value) { this._data = value; this._render(); }
+
+  /** The facilitator's own state — nothing here is redacted from them. */
+  set view(value) { this._view = value; this._render(); }
+
+  attributeChangedCallback() { this._render(); }
+
+  connectedCallback() { this._render(); }
+
+  get mapId() { return this.getAttribute('map'); }
+
+  /** What this console's umpire calls themselves, for the lane claim. */
+  get facilitatorName() { return this.getAttribute('facilitator-name') || 'the host'; }
+
+  _emit(verb, payload) {
+    this.dispatchEvent(new CustomEvent('cm-facilitate', {
+      bubbles: true, detail: { verb, payload },
+    }));
+  }
+
+  /** The lane's ownership line: whose table this is, claim or release. */
+  _laneBar() {
+    const owner = this._view.lanes?.[this.mapId] ?? null;
+    const mine = owner === this.facilitatorName;
+    return `
+      <p class="cm-lane-bar">
+        ${owner ? `Lane: <strong>${escape(owner)}</strong>${mine ? ' (you)' : ''}`
+    : '<span class="cm-meta">Lane unclaimed</span>'}
+        <button type="button" data-lane="${mine ? '' : escape(this.facilitatorName)}">
+          ${mine ? 'Release' : 'Run this lane'}</button>
+      </p>`;
+  }
+
+  _wireLane() {
+    const button = this.querySelector('[data-lane]');
+    if (button) {
+      button.onclick = () => this._emit('facilitator:claim-lane', {
+        mapId: this.mapId, name: button.dataset.lane || null,
+      });
+    }
+  }
+
+  _name(code) {
+    return this._data?.roles.roles[code]?.name
+      ?? this._data?.factions.npcs?.[code]?.name ?? code;
+  }
+
+  _cardName(cardId) {
+    const card = this._data?.resources.cards[cardId];
+    return this._data?.resources.types[card?.type]?.name ?? cardId;
+  }
+
+  /** This action's staging area, fresh whenever the action changes. */
+  _stagedFor(action) {
+    if (this._staged?.actionId !== action.id) {
+      this._staged = {
+        actionId: action.id,
+        effects: {},                    // trackId -> delta
+        regains: [...action.regains],   // cardIds
+        sabotage: action.sabotage.map((entry) => ({ ...entry })),
+        narration: action.narration,
+      };
+      for (const { trackId, delta } of action.effects) this._staged.effects[trackId] = delta;
+    }
+    return this._staged;
+  }
+
+  _render() {
+    if (!this.isConnected || !this._data || !this._view) return;
+    if (this.contains(document.activeElement)
+      && document.activeElement.matches('input, textarea, select')) return;
+
+    const initiative = this._view.initiative ?? {};
+    const queue = initiative.queues?.[this.mapId];
+    if (!queue) { this.innerHTML = ''; return; }
+
+    const id = initiative.current?.[this.mapId];
+    const action = id ? this._view.actions?.[id] : null;
+
+    if (!action) {
+      this.innerHTML = `
+        <div class="cm-adjudicate" data-idle="true">
+          ${this._laneBar()}
+          ${queue.length ? `
+            <button type="button" class="cm-primary" data-call>Call ${
+  escape(this._name(queue[0]))}</button>
+            <button type="button" data-skip>Skip them</button>` : `
+            <p class="cm-meta">This map's queue is done.</p>`}
+        </div>`;
+      this._wireIdle();
+      this._wireLane();
+      return;
+    }
+
+    const impact = actionImpact(this._view, this._data, action);
+    const band = bandFor(impact, this._data);
+    const staged = this._stagedFor(action);
+    const confirmed = confirmedAllies(action);
+    const rolled = action.status === 'rolled';
+
+    this.innerHTML = `
+      <div class="cm-adjudicate" data-status="${escape(action.status)}">
+        ${this._laneBar()}
+        <h4>#${action.seq} · ${escape(this._name(action.actorCode))}
+          <span class="cm-meta">${escape(action.status)}</span></h4>
+        ${action.declaration
+    ? `<blockquote class="cm-spotlight-words">${escape(action.declaration)}</blockquote>`
+    : '<p class="cm-meta">Waiting on the declaration…</p>'}
+        ${Object.keys(action.allies).length ? `
+          <p>${Object.entries(action.allies).map(([code, status]) => `
+            <span class="cm-ally-chip" data-ally="${escape(status)}">${
+  escape(this._name(code))} · ${escape(status)}</span>`).join(' ')}</p>` : ''}
+
+        ${this._notesPanel(action, confirmed)}
+
+        ${action.offered.length && !rolled ? `
+          <fieldset class="cm-ruling"><legend>Rule the offer</legend>
+            ${action.offered.map((cardId) => {
+    const owner = this._view.cards[cardId]?.ownerCode;
+    const accepted = action.accepted.length
+      ? action.accepted.includes(cardId) : true;
+    return `<label><input type="checkbox" name="accept" value="${escape(cardId)}"
+              ${accepted ? 'checked' : ''}> ${escape(this._cardName(cardId))}
+              <span class="cm-meta">${escape(this._name(owner))}'s</span></label>`;
+  }).join('')}
+            <button type="button" data-rule>Rule resources</button>
+          </fieldset>` : ''}
+
+        ${!rolled ? `
+          <div class="cm-difficulty" role="group" aria-label="Difficulty">
+            Difficulty:
+            ${[0, -1, -2, -3].map((d) => `
+              <button type="button" data-difficulty="${d}"
+                aria-pressed="${action.difficulty === d}">${d}</button>`).join('')}
+          </div>` : ''}
+
+        <p class="cm-spotlight-sums">
+          Impact <strong>${impact}</strong> · ${escape(band?.label ?? '')}
+          <span class="cm-meta">${escape(band?.printed ?? '')}</span>
+          ${action.bonus ? `· ${action.bonus > 0 ? '+' : ''}${action.bonus} bonus` : ''}
+          ${action.roll !== null
+    ? `· die ${action.roll} (${escape(consequenceOf(action.roll, this._data)?.id ?? '')})`
+    : `<button type="button" data-roll>Roll the consequence die</button>`}
+        </p>
+
+        ${rolled ? this._effectsPanel(action, staged, impact) : ''}
+
+        <label class="cm-narrate">Narration
+          <textarea name="narration" rows="2">${escape(staged.narration)}</textarea>
+        </label>
+        <div class="cm-adjudicate-buttons">
+          <button type="button" data-narrate>Save narration</button>
+          <button type="button" class="cm-primary" data-close>Close the action</button>
+          <button type="button" data-skip>Skip</button>
+        </div>
+      </div>`;
+
+    this._wire(action, staged);
+    this._wireLane();
+  }
+
+  /**
+   * The umpire's ledger, at the moment it matters: every note against the
+   * actor and each confirmed ally, and the box that writes the next one.
+   */
+  _notesPanel(action, confirmed) {
+    const characters = [action.actorCode, ...confirmed];
+    const noted = characters
+      .map((code) => [code, this._view.notes?.[code] ?? []])
+      .filter(([, notes]) => notes.length);
+
+    return `
+      <details class="cm-adjudicate-notes" ${noted.length ? 'open' : ''}>
+        <summary>Your notes ${noted.length
+    ? `<span class="cm-meta">${noted.reduce((n, [, notes]) => n + notes.length, 0)}</span>` : ''}</summary>
+        ${noted.length ? noted.map(([code, notes]) => `
+          <p class="cm-meta"><strong>${escape(this._name(code))}</strong></p>
+          <ul>${notes.map((note) => `<li>${escape(note.text)}</li>`).join('')}</ul>`).join('')
+    : '<p class="cm-empty">Nothing written against them.</p>'}
+        <div class="cm-row">
+          <select data-note-code>
+            ${characters.map((code) => `
+              <option value="${escape(code)}">${escape(this._name(code))}</option>`).join('')}
+          </select>
+          <input type="text" data-note-text placeholder="Prepare for the future…">
+          <button type="button" data-add-note>Note it</button>
+        </div>
+        <div class="cm-row">
+          <label>Spoken bonus
+            <input type="number" step="1" data-bonus value="${action.bonus}" style="width: 4rem">
+          </label>
+          <button type="button" data-set-bonus>Set</button>
+          <span class="cm-meta">Public, counted into Impact — honouring a note, out loud.</span>
+        </div>
+      </details>`;
+  }
+
+  /**
+   * The printed effect tables as guidance — the action's band column lit,
+   * the running totals beside — and the unclamped pickers.
+   */
+  _effectsPanel(action, staged, impact) {
+    const tracks = this._data.maps.maps[this.mapId].trackIds;
+    const trackSpent = Object.values(staged.effects)
+      .reduce((sum, delta) => sum + Math.abs(delta || 0), 0);
+    const regainSpent = staged.regains.reduce((sum, cardId) =>
+      sum + regainCost(this._data, this._view.cards[cardId]?.ownerCode, action.actorCode), 0);
+    const spentCards = Object.values(this._view.cards)
+      .filter((card) => card.state === 'spent');
+    const heldCards = Object.values(this._view.cards)
+      .filter((card) => card.state === 'held' && !action.accepted.includes(card.id));
+
+    const litColumn = bandIndexOf(impact, this._data);
+    const bands = this._data.meta.impact.bands;
+    const tables = this._data.meta.effects;
+    const guidanceRows = [
+      ['Score modifier ±', tables.score_modifier.by_band, `${trackSpent} staged`],
+      ['Regain', tables.regain_resources.by_band, `${regainSpent} staged`],
+      ['Sabotage', tables.sabotage_resources.by_band, `${staged.sabotage.length} staged`],
+      ['Future impact', tables.increase_future_impact.by_band, 'a note, now'],
+    ];
+
+    return `
+      <div class="cm-effects">
+        <table class="cm-guidance">
+          <caption class="cm-meta">The printed tables — guidance for the whole
+            action, this band's column lit. Nothing here is enforced.</caption>
+          <thead><tr><th></th>${bands.map((entry, index) => `
+            <th data-band="${index === litColumn}">${escape(entry.label)}</th>`).join('')}
+            <th>Running</th></tr></thead>
+          <tbody>${guidanceRows.map(([label, byBand, running]) => `
+            <tr><th>${escape(label)}</th>${byBand.map((value, index) => `
+              <td data-band="${index === litColumn}">${value}</td>`).join('')}
+              <td class="cm-meta">${escape(running)}</td></tr>`).join('')}
+          </tbody>
+        </table>
+
+        <fieldset><legend>Tracks</legend>
+          ${tracks.map((trackId) => `
+            <label class="cm-effect-track">${escape(this._data.maps.tracks[trackId]?.name ?? trackId)}
+              <input type="number" step="1" data-track="${escape(trackId)}"
+                value="${staged.effects[trackId] ?? 0}">
+            </label>`).join('')}
+        </fieldset>
+
+        <fieldset><legend>Regain — to ${escape(this._name(action.actorCode))}
+          <span class="cm-meta">(out-of-faction cards count 2 in the guidance)</span></legend>
+          ${staged.regains.map((cardId, index) => `
+            <span class="cm-card-chip">${escape(this._cardName(cardId))}
+              <button type="button" data-unregain="${index}" aria-label="Remove">×</button>
+            </span>`).join('')}
+          <div class="cm-row">
+            <select data-regain-card>
+              <option value="">Card…</option>
+              ${spentCards.map((card) => `
+                <option value="${escape(card.id)}">${escape(this._cardName(card.id))} (${
+  escape(card.ownerCode)})</option>`).join('')}
+            </select>
+            <button type="button" data-add-regain>Add</button>
+          </div>
+        </fieldset>
+
+        <fieldset><legend>Sabotage</legend>
+          ${staged.sabotage.map(({ cardId, mode }, index) => `
+            <span class="cm-card-chip" data-mode="${escape(mode)}">${escape(this._cardName(cardId))}
+              · ${escape(mode)}
+              <button type="button" data-unsabotage="${index}" aria-label="Remove">×</button>
+            </span>`).join('')}
+          <div class="cm-row">
+            <select data-sabotage-card>
+              <option value="">Card…</option>
+              ${heldCards.map((card) => `
+                <option value="${escape(card.id)}">${escape(this._cardName(card.id))} — with ${
+  escape(card.holderCode)}</option>`).join('')}
+            </select>
+            <select data-sabotage-mode>
+              <option value="discard">discard — recoverable</option>
+              <option value="destroy">destroy — gone for good</option>
+            </select>
+            <button type="button" data-add-sabotage>Add</button>
+          </div>
+        </fieldset>
+
+        <button type="button" class="cm-primary" data-apply>Apply effects</button>
+      </div>`;
+  }
+
+  _wireIdle() {
+    const call = this.querySelector('[data-call]');
+    if (call) call.onclick = () => this._emit('facilitator:call-next', { mapId: this.mapId });
+    const skip = this.querySelector('[data-skip]');
+    if (skip) skip.onclick = () => this._emit('facilitator:skip-action', { mapId: this.mapId });
+  }
+
+  _wire(action, staged) {
+    const rule = this.querySelector('[data-rule]');
+    if (rule) {
+      rule.onclick = () => {
+        const accepted = [...this.querySelectorAll('input[name="accept"]:checked')]
+          .map((input) => input.value);
+        this._emit('facilitator:rule-resources', {
+          actionId: action.id,
+          acceptedCardIds: accepted,
+          vetoedCardIds: action.offered.filter((cardId) => !accepted.includes(cardId)),
+        });
+      };
+    }
+    for (const button of this.querySelectorAll('[data-difficulty]')) {
+      button.onclick = () => this._emit('facilitator:set-difficulty', {
+        actionId: action.id, difficulty: Number(button.dataset.difficulty),
+      });
+    }
+    const roll = this.querySelector('[data-roll]');
+    if (roll) roll.onclick = () => this._emit('facilitator:roll-consequence', { actionId: action.id });
+
+    // --- the ledger and the spoken bonus --------------------------------------
+    const addNote = this.querySelector('[data-add-note]');
+    if (addNote) {
+      addNote.onclick = () => {
+        const text = this.querySelector('[data-note-text]').value;
+        if (!text.trim()) return;
+        this._emit('facilitator:note', {
+          code: this.querySelector('[data-note-code]').value, text,
+        });
+        this.querySelector('[data-note-text]').value = '';
+      };
+    }
+    const setBonus = this.querySelector('[data-set-bonus]');
+    if (setBonus) {
+      setBonus.onclick = () => {
+        const bonus = Number(this.querySelector('[data-bonus]').value);
+        if (!Number.isInteger(bonus)) return;
+        this._emit('facilitator:set-bonus', { actionId: action.id, bonus });
+      };
+    }
+
+    // --- the staged effects -------------------------------------------------
+    for (const input of this.querySelectorAll('[data-track]')) {
+      input.onchange = () => {
+        const delta = Number(input.value);
+        if (delta === 0) delete staged.effects[input.dataset.track];
+        else staged.effects[input.dataset.track] = delta;
+        this._render();
+      };
+    }
+    const addRegain = this.querySelector('[data-add-regain]');
+    if (addRegain) {
+      addRegain.onclick = () => {
+        const cardId = this.querySelector('[data-regain-card]').value;
+        if (!cardId) return;
+        staged.regains.push(cardId);
+        this._render();
+      };
+    }
+    for (const button of this.querySelectorAll('[data-unregain]')) {
+      button.onclick = () => { staged.regains.splice(Number(button.dataset.unregain), 1); this._render(); };
+    }
+    const addSabotage = this.querySelector('[data-add-sabotage]');
+    if (addSabotage) {
+      addSabotage.onclick = () => {
+        const cardId = this.querySelector('[data-sabotage-card]').value;
+        if (!cardId) return;
+        staged.sabotage.push({ cardId, mode: this.querySelector('[data-sabotage-mode]').value });
+        this._render();
+      };
+    }
+    for (const button of this.querySelectorAll('[data-unsabotage]')) {
+      button.onclick = () => { staged.sabotage.splice(Number(button.dataset.unsabotage), 1); this._render(); };
+    }
+
+    const apply = this.querySelector('[data-apply]');
+    if (apply) {
+      apply.onclick = () => this._emit('facilitator:apply-effects', {
+        actionId: action.id,
+        effects: Object.entries(staged.effects)
+          .filter(([, delta]) => delta !== 0)
+          .map(([trackId, delta]) => ({ trackId, delta })),
+        regains: staged.regains,
+        sabotage: staged.sabotage,
+      });
+    }
+
+    const narration = this.querySelector('textarea[name="narration"]');
+    if (narration) narration.onchange = () => { staged.narration = narration.value; };
+    const narrate = this.querySelector('[data-narrate]');
+    if (narrate) {
+      narrate.onclick = () => this._emit('facilitator:narrate', {
+        actionId: action.id, text: staged.narration,
+      });
+    }
+    const close = this.querySelector('[data-close]');
+    if (close) close.onclick = () => this._emit('facilitator:close-action', { actionId: action.id });
+    const skip = this.querySelector('[data-skip]');
+    if (skip) skip.onclick = () => this._emit('facilitator:skip-action', { mapId: this.mapId });
+  }
+}
+
+function escape(text) {
+  return String(text ?? '').replace(/[&<>"']/g, (c) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+customElements.define('cm-adjudication', CmAdjudication);

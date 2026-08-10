@@ -1,0 +1,252 @@
+{
+ "_generated": "crisis_mars gamespec @ analogue-projects 91b1903 via tools/export_web_data.py",
+ "_doNotEdit": true,
+ "factions": {
+  "canopy_corp": {
+   "name": "Canopy Corp",
+   "codePrefix": "C",
+   "colour": "#abf075",
+   "icons": {
+    "large": "Icons/CanopyLarge.png",
+    "small": "Icons/CanopySmall.png"
+   },
+   "background": "Canopy P.L.C. was initially founded to develop and deploy habitats during the colonisation of Luna. Until it won the contract to terraform Mars it was a mid-sized mega-corporation, but over the last 40 years it has grown to one of the largest non-state entities in the solar system.\nThe Martian terraforming project is now vital to the future of Canopy Corp and the political unrest is an unwelcome disruption to normal operations.",
+   "goals": [
+    {
+     "id": "canopy_corp_goal_1",
+     "statement": "The UN are the only faction who can credibly afford terraforming, so they need to keep control of Mars."
+    },
+    {
+     "id": "canopy_corp_goal_2",
+     "statement": "Keep the terraforming project active, including the trade route from the Asteroid Belt to Mars."
+    },
+    {
+     "id": "canopy_corp_goal_3",
+     "statement": "Luna in general, and Canopy Corp in particular, should remain prosperous."
+    },
+    {
+     "id": "canopy_corp_goal_4",
+     "statement": "The Martian Senate should be controlled by corporations, or at least the Politicians."
+    }
+   ],
+   "roleIds": [
+    "C1",
+    "C2",
+    "C3"
+   ],
+   "brief": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Front_22.png"
+  },
+  "viva_mars": {
+   "name": "Viva Mars",
+   "codePrefix": "V",
+   "colour": "#f07575",
+   "icons": {
+    "large": "Icons/VivaMarsLarge.png",
+    "small": "Icons/VivaMarsSmall.png"
+   },
+   "background": "Viva Mars was there at the start of the independence movement, before it became mainstream and the politicians became involved. It started with a socialist dream, equality for all Martians as well as freedom from Earth, but the Senate wants to keep their power.\nAs much as your main aim has never been closer to being realised, the new wave of opportunistic politicians and military folk seem hell bent on turning Mars into a copy of Earth, and bending the knee to the same old corporations.",
+   "goals": [
+    {
+     "id": "viva_mars_goal_1",
+     "statement": "The Martian war for independence should be a success."
+    },
+    {
+     "id": "viva_mars_goal_2",
+     "statement": "The Martian Senate should be returned to the people."
+    },
+    {
+     "id": "viva_mars_goal_3",
+     "statement": "Recruit as many allies as possible."
+    },
+    {
+     "id": "viva_mars_goal_4",
+     "statement": "The future of Mars relies on the terraforming project continuing."
+    }
+   ],
+   "roleIds": [
+    "V1",
+    "V2",
+    "V3"
+   ],
+   "brief": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Front_23.png"
+  },
+  "belt_union": {
+   "name": "Belt Union",
+   "codePrefix": "B",
+   "colour": "#f0da75",
+   "icons": {
+    "large": "Icons/BeltUnionLarge.png",
+    "small": "Icons/BeltUnionSmall.png"
+   },
+   "background": "Once mining in the asteroid belt had been proved viable a new gold rush for rare ores and materials from the belt began. The early pioneers had to lease spacecraft from the corporations that could afford to build them.\nOver time this settled down into a status quo where large mining companies would hire freelancer mining crews to perform the dangerous work.\nThe Belt Union was formed from these workers in order to counterbalance the power of the corps that employ them and operate several space stations in the asteroid belt.",
+   "goals": [
+    {
+     "id": "belt_union_goal_1",
+     "statement": "Ceres, Vesta and Pallas should be as prosperous as possible."
+    },
+    {
+     "id": "belt_union_goal_2",
+     "statement": "Both Mars and Earth should remain in political turmoil, so you can claim more independence for the Asteroid Belt."
+    },
+    {
+     "id": "belt_union_goal_3",
+     "statement": "Keep trade flowing between the Belt and the inner planets."
+    },
+    {
+     "id": "belt_union_goal_4",
+     "statement": "Gain control of shipping in the Asteroid Belt."
+    }
+   ],
+   "roleIds": [
+    "B1",
+    "B2",
+    "B3"
+   ],
+   "brief": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Front_24.png"
+  },
+  "unss": {
+   "name": "UNSS",
+   "codePrefix": "U",
+   "colour": "#75e9f0",
+   "icons": {
+    "large": "Icons/UNSSLarge.png",
+    "small": "Icons/UNSSSmall.png"
+   },
+   "background": "The Unified Nations Security Service is a joint intelligence agency working for the Earth Gov to ensure stability on Earth, in the inner system and intercepting threats to the sovereignty of Earth.\nLittle is known about just how broad their mandate is, but there have been unofficial reports of paramilitary operations and infiltration of other parts of the UN.",
+   "goals": [
+    {
+     "id": "unss_goal_1",
+     "statement": "Ensure Earth is never threatened or attacked."
+    },
+    {
+     "id": "unss_goal_2",
+     "statement": "Win the war against Mars."
+    },
+    {
+     "id": "unss_goal_3",
+     "statement": "Secure Earth's interests in the Asteroid Belt."
+    },
+    {
+     "id": "unss_goal_4",
+     "statement": "Ensure the loyalty of the corporations and traders to Earth."
+    }
+   ],
+   "roleIds": [
+    "U1",
+    "U3",
+    "U2"
+   ],
+   "brief": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Front_25.png"
+  },
+  "deimos_rising": {
+   "name": "Deimos Rising Corp",
+   "codePrefix": "D",
+   "colour": "#ab75f0",
+   "icons": {
+    "large": "Icons/DeimosLarge.png",
+    "small": "Icons/DeimosSmall.png"
+   },
+   "background": "Deimos was the first Martian Senate backed corporation, ratified by Earth Gov, given corporate sovereignty over the moon of Deimos and a charter to facilitate trade to and from Mars.\nThe senate has stated that, if independence is won then Deimos Rising will be taken public, which could result in a healthy payday if their shares are high.",
+   "goals": [
+    {
+     "id": "deimos_rising_goal_1",
+     "statement": "Outperform the Belt Union for trading."
+    },
+    {
+     "id": "deimos_rising_goal_2",
+     "statement": "Keep Mars stable, with the Senate controlled by the Corps or Politicians."
+    },
+    {
+     "id": "deimos_rising_goal_3",
+     "statement": "Muscle in on the Terraforming project"
+    },
+    {
+     "id": "deimos_rising_goal_4",
+     "statement": "Keep your valuation high."
+    }
+   ],
+   "roleIds": [
+    "D1",
+    "D3",
+    "D2"
+   ],
+   "brief": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Front_26.png"
+  },
+  "free_federation": {
+   "name": "Free Federation",
+   "codePrefix": "F",
+   "colour": "#b3b3b3",
+   "icons": {
+    "large": "Icons/FreeFedLarge.png",
+    "small": "Icons/FreeFedSmall.png"
+   },
+   "background": "Space piracy is in its infancy, as only recently has access to small space vessels become easier and trade more common. The Free Federation are a loose federation of those who are looking for wealth or freedom in space. Their founder, Dread Lizzy, was recently killed in a UN raid and now the Federation finds itself leaderless.",
+   "goals": [
+    {
+     "id": "free_federation_goal_1",
+     "statement": "Resolve the leadership question."
+    },
+    {
+     "id": "free_federation_goal_2",
+     "statement": "Gain power and wealth for the Federation."
+    },
+    {
+     "id": "free_federation_goal_3",
+     "statement": "Be seen as a faction to be feared and respected."
+    },
+    {
+     "id": "free_federation_goal_4",
+     "statement": "Gain control of shipping in the Asteroid Belt."
+    }
+   ],
+   "roleIds": [
+    "F3",
+    "F2",
+    "F1"
+   ],
+   "brief": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Front_27.png"
+  }
+ },
+ "npcs": {
+  "N1": {
+   "id": "unified_nations_ambassador",
+   "name": "Unified Nations Ambassador",
+   "publicDescription": "The Unified Nations of Earth is the largest and most powerful organisation in the solar system. It is the ultimate authority on Earth, although often leaving individual nation states to their own devices. In space, however, it doesn't hesitate to exert its full authority. Their ambassador has access to resources, but the bureaucracy of Earth Gov can make them slow to deploy.\n",
+   "handCardIds": [
+    "rc_n1_1",
+    "rc_n1_2",
+    "rc_n1_3",
+    "rc_n1_4",
+    "rc_n1_5",
+    "rc_n1_6",
+    "rc_n1_7",
+    "rc_n1_8",
+    "rc_n1_9"
+   ],
+   "card": {
+    "front": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Front_1.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Jumbo Back/Crisis Mars v1.0 - Jumbo Cards Back_1.png"
+   }
+  },
+  "N2": {
+   "id": "martian_senate_speaker",
+   "name": "Martian Senate Speaker",
+   "publicDescription": "The Martian Senate is the governing body of Mars and, while democratically elected, is still under the authority of Earth. The Speaker is one of the new wave of professional politicians and is empowered to make deals on the Senate's behalf during this time of war.\n",
+   "handCardIds": [
+    "rc_n2_1",
+    "rc_n2_2",
+    "rc_n2_3",
+    "rc_n2_4",
+    "rc_n2_5",
+    "rc_n2_6",
+    "rc_n2_7",
+    "rc_n2_8",
+    "rc_n2_9"
+   ],
+   "card": {
+    "front": "Deluxe/Crisis Mars v1.0 - Jumbo Front/Crisis Mars v1.0 - Jumbo Cards Front_2.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Jumbo Back/Crisis Mars v1.0 - Jumbo Cards Back_2.png"
+   }
+  }
+ }
+}

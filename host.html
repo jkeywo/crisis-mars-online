@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Crisis: Mars — Facilitator</title>
+  <link rel="icon" href="favicon.ico">
+  <link rel="stylesheet" href="gui/console.css">
+  <script src="vendor/peerjs.min.js"></script>
+</head>
+<body class="cm-shell">
+  <div id="stale-banner" class="cm-stale-banner" hidden>
+    This page loaded only part of a freshly published version.
+    <button type="button" id="stale-reload">Reload</button>
+  </div>
+  <script>
+    // Classic script on purpose: it must run even when the module graph
+    // cannot. A deploy mid-visit can pair cached old modules with new HTML
+    // (or vice versa); the failure used to be a silent skeleton.
+    (function () {
+      var reveal = function () {
+        var b = document.getElementById('stale-banner');
+        if (b) b.hidden = false;
+      };
+      document.getElementById('stale-reload').addEventListener('click', function () {
+        location.reload();
+      });
+      window.addEventListener('error', function (e) {
+        var t = e.target;
+        if (t && (t.tagName === 'SCRIPT' || t.tagName === 'LINK')) reveal();
+      }, true);
+      setTimeout(function () {
+        if (!document.body.dataset.booted) reveal();
+      }, 6000);
+    })();
+  </script>
+  <header class="cm-bar">
+    <span class="cm-brand">Crisis: Mars <span class="cm-tag">facilitator</span></span>
+    <cm-connection-dot id="connection" status="idle"></cm-connection-dot>
+  </header>
+
+  <main class="cm-main">
+    <!-- starting or resuming ---------------------------------------------- -->
+    <section id="screen-start" class="cm-panel" hidden>
+      <h1>Run a game</h1>
+      <p class="cm-lede">
+        The game runs in this tab. Keep it open and active or the game will
+        pause.
+      </p>
+      <label for="player-count">How many players?</label>
+      <select id="player-count">
+        <option value="18" selected>18 — the full game</option>
+        <option value="17">17</option>
+        <option value="16">16</option>
+        <option value="15">15</option>
+        <option value="14">14</option>
+        <option value="13">13</option>
+        <option value="12">12</option>
+        <option value="11">11</option>
+        <option value="10">10</option>
+        <option value="9">9</option>
+        <option value="8">8 — the smallest table</option>
+      </select>
+      <p class="cm-meta">
+        The variable available roles are applied automatically.
+      </p>
+
+      <button id="new-game" type="button" class="cm-primary">Start a new game</button>
+      <p id="start-error" class="cm-error" role="alert"></p>
+
+      <div id="resume" hidden>
+        <h2>Or pick up where you left off</h2>
+        <ul id="resume-list" class="cm-resumes"></ul>
+      </div>
+
+      <h2>Or help run somebody else's</h2>
+      <p class="cm-meta">
+        The other facilitator's computer runs the game, but you get the same
+        interface and can continue running the game if something happens to
+        their session.
+      </p>
+      <form id="join-as-co" class="cm-co-form">
+        <label>Game code <input id="co-code" maxlength="8" autocomplete="off"></label>
+        <label>Facilitator PIN <input id="co-pin" maxlength="8" autocomplete="off"></label>
+        <label>Your name <input id="co-name" maxlength="40" autocomplete="off"></label>
+        <button type="submit">Join as co-facilitator</button>
+      </form>
+
+      <h2>Or open a saved game</h2>
+      <p class="cm-meta">
+        A downloaded save can be opened on any machine.
+      </p>
+      <input id="import-file" type="file" accept="application/json,.json">
+    </section>
+
+    <!-- running ------------------------------------------------------------ -->
+    <section id="screen-running" class="cm-panel cm-wide" hidden>
+      <section id="co-banner" class="cm-co-banner" hidden>
+        <p>
+          <strong>You are the co-facilitator.</strong>
+          The game is on the main facilitators machine and mirrored here.
+          <span id="co-mirror" class="cm-meta"></span>
+        </p>
+        <button id="take-over" type="button">Take over hosting</button>
+      </section>
+
+      <!-- The pinned header: two rows that stay put while the console
+           scrolls beneath them. Row one is the phase clock, its controls
+           and the war rail; row two is the six tabs. The connection dot
+           rides the brand bar above, which is sticky in its own right. -->
+      <div id="host-header" class="cm-host-header">
+        <section class="cm-run-control">
+          <cm-phase-clock id="clock"></cm-phase-clock>
+          <div class="cm-clock-buttons">
+            <button id="advance-phase" type="button" class="cm-primary">Next phase</button>
+            <button id="pause-clock" type="button">Pause</button>
+            <button id="extend-clock" type="button" data-minutes="1">+1 min</button>
+            <button id="shorten-clock" type="button" data-minutes="-1">−1 min</button>
+            <button id="end-game" type="button">Call time</button>
+          </div>
+          <!-- The war, on the strip that never leaves the screen. Says
+               nothing until the turn-two correspondence starts it. -->
+          <div id="war-strip" class="cm-war-strip" hidden>
+            <cm-war-progress id="war"></cm-war-progress>
+          </div>
+          <!-- Placement is mandatory, so during the Negotiation Phase this
+               strip names who has not placed yet — the list to read out with
+               a minute on the clock. -->
+          <p id="unplaced" class="cm-meta" hidden></p>
+        </section>
+
+        <!-- The console is tabs from here down: one per map (the printed
+             board with the live game overlaid, and that map's Action Phase
+             machinery), then Roles, NPCs, and Game. The map tab buttons and
+             panels are built by the app from maps.json. -->
+        <nav id="host-tabs" class="cm-tabs cm-host-tabs" role="tablist"
+             aria-label="Console tabs"></nav>
+      </div>
+
+      <div id="tab-panels">
+        <!-- The three map panels are built here by the app. -->
+
+        <section class="cm-tab-panel" id="panel-roles" role="tabpanel"
+                 aria-labelledby="tab-roles" hidden>
+          <h2>The lanyards</h2>
+          <p class="cm-meta">
+            Who is wearing what. Open a row to manage that player's cards —
+            every move lands on the override ledger — or to place their
+            action card for them.
+          </p>
+          <cm-roles-panel id="roles-panel"></cm-roles-panel>
+        </section>
+
+        <section class="cm-tab-panel" id="panel-npcs" role="tabpanel"
+                 aria-labelledby="tab-npcs" hidden>
+          <h2>Your lanyards</h2>
+          <p class="cm-meta">
+            The U.N. Ambassador and the Martian Senate Speaker are
+            facilitators to roleplay. Split these roles between the game's
+            facilitators.
+          </p>
+          <div class="cm-npc-grid">
+            <article class="cm-npc-column">
+              <div id="npc-brief-n1"></div>
+              <h3>The tithe</h3>
+              <div id="tithe-tracker"></div>
+              <h3>Hand</h3>
+              <cm-hand id="npc-n1" acts-for="N1" regain></cm-hand>
+            </article>
+            <article class="cm-npc-column">
+              <div id="npc-brief-n2"></div>
+              <h3>Hand</h3>
+              <cm-hand id="npc-n2" acts-for="N2" regain></cm-hand>
+            </article>
+          </div>
+        </section>
+
+        <section class="cm-tab-panel" id="panel-game" role="tabpanel"
+                 aria-labelledby="tab-game" hidden>
+      <!-- The end-of-turn worksheet: computed by the reducer, stepped
+           through here once the last spotlight has closed. -->
+      <cm-turn-update id="turn-update"></cm-turn-update>
+
+      <!-- The debrief. Everything on it is worked out from the frozen board,
+           so it cannot disagree with the maps the players are looking at. -->
+      <section id="epilogue-panel" class="cm-epilogue-panel" hidden>
+        <h2>The debrief</h2>
+        <p class="cm-meta">Use as the basis for the post game debrief.</p>
+        <div class="cm-row">
+          <button id="print-epilogue" type="button" class="cm-primary">Print it</button>
+          <button id="save-epilogue" type="button">Save as a page</button>
+        </div>
+        <cm-epilogue id="epilogue"></cm-epilogue>
+      </section>
+
+      <!-- The Team Phase table: the turn's war news, the opportunity
+           composer, and the tithe. Built from the facilitator-only files
+           this page alone loads; see DECISIONS.md. -->
+      <section id="team-panel" class="cm-team-panel" hidden>
+        <h2>The Team Phase table</h2>
+        <div class="cm-columns">
+          <div>
+            <h3>War correspondence</h3>
+            <div id="correspondence-card"></div>
+          </div>
+          <div>
+            <h3>Compose an opportunity</h3>
+            <div id="opportunity-composer"></div>
+            <h3>Opportunities</h3>
+            <div id="opportunity-list"></div>
+            <h3>Post the news</h3>
+            <p class="cm-meta">Anything the room should read on their News
+              tab — a made-the-news action, a rumour, a correction.</p>
+            <div class="cm-row">
+              <input id="news-text" maxlength="400" placeholder="What happened…">
+              <button id="post-news" type="button">Post it</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="cm-columns">
+        <div>
+          <h1>Game <span id="join-code" class="cm-code"></span></h1>
+          <p class="cm-lede">Read the code out and/or paste the link.</p>
+
+          <label for="player-link">Player link</label>
+          <div class="cm-row">
+            <input id="player-link" readonly>
+            <button id="copy-link" type="button">Copy</button>
+          </div>
+
+          <details class="cm-testing">
+            <summary>Testing on one machine</summary>
+            <p class="cm-meta">
+              Opens tabs that each take a role of their own. For testing.
+            </p>
+            <div class="cm-row">
+              <label for="test-seats">How many</label>
+              <input id="test-seats" type="number" min="1" max="8" value="2">
+              <button id="open-test-seats" type="button">Open test players</button>
+            </div>
+          </details>
+
+          <p class="cm-pin">
+            Facilitator PIN <strong id="facilitator-pin"></strong>
+            <span class="cm-meta">
+              Only the other facilitator should be sent this. Anyone with it can edit the game.
+            </span>
+          </p>
+
+          <h2>Keeping the game</h2>
+          <p class="cm-meta">
+            Saved automatically as you go.
+          </p>
+          <button id="download-save" type="button">Download save</button>
+          <p id="save-warning" class="cm-error" role="alert" hidden>
+            Could not save to this browser — storage is full or blocked.
+            Download a save instead.
+          </p>
+          <p id="replay-warning" class="cm-error" role="alert" hidden></p>
+
+          <h2>Who is here</h2>
+          <p id="seated-count" class="cm-meta"></p>
+          <p class="cm-meta">
+            Clearing a seat empties the chair, not the character: whoever was
+            in it can no longer resume, and their role stays available for
+            somebody else to take.
+          </p>
+          <!-- `editable` is the whole of what separates this roster from the
+               identical one every player has open. -->
+          <cm-seat-roster id="roster" editable></cm-seat-roster>
+
+          <h2>Connections</h2>
+          <pre id="host-log" class="cm-log"></pre>
+        </div>
+
+        <div>
+          <section id="gaps-panel" class="cm-gaps-panel" hidden>
+            <details>
+              <summary>Where the rules aren't implemented yet</summary>
+              <p class="cm-meta">
+                These rules have not been converted online yet and need to be
+                resolved manually.
+              </p>
+              <dl id="rules-gaps" class="cm-gaps"></dl>
+            </details>
+          </section>
+        </div>
+      </div>
+        </section>
+      </div><!-- /#tab-panels -->
+    </section>
+  </main>
+
+  <cm-card-viewer id="card-viewer"></cm-card-viewer>
+
+  <script type="module">
+    import { startHostApp } from './gui/host/host-app.js';
+    import { checkVersion } from './gui/version-check.js';
+    startHostApp().then(() => { document.body.dataset.booted = '1'; })
+      .catch((err) => {
+        console.error(err);
+        document.getElementById('stale-banner').hidden = false;
+      });
+    checkVersion();
+  </script>
+</body>
+</html>

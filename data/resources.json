@@ -1,0 +1,1100 @@
+{
+ "_generated": "crisis_mars gamespec @ analogue-projects 91b1903 via tools/export_web_data.py",
+ "_doNotEdit": true,
+ "types": {
+  "construction_ship": {
+   "name": "Construction Ship",
+   "flavour": "Capable of building, repairing, or improving space-based infrastructure.",
+   "deckCount": 4
+  },
+  "corporate_security": {
+   "name": "Corporate Security",
+   "flavour": "Any sufficiently large corporation operates its own paramilitary security force.",
+   "deckCount": 3
+  },
+  "criminal_contacts": {
+   "name": "Criminal Contacts",
+   "flavour": "Capable of finding anything or anyone, off the books.",
+   "deckCount": 4
+  },
+  "enthusiastic_recruits": {
+   "name": "Enthusiastic Recruits",
+   "flavour": "There are always those willing to join a righteous cause, even amongst the enemy.",
+   "deckCount": 4
+  },
+  "hackers": {
+   "name": "Hackers",
+   "flavour": "Everything is run by a computer, so everything is vulnerable.",
+   "deckCount": 0
+  },
+  "military_randd": {
+   "name": "Military R&D",
+   "flavour": "I'm sure it could have some civilian applications.",
+   "deckCount": 1
+  },
+  "mining_ship": {
+   "name": "Mining Ship",
+   "flavour": "A small asteroid mining ship.",
+   "deckCount": 4
+  },
+  "patrol_ship": {
+   "name": "Patrol Ship",
+   "flavour": "A lightly armed ship capable of scouting and limited combat engagements.",
+   "deckCount": 12
+  },
+  "political_contacts": {
+   "name": "Political Contacts",
+   "flavour": "Any government can be swayed with enough lobbying power.",
+   "deckCount": 11
+  },
+  "rabble_rousers": {
+   "name": "Rabble Rousers",
+   "flavour": "With enough charisma the common folk can be persuaded to do anything that’s plausibly in their self interest.",
+   "deckCount": 3
+  },
+  "raiders": {
+   "name": "Raiders",
+   "flavour": "A well targeted raid can do a great deal to disrupt a military, or corporation.",
+   "deckCount": 7
+  },
+  "raw_materials": {
+   "name": "Raw Materials",
+   "flavour": "The Belt produces many minerals and metals for trade.",
+   "deckCount": 5
+  },
+  "saboteurs": {
+   "name": "Saboteurs",
+   "flavour": "Anything from controlled explosions to detailed work, some workers know how to destroy and disable instead of build.",
+   "deckCount": 2
+  },
+  "scientific_randd": {
+   "name": "Scientific R&D",
+   "flavour": "Major breakthroughs are happening every day.",
+   "deckCount": 2
+  },
+  "secret_agents": {
+   "name": "Secret Agents",
+   "flavour": "Capable of most jobs, completed with discretion.",
+   "deckCount": 3
+  },
+  "small_arms": {
+   "name": "Small Arms",
+   "flavour": "A cache of weapons for use in ground engagements.",
+   "deckCount": 4
+  },
+  "special_forces": {
+   "name": "Special Forces",
+   "flavour": "A small group of highly trained stealthy killers.",
+   "deckCount": 5
+  },
+  "spy_network": {
+   "name": "Spy Network",
+   "flavour": "Spies and double agents have been being put into place for years, waiting for an opportunity to serve the cause.",
+   "deckCount": 3
+  },
+  "stealth_ship": {
+   "name": "Stealth Ship",
+   "flavour": "Stealth ships are small, but can operate for small periods of time undetected.",
+   "deckCount": 4
+  },
+  "gang_of_thugs": {
+   "name": "Gang of Thugs",
+   "flavour": "Want someone roughed up? Something vandalised? You know a guy.",
+   "deckCount": 4
+  },
+  "trade_goods": {
+   "name": "Trade Goods",
+   "flavour": "A mix of valuable and useful goods that could be put to all manner of uses.",
+   "deckCount": 6
+  },
+  "transport_ship": {
+   "name": "Transport Ship",
+   "flavour": "Get from A to B: fast, efficient and cheap - choose two.",
+   "deckCount": 6
+  },
+  "untraceable_cash": {
+   "name": "Untraceable Cash",
+   "flavour": "Sometimes cash speaks for itself.",
+   "deckCount": 7
+  },
+  "workers": {
+   "name": "Workers",
+   "flavour": "Skilled labour that can get a job done, are loyal to the Union and ask no questions.",
+   "deckCount": 4
+  }
+ },
+ "cards": {
+  "rc_c1_1": {
+   "type": "political_contacts",
+   "ownerCode": "C1",
+   "flavour": "Any government can be swayed with enough lobbying power.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_1.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_1.png"
+   }
+  },
+  "rc_c1_2": {
+   "type": "political_contacts",
+   "ownerCode": "C1",
+   "flavour": "Any government can be swayed with enough lobbying power.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_2.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_2.png"
+   }
+  },
+  "rc_c1_3": {
+   "type": "untraceable_cash",
+   "ownerCode": "C1",
+   "flavour": "Sometimes cash speaks for itself.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_3.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_3.png"
+   }
+  },
+  "rc_c1_4": {
+   "type": "untraceable_cash",
+   "ownerCode": "C1",
+   "flavour": "Sometimes cash speaks for itself.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_4.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_4.png"
+   }
+  },
+  "rc_c1_5": {
+   "type": "corporate_security",
+   "ownerCode": "C1",
+   "flavour": "Any sufficiently large corporation operates its own paramilitary security force.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_5.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_5.png"
+   }
+  },
+  "rc_c2_1": {
+   "type": "scientific_randd",
+   "ownerCode": "C2",
+   "flavour": "Major breakthroughs are happening every day.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_6.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_6.png"
+   }
+  },
+  "rc_c2_2": {
+   "type": "scientific_randd",
+   "ownerCode": "C2",
+   "flavour": "Major breakthroughs are happening every day.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_7.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_7.png"
+   }
+  },
+  "rc_c2_3": {
+   "type": "untraceable_cash",
+   "ownerCode": "C2",
+   "flavour": "Sometimes cash speaks for itself.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_8.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_8.png"
+   }
+  },
+  "rc_c2_4": {
+   "type": "military_randd",
+   "ownerCode": "C2",
+   "flavour": "I'm sure it could have some civilian applications.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_9.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_9.png"
+   }
+  },
+  "rc_c2_5": {
+   "type": "political_contacts",
+   "ownerCode": "C2",
+   "flavour": "Any government can be swayed with enough lobbying power.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_10.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_10.png"
+   }
+  },
+  "rc_c3_1": {
+   "type": "corporate_security",
+   "ownerCode": "C3",
+   "flavour": "Any sufficiently large corporation operates its own paramilitary security force.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_11.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_11.png"
+   }
+  },
+  "rc_c3_2": {
+   "type": "corporate_security",
+   "ownerCode": "C3",
+   "flavour": "Any sufficiently large corporation operates its own paramilitary security force.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_12.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_12.png"
+   }
+  },
+  "rc_c3_3": {
+   "type": "spy_network",
+   "ownerCode": "C3",
+   "flavour": "Spies and double agents have been being put into place for years, waiting for an opportunity to serve the cause.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_13.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_13.png"
+   }
+  },
+  "rc_c3_4": {
+   "type": "untraceable_cash",
+   "ownerCode": "C3",
+   "flavour": "Sometimes cash speaks for itself.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_14.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_14.png"
+   }
+  },
+  "rc_c3_5": {
+   "type": "stealth_ship",
+   "ownerCode": "C3",
+   "flavour": "Stealth ships are small, but can operate for small periods of time undetected.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_15.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_15.png"
+   }
+  },
+  "rc_v1_1": {
+   "type": "rabble_rousers",
+   "ownerCode": "V1",
+   "flavour": "With enough charisma the common folk can be persuaded to do anything that’s plausibly in their self interest.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_16.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_16.png"
+   }
+  },
+  "rc_v1_2": {
+   "type": "enthusiastic_recruits",
+   "ownerCode": "V1",
+   "flavour": "There are always those willing to join a righteous cause, even amongst the enemy.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_17.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_17.png"
+   }
+  },
+  "rc_v1_3": {
+   "type": "enthusiastic_recruits",
+   "ownerCode": "V1",
+   "flavour": "There are always those willing to join a righteous cause, even amongst the enemy.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_18.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_18.png"
+   }
+  },
+  "rc_v1_4": {
+   "type": "raiders",
+   "ownerCode": "V1",
+   "flavour": "A well targeted raid can do a great deal to disrupt a military, or corporation.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_19.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_19.png"
+   }
+  },
+  "rc_v1_5": {
+   "type": "political_contacts",
+   "ownerCode": "V1",
+   "flavour": "Any government can be swayed with enough lobbying power.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_20.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_20.png"
+   }
+  },
+  "rc_v2_1": {
+   "type": "rabble_rousers",
+   "ownerCode": "V2",
+   "flavour": "With enough charisma the common folk can be persuaded to do anything that’s plausibly in their self interest.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_21.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_21.png"
+   }
+  },
+  "rc_v2_2": {
+   "type": "rabble_rousers",
+   "ownerCode": "V2",
+   "flavour": "With enough charisma the common folk can be persuaded to do anything that’s plausibly in their self interest.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_22.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_22.png"
+   }
+  },
+  "rc_v2_3": {
+   "type": "enthusiastic_recruits",
+   "ownerCode": "V2",
+   "flavour": "There are always those willing to join a righteous cause, even amongst the enemy.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_23.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_23.png"
+   }
+  },
+  "rc_v2_4": {
+   "type": "raiders",
+   "ownerCode": "V2",
+   "flavour": "A well targeted raid can do a great deal to disrupt a military, or corporation.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_24.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_24.png"
+   }
+  },
+  "rc_v2_5": {
+   "type": "saboteurs",
+   "ownerCode": "V2",
+   "flavour": "Anything from controlled explosions to detailed work, some workers know how to destroy and disable instead of build.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_25.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_25.png"
+   }
+  },
+  "rc_v3_1": {
+   "type": "raiders",
+   "ownerCode": "V3",
+   "flavour": "A well targeted raid can do a great deal to disrupt a military, or corporation.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_26.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_26.png"
+   }
+  },
+  "rc_v3_2": {
+   "type": "raiders",
+   "ownerCode": "V3",
+   "flavour": "A well targeted raid can do a great deal to disrupt a military, or corporation.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_27.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_27.png"
+   }
+  },
+  "rc_v3_3": {
+   "type": "small_arms",
+   "ownerCode": "V3",
+   "flavour": "A cache of weapons for use in ground engagements.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_28.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_28.png"
+   }
+  },
+  "rc_v3_4": {
+   "type": "enthusiastic_recruits",
+   "ownerCode": "V3",
+   "flavour": "There are always those willing to join a righteous cause, even amongst the enemy.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_29.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_29.png"
+   }
+  },
+  "rc_v3_5": {
+   "type": "raiders",
+   "ownerCode": "V3",
+   "flavour": "A well targeted raid can do a great deal to disrupt a military, or corporation.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_30.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_30.png"
+   }
+  },
+  "rc_b1_1": {
+   "type": "raw_materials",
+   "ownerCode": "B1",
+   "flavour": "The Belt produces many minerals and metals for trade.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_31.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_31.png"
+   }
+  },
+  "rc_b1_2": {
+   "type": "raw_materials",
+   "ownerCode": "B1",
+   "flavour": "The Belt produces many minerals and metals for trade.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_32.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_32.png"
+   }
+  },
+  "rc_b1_3": {
+   "type": "transport_ship",
+   "ownerCode": "B1",
+   "flavour": "Get from A to B: fast, efficient and cheap - choose two.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_33.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_33.png"
+   }
+  },
+  "rc_b1_4": {
+   "type": "workers",
+   "ownerCode": "B1",
+   "flavour": "Skilled labour that can get a job done, are loyal to the Union and ask no questions.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_34.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_34.png"
+   }
+  },
+  "rc_b1_5": {
+   "type": "mining_ship",
+   "ownerCode": "B1",
+   "flavour": "A small asteroid mining ship.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_35.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_35.png"
+   }
+  },
+  "rc_b2_1": {
+   "type": "transport_ship",
+   "ownerCode": "B2",
+   "flavour": "Get from A to B: fast, efficient and cheap - choose two.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_36.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_36.png"
+   }
+  },
+  "rc_b2_2": {
+   "type": "transport_ship",
+   "ownerCode": "B2",
+   "flavour": "Get from A to B: fast, efficient and cheap - choose two.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_37.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_37.png"
+   }
+  },
+  "rc_b2_3": {
+   "type": "mining_ship",
+   "ownerCode": "B2",
+   "flavour": "A small asteroid mining ship.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_38.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_38.png"
+   }
+  },
+  "rc_b2_4": {
+   "type": "raw_materials",
+   "ownerCode": "B2",
+   "flavour": "The Belt produces many minerals and metals for trade.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_39.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_39.png"
+   }
+  },
+  "rc_b2_5": {
+   "type": "workers",
+   "ownerCode": "B2",
+   "flavour": "Skilled labour that can get a job done, are loyal to the Union and ask no questions.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_40.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_40.png"
+   }
+  },
+  "rc_b3_1": {
+   "type": "mining_ship",
+   "ownerCode": "B3",
+   "flavour": "A small asteroid mining ship.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_41.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_41.png"
+   }
+  },
+  "rc_b3_2": {
+   "type": "workers",
+   "ownerCode": "B3",
+   "flavour": "Skilled labour that can get a job done, are loyal to the Union and ask no questions.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_42.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_42.png"
+   }
+  },
+  "rc_b3_3": {
+   "type": "workers",
+   "ownerCode": "B3",
+   "flavour": "Skilled labour that can get a job done, are loyal to the Union and ask no questions.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_43.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_43.png"
+   }
+  },
+  "rc_b3_4": {
+   "type": "saboteurs",
+   "ownerCode": "B3",
+   "flavour": "Anything from controlled explosions to detailed work, some workers know how to destroy and disable instead of build.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_44.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_44.png"
+   }
+  },
+  "rc_b3_5": {
+   "type": "patrol_ship",
+   "ownerCode": "B3",
+   "flavour": "A lightly armed ship capable of scouting and limited combat engagements.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_45.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_45.png"
+   }
+  },
+  "rc_u1_1": {
+   "type": "secret_agents",
+   "ownerCode": "U1",
+   "flavour": "Capable of most jobs, completed with discretion.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_46.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_46.png"
+   }
+  },
+  "rc_u1_2": {
+   "type": "political_contacts",
+   "ownerCode": "U1",
+   "flavour": "Any government can be swayed with enough lobbying power.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_47.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_47.png"
+   }
+  },
+  "rc_u1_3": {
+   "type": "political_contacts",
+   "ownerCode": "U1",
+   "flavour": "Any government can be swayed with enough lobbying power.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_48.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_48.png"
+   }
+  },
+  "rc_u1_4": {
+   "type": "untraceable_cash",
+   "ownerCode": "U1",
+   "flavour": "Sometimes cash speaks for itself.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_49.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_49.png"
+   }
+  },
+  "rc_u1_5": {
+   "type": "stealth_ship",
+   "ownerCode": "U1",
+   "flavour": "Stealth ships are small, but can operate for small periods of time undetected.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_50.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_50.png"
+   }
+  },
+  "rc_u3_1": {
+   "type": "special_forces",
+   "ownerCode": "U3",
+   "flavour": "A small group of highly trained stealthy killers.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_51.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_51.png"
+   }
+  },
+  "rc_u3_2": {
+   "type": "special_forces",
+   "ownerCode": "U3",
+   "flavour": "A small group of highly trained stealthy killers.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_52.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_52.png"
+   }
+  },
+  "rc_u3_3": {
+   "type": "patrol_ship",
+   "ownerCode": "U3",
+   "flavour": "A lightly armed ship capable of scouting and limited combat engagements.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_53.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_53.png"
+   }
+  },
+  "rc_u3_4": {
+   "type": "stealth_ship",
+   "ownerCode": "U3",
+   "flavour": "Stealth ships are small, but can operate for small periods of time undetected.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_54.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_54.png"
+   }
+  },
+  "rc_u3_5": {
+   "type": "secret_agents",
+   "ownerCode": "U3",
+   "flavour": "Capable of most jobs, completed with discretion.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_55.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_55.png"
+   }
+  },
+  "rc_u2_1": {
+   "type": "spy_network",
+   "ownerCode": "U2",
+   "flavour": "Spies and double agents have been being put into place for years, waiting for an opportunity to serve the cause.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_56.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_56.png"
+   }
+  },
+  "rc_u2_2": {
+   "type": "spy_network",
+   "ownerCode": "U2",
+   "flavour": "Spies and double agents have been being put into place for years, waiting for an opportunity to serve the cause.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_57.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_57.png"
+   }
+  },
+  "rc_u2_3": {
+   "type": "stealth_ship",
+   "ownerCode": "U2",
+   "flavour": "Stealth ships are small, but can operate for small periods of time undetected.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_58.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_58.png"
+   }
+  },
+  "rc_u2_4": {
+   "type": "secret_agents",
+   "ownerCode": "U2",
+   "flavour": "Capable of most jobs, completed with discretion.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_59.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_59.png"
+   }
+  },
+  "rc_u2_5": {
+   "type": "special_forces",
+   "ownerCode": "U2",
+   "flavour": "A small group of highly trained stealthy killers.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_60.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_60.png"
+   }
+  },
+  "rc_d1_1": {
+   "type": "untraceable_cash",
+   "ownerCode": "D1",
+   "flavour": "Sometimes cash speaks for itself.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_61.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_61.png"
+   }
+  },
+  "rc_d1_2": {
+   "type": "untraceable_cash",
+   "ownerCode": "D1",
+   "flavour": "Sometimes cash speaks for itself.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_62.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_62.png"
+   }
+  },
+  "rc_d1_3": {
+   "type": "construction_ship",
+   "ownerCode": "D1",
+   "flavour": "Capable of building, repairing, or improving space-based infrastructure.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_63.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_63.png"
+   }
+  },
+  "rc_d1_4": {
+   "type": "trade_goods",
+   "ownerCode": "D1",
+   "flavour": "A mix of valuable and useful goods that could be put to all manner of uses.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_64.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_64.png"
+   }
+  },
+  "rc_d1_5": {
+   "type": "political_contacts",
+   "ownerCode": "D1",
+   "flavour": "Any government can be swayed with enough lobbying power.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_65.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_65.png"
+   }
+  },
+  "rc_d3_1": {
+   "type": "transport_ship",
+   "ownerCode": "D3",
+   "flavour": "Get from A to B: fast, efficient and cheap - choose two.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_66.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_66.png"
+   }
+  },
+  "rc_d3_2": {
+   "type": "transport_ship",
+   "ownerCode": "D3",
+   "flavour": "Get from A to B: fast, efficient and cheap - choose two.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_67.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_67.png"
+   }
+  },
+  "rc_d3_3": {
+   "type": "trade_goods",
+   "ownerCode": "D3",
+   "flavour": "A mix of valuable and useful goods that could be put to all manner of uses.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_68.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_68.png"
+   }
+  },
+  "rc_d3_4": {
+   "type": "small_arms",
+   "ownerCode": "D3",
+   "flavour": "A cache of weapons for use in ground engagements.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_69.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_69.png"
+   }
+  },
+  "rc_d3_5": {
+   "type": "patrol_ship",
+   "ownerCode": "D3",
+   "flavour": "A lightly armed ship capable of scouting and limited combat engagements.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_70.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_70.png"
+   }
+  },
+  "rc_d2_1": {
+   "type": "construction_ship",
+   "ownerCode": "D2",
+   "flavour": "Capable of building, repairing, or improving space-based infrastructure.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_71.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_71.png"
+   }
+  },
+  "rc_d2_2": {
+   "type": "patrol_ship",
+   "ownerCode": "D2",
+   "flavour": "A lightly armed ship capable of scouting and limited combat engagements.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_72.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_72.png"
+   }
+  },
+  "rc_d2_3": {
+   "type": "trade_goods",
+   "ownerCode": "D2",
+   "flavour": "A mix of valuable and useful goods that could be put to all manner of uses.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_73.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_73.png"
+   }
+  },
+  "rc_d2_4": {
+   "type": "trade_goods",
+   "ownerCode": "D2",
+   "flavour": "A mix of valuable and useful goods that could be put to all manner of uses.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_74.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_74.png"
+   }
+  },
+  "rc_d2_5": {
+   "type": "transport_ship",
+   "ownerCode": "D2",
+   "flavour": "Get from A to B: fast, efficient and cheap - choose two.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_75.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_75.png"
+   }
+  },
+  "rc_f3_1": {
+   "type": "patrol_ship",
+   "ownerCode": "F3",
+   "flavour": "A lightly armed ship capable of scouting and limited combat engagements.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_76.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_76.png"
+   }
+  },
+  "rc_f3_2": {
+   "type": "patrol_ship",
+   "ownerCode": "F3",
+   "flavour": "A lightly armed ship capable of scouting and limited combat engagements.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_77.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_77.png"
+   }
+  },
+  "rc_f3_3": {
+   "type": "gang_of_thugs",
+   "ownerCode": "F3",
+   "flavour": "Want someone roughed up? Something vandalised? You know a guy.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_78.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_78.png"
+   }
+  },
+  "rc_f3_4": {
+   "type": "criminal_contacts",
+   "ownerCode": "F3",
+   "flavour": "Capable of finding anything or anyone, off the books.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_79.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_79.png"
+   }
+  },
+  "rc_f3_5": {
+   "type": "raiders",
+   "ownerCode": "F3",
+   "flavour": "A well targeted raid can do a great deal to disrupt a military, or corporation.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_80.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_80.png"
+   }
+  },
+  "rc_f2_1": {
+   "type": "patrol_ship",
+   "ownerCode": "F2",
+   "flavour": "A lightly armed ship capable of scouting and limited combat engagements.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_81.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_81.png"
+   }
+  },
+  "rc_f2_2": {
+   "type": "gang_of_thugs",
+   "ownerCode": "F2",
+   "flavour": "Want someone roughed up? Something vandalised? You know a guy.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_82.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_82.png"
+   }
+  },
+  "rc_f2_3": {
+   "type": "gang_of_thugs",
+   "ownerCode": "F2",
+   "flavour": "Want someone roughed up? Something vandalised? You know a guy.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_83.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_83.png"
+   }
+  },
+  "rc_f2_4": {
+   "type": "criminal_contacts",
+   "ownerCode": "F2",
+   "flavour": "Capable of finding anything or anyone, off the books.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_84.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_84.png"
+   }
+  },
+  "rc_f2_5": {
+   "type": "raiders",
+   "ownerCode": "F2",
+   "flavour": "A well targeted raid can do a great deal to disrupt a military, or corporation.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_85.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_85.png"
+   }
+  },
+  "rc_f1_1": {
+   "type": "patrol_ship",
+   "ownerCode": "F1",
+   "flavour": "A lightly armed ship capable of scouting and limited combat engagements.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_86.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_86.png"
+   }
+  },
+  "rc_f1_2": {
+   "type": "mining_ship",
+   "ownerCode": "F1",
+   "flavour": "A small asteroid mining ship.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_87.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_87.png"
+   }
+  },
+  "rc_f1_3": {
+   "type": "gang_of_thugs",
+   "ownerCode": "F1",
+   "flavour": "Want someone roughed up? Something vandalised? You know a guy.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_88.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_88.png"
+   }
+  },
+  "rc_f1_4": {
+   "type": "criminal_contacts",
+   "ownerCode": "F1",
+   "flavour": "Capable of finding anything or anyone, off the books.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_89.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_89.png"
+   }
+  },
+  "rc_f1_5": {
+   "type": "criminal_contacts",
+   "ownerCode": "F1",
+   "flavour": "Capable of finding anything or anyone, off the books.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_90.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_90.png"
+   }
+  },
+  "rc_n1_1": {
+   "type": "construction_ship",
+   "ownerCode": "N1",
+   "flavour": "Capable of building, repairing, or improving space-based infrastructure.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_91.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_91.png"
+   }
+  },
+  "rc_n1_2": {
+   "type": "patrol_ship",
+   "ownerCode": "N1",
+   "flavour": "A lightly armed ship capable of scouting and limited combat engagements.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_92.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_92.png"
+   }
+  },
+  "rc_n1_3": {
+   "type": "patrol_ship",
+   "ownerCode": "N1",
+   "flavour": "A lightly armed ship capable of scouting and limited combat engagements.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_93.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_93.png"
+   }
+  },
+  "rc_n1_4": {
+   "type": "political_contacts",
+   "ownerCode": "N1",
+   "flavour": "Any government can be swayed with enough lobbying power.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_94.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_94.png"
+   }
+  },
+  "rc_n1_5": {
+   "type": "political_contacts",
+   "ownerCode": "N1",
+   "flavour": "Any government can be swayed with enough lobbying power.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_95.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_95.png"
+   }
+  },
+  "rc_n1_6": {
+   "type": "trade_goods",
+   "ownerCode": "N1",
+   "flavour": "A mix of valuable and useful goods that could be put to all manner of uses.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_96.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_96.png"
+   }
+  },
+  "rc_n1_7": {
+   "type": "small_arms",
+   "ownerCode": "N1",
+   "flavour": "A cache of weapons for use in ground engagements.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_97.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_97.png"
+   }
+  },
+  "rc_n1_8": {
+   "type": "raw_materials",
+   "ownerCode": "N1",
+   "flavour": "The Belt produces many minerals and metals for trade.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_98.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_98.png"
+   }
+  },
+  "rc_n1_9": {
+   "type": "special_forces",
+   "ownerCode": "N1",
+   "flavour": "A small group of highly trained stealthy killers.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_99.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_99.png"
+   }
+  },
+  "rc_n2_1": {
+   "type": "political_contacts",
+   "ownerCode": "N2",
+   "flavour": "Any government can be swayed with enough lobbying power.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_100.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_100.png"
+   }
+  },
+  "rc_n2_2": {
+   "type": "political_contacts",
+   "ownerCode": "N2",
+   "flavour": "Any government can be swayed with enough lobbying power.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_101.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_101.png"
+   }
+  },
+  "rc_n2_3": {
+   "type": "patrol_ship",
+   "ownerCode": "N2",
+   "flavour": "A lightly armed ship capable of scouting and limited combat engagements.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_102.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_102.png"
+   }
+  },
+  "rc_n2_4": {
+   "type": "patrol_ship",
+   "ownerCode": "N2",
+   "flavour": "A lightly armed ship capable of scouting and limited combat engagements.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_103.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_103.png"
+   }
+  },
+  "rc_n2_5": {
+   "type": "construction_ship",
+   "ownerCode": "N2",
+   "flavour": "Capable of building, repairing, or improving space-based infrastructure.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_104.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_104.png"
+   }
+  },
+  "rc_n2_6": {
+   "type": "trade_goods",
+   "ownerCode": "N2",
+   "flavour": "A mix of valuable and useful goods that could be put to all manner of uses.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_105.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_105.png"
+   }
+  },
+  "rc_n2_7": {
+   "type": "small_arms",
+   "ownerCode": "N2",
+   "flavour": "A cache of weapons for use in ground engagements.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_106.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_106.png"
+   }
+  },
+  "rc_n2_8": {
+   "type": "raw_materials",
+   "ownerCode": "N2",
+   "flavour": "The Belt produces many minerals and metals for trade.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_107.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_107.png"
+   }
+  },
+  "rc_n2_9": {
+   "type": "special_forces",
+   "ownerCode": "N2",
+   "flavour": "A small group of highly trained stealthy killers.",
+   "art": {
+    "front": "Deluxe/Crisis Mars v1.0 - Poker Front/Crisis Mars v1.0 - Resource Cards_108.png",
+    "back": "Deluxe/Crisis Mars v1.0 - Poker Back/Crisis Mars v1.0 - Resource Cards_108.png"
+   }
+  }
+ }
+}
