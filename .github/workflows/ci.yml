@@ -76,6 +76,11 @@ jobs:
           cp -r gui data assets vendor _site/
           # A marker so a confusing bug report can be tied to a revision.
           printf '%s\n%s\n' "$GITHUB_SHA" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > _site/VERSION
+          # The custom domain. gh-pages is force-pushed fresh every publish,
+          # so the CNAME must be written into every copy or GitHub forgets
+          # the domain binding — which is exactly what took the live site
+          # down once. See DECISIONS.md.
+          printf 'crisis-mars-online.kiwigamedesign.co.uk\n' > _site/CNAME
 
       - name: Push it
         run: |

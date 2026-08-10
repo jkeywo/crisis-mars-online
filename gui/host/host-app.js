@@ -447,6 +447,266 @@ export async function startHostApp({ location = window.location, beeper = create
     for (const id of ['pause-clock', 'extend-clock', 'shorten-clock']) $(id).disabled = !running;
   }
 
+  // --- the Team Phase table --------------------------------------------------
+
+  /**
+   * Who has not placed — and, by the author's ruling, the way to place for
+   * them. Each name carries the three map buttons; a click assigns their
+   * card, and mid-Action-Phase the rules append them to the back of that
+   * map's queue.
+   */
+  function renderUnplaced(state, phase) {
+    const waiting = phase.name === 'action'
+      ? state.initiative.unplaced
+      : phase.name === 'negotiation'
+        ? Object.keys(state.actionCards).filter((code) => state.actionCards[code].placed === null)
+        : [];
+    $('unplaced').hidden = !['negotiation', 'action'].includes(phase.name);
+    if ($('unplaced').hidden) return;
+    if (!waiting.length) {
+      $('unplaced').textContent = 'Every action card is placed.';
+      return;
+    }
+    $('unplaced').innerHTML = `Still to place: ${waiting.map((code) => `
+      <span class="cm-unplaced-entry">${escape(data.roles.roles[code]?.name ?? code)}
+        ${Object.entries(data.maps.maps).map(([mapId, map]) => `
+          <button type="button" data-assign="${escape(code)}|${escape(mapId)}">${
+  escape(map.name)}</button>`).join('')}
+      </span>`).join(' ')}`;
+    for (const button of $('unplaced').querySelectorAll('[data-assign]')) {
+      button.onclick = () => {
+        const [code, mapId] = button.dataset.assign.split('|');
+        asFacilitator('facilitator:assign-action-card', { code, mapId });
+      };
+    }
+  }
+
+  /**
+   * The correspondence card and the opportunity ledger. (The tithe tracker
+   * lives on the NPCs tab now, rendered from render() directly.)
+   *
+   * Rebuilt from state on every render, with one guard: never while the
+   * facilitator is typing in it — a projection landing mid-sentence must
+   * not eat the sentence. The composer is built once and left alone.
+   */
+  function renderTeamPanel(state) {
+    const panel = $('team-panel');
+    panel.hidden = state.phase.name === 'lobby';
+    if (panel.hidden) return;
+    if (panel.contains(document.activeElement)
+      && document.activeElement.matches('input, textarea, select')) return;
+
+    renderCorrespondence(state);
+    renderOpportunityList(state);
+  }
+
+  function renderCorrespondence(state) {
+    const turn = state.phase.turn;
+    const entry = events.correspondence.find((c) => c.turn === turn);
+    const status = state.correspondence['t' + turn];
+    if (!entry) { $('correspondence-card').innerHTML = ''; return; }
+
+    $('correspondence-card').innerHTML = `
+      <article class="cm-correspondence" data-status="${status ?? 'unread'}">
+        ${entry.readAloud ? `<blockquote>${escape(entry.readAloud)}</blockquote>`
+    : '<p class="cm-meta">Nothing scripted to read this turn.</p>'}
+        ${entry.note ? `<p class="cm-meta">${escape(entry.note)}</p>` : ''}
+        ${entry.effects.length ? `<ul>${entry.effects.map((e) => `
+          <li>${escape(e.track)}: ${'set' in e ? `set to ${e.set}` : (e.delta > 0 ? '+' : '') + e.delta}</li>`).join('')}
+        </ul>` : ''}
+        ${status ? `<p class="cm-meta">Already ${status}.</p>` : `
+          <div class="cm-row">
+            <button type="button" class="cm-primary" data-publish>Publish</button>
+            ${entry.optional ? '<button type="button" data-skip-news>Skip it</button>' : ''}
+          </div>`}
+      </article>`;
+
+    const publish = $('correspondence-card').querySelector('[data-publish]');
+    if (publish) {
+      publish.onclick = () => asFacilitator('facilitator:publish-correspondence', {
+        turn, effects: entry.effects.map((e) => ({ ...e })),
+      });
+    }
+    const skip = $('correspondence-card').querySelector('[data-skip-news]');
+    if (skip) {
+      skip.onclick = () => asFacilitator('facilitator:publish-correspondence',
+        { turn, skip: true });
+    }
+  }
+
+  /**
+   * Built once: a composer whose inputs must survive every projection.
+   * The guidance line follows the chosen trigger, straight from the
+   * facilitator file's menus.
+   */
+  function buildOpportunityComposer() {
+    const triggers = data.maps.opportunityTriggers;
+    const host = $('opportunity-composer');
+    host.innerHTML = `
+      <label>Trigger
+        <select id="op-trigger">
+          <option value="">Free-form</option>
+          ${triggers.map((t) => `<option value="${t.id}">${t.id}</option>`).join('')}
+        </select>
+      </label>
+      <p id="op-guidance" class="cm-meta"></p>
+      <label>For
+        <select id="op-target">
+          ${Object.entries(data.factions.factions).map(([id, f]) =>
+    `<option value="faction|${id}">${escape(f.name)}</option>`).join('')}
+          <option value="npc|N1">U.N. Ambassador (you)</option>
+          <option value="npc|N2">Senate Speaker (you)</option>
+        </select>
+      </label>
+      <label>Title <input id="op-title" maxlength="120"></label>
+      <label>Option A <input id="op-a" maxlength="200"></label>
+      <label>Option B <input id="op-b" maxlength="200"></label>
+      <button type="button" id="op-deliver" class="cm-primary">Deliver it</button>`;
+
+    const guidanceFor = () => {
+      const picked = $('op-trigger').value;
+      const guide = events.opportunityGuidance.find((g) => picked.startsWith(g.trigger));
+      $('op-guidance').textContent = guide
+        ? guide.principle + ' e.g. ' + guide.examples[0] : '';
+    };
+    $('op-trigger').onchange = guidanceFor;
+    guidanceFor();
+
+    $('op-deliver').onclick = () => {
+      const [kind, id] = $('op-target').value.split('|');
+      asFacilitator('facilitator:deliver-opportunity', {
+        triggerId: $('op-trigger').value || null,
+        ...(kind === 'faction' ? { factionId: id } : { npcCode: id }),
+        title: $('op-title').value,
+        optionA: $('op-a').value,
+        optionB: $('op-b').value,
+      });
+      for (const field of ['op-title', 'op-a', 'op-b']) $(field).value = '';
+    };
+  }
+
+  /** Pending first; each pending one carries a small resolve builder. */
+  const resolveStaged = new Map();   // opportunityId -> [{track, delta}]
+  function renderOpportunityList(state) {
+    const records = Object.values(state.opportunities);
+    if (!records.length) {
+      $('opportunity-list').innerHTML = '<p class="cm-empty">None delivered yet.</p>';
+      return;
+    }
+    const rank = (r) => (r.status === 'pending' ? 0 : 1);
+    records.sort((a, b) => rank(a) - rank(b) || a.id.localeCompare(b.id));
+
+    $('opportunity-list').innerHTML = records.map((r) => {
+      const { claimed, agreed } = opportunityConsensus(state, data, r);
+      const votes = Object.entries(r.votes ?? {});
+      const standing = r.status !== 'pending' ? ''
+        : agreed ? ` — CONSENSUS on ${agreed} (${claimed.length} claimed)`
+          : votes.length ? ` — ${votes.map(([code, choice]) => `${code}:${choice}`).join(' ')}`
+            + `, no consensus of ${claimed.length} claimed`
+            : ' — no votes yet';
+      return `
+      <article class="cm-opportunity-row" data-status="${r.status}"
+               data-consensus="${agreed ?? ''}">
+        <h4>${escape(r.title)} <span class="cm-meta">${
+  r.factionId ? escape(data.factions.factions[r.factionId]?.name ?? r.factionId)
+    : escape(r.npcCode)} · ${r.status}</span></h4>
+        <p class="cm-meta">A: ${escape(r.optionA)} · B: ${escape(r.optionB)}${escape(standing)}</p>
+        ${r.status === 'pending' ? `
+          <div class="cm-row">
+            ${(resolveStaged.get(r.id) ?? []).map((e, i) => `
+              <span class="cm-card-chip">${escape(e.track)} ${e.delta > 0 ? '+' : ''}${e.delta}
+                <button type="button" data-unstage="${r.id}|${i}">×</button></span>`).join('')}
+            <select data-res-track="${r.id}">
+              <option value="">Track…</option>
+              ${Object.keys(data.maps.tracks).filter((t) => t !== 'war_progress')
+    .map((t) => `<option value="${t}">${escape(data.maps.tracks[t].name)}</option>`).join('')}
+            </select>
+            <input type="number" step="1" data-res-delta="${r.id}" placeholder="+/-" style="width:4rem">
+            <button type="button" data-res-add="${r.id}">Add</button>
+            <button type="button" class="cm-primary" data-resolve="${r.id}">Resolve</button>
+          </div>` : ''}
+      </article>`;
+    }).join('');
+
+    for (const button of $('opportunity-list').querySelectorAll('[data-res-add]')) {
+      button.onclick = () => {
+        const id = button.dataset.resAdd;
+        const track = $('opportunity-list').querySelector(`[data-res-track="${id}"]`).value;
+        const delta = Number($('opportunity-list').querySelector(`[data-res-delta="${id}"]`).value);
+        if (!track || !Number.isInteger(delta) || delta === 0) return;
+        resolveStaged.set(id, [...(resolveStaged.get(id) ?? []), { track, delta }]);
+        renderOpportunityList(session.state);
+      };
+    }
+    for (const button of $('opportunity-list').querySelectorAll('[data-unstage]')) {
+      button.onclick = () => {
+        const [id, index] = button.dataset.unstage.split('|');
+        const staged = resolveStaged.get(id) ?? [];
+        staged.splice(Number(index), 1);
+        renderOpportunityList(session.state);
+      };
+    }
+    for (const button of $('opportunity-list').querySelectorAll('[data-resolve]')) {
+      button.onclick = () => {
+        const id = button.dataset.resolve;
+        asFacilitator('facilitator:resolve-opportunity', {
+          opportunityId: id, effects: resolveStaged.get(id) ?? [],
+        });
+        resolveStaged.delete(id);
+      };
+    }
+  }
+
+  function renderTitheTracker(state) {
+    const owed = titheOwed(state.phase.turn);
+    const paid = state.tithe.paidCardIds.length;
+    $('tithe-tracker').innerHTML = `
+      <p>${escape(events.tithe.from)} owes ${owed} card${owed === 1 ? '' : 's'} this turn —
+        ${state.tithe.refused ? `refused, with ${paid} paid.`
+    : paid >= owed ? `paid in full (${paid}).`
+      : `${paid} of ${owed} paid.`}</p>
+      ${paid < owed && !state.tithe.refused ? `
+        <button type="button" data-refuse-tithe>Mark refused</button>
+        <p class="cm-meta">On refusal, the print says: ${
+  events.tithe.onRefusal.map(escape).join('; ')}. The amounts are yours — move the
+          tracks by hand.</p>` : ''}`;
+    const refuse = $('tithe-tracker').querySelector('[data-refuse-tithe]');
+    if (refuse) refuse.onclick = () => asFacilitator('facilitator:mark-tithe-refused', {});
+  }
+
+
+  /**
+   * A quiet dot where attention is due: a map tab with an open spotlight,
+   * Roles while the lobby is seating, Game when the news is unread or the
+   * debrief is up.
+   */
+  function renderTabBadges(state) {
+    for (const mapId of Object.keys(data.maps.maps)) {
+      $(`tab-${mapId}`).dataset.live = String(Boolean(state.initiative.current?.[mapId]));
+    }
+    $('tab-roles').dataset.live = String(state.phase.name === 'lobby');
+    $('tab-game').dataset.live = String(state.phase.name === 'epilogue'
+      || (state.phase.name === 'team'
+        && state.correspondence[`t${state.phase.turn}`] === null));
+  }
+
+  /** The NPC columns' fixed half: lanyard, public description, play notes. */
+  function renderNpcBriefs() {
+    for (const code of ['N1', 'N2']) {
+      const npc = data.factions.npcs[code];
+      $(`npc-brief-${code.toLowerCase()}`).innerHTML = `
+        <img class="cm-npc-lanyard" src="assets/cards/lanyard_role_${
+  code.toLowerCase()}-front.png" alt="${escape(npc.name)}">
+        <h3>${escape(npc.name)}</h3>
+        <p class="cm-meta">${escape(npc.publicDescription)}</p>
+        <details>
+          <summary>Play notes</summary>
+          ${(events.npcPlayNotes?.[code] ?? []).map((note) => `
+            <p class="cm-meta">${escape(note)}</p>`).join('')}
+        </details>`;
+    }
+  }
+
   /** The facilitator acts as themselves — a seat of their own on this tab. */
   function asFacilitator(verb, payload = {}) {
     const result = session.submit(verb, payload);
