@@ -155,3 +155,49 @@ and everything about map artwork (this game has no map artwork yet).
   authorization before going AFK. Code MIT; `assets/**` remains
   © John Keyworth, all rights reserved, as the README states.
 - GitHub Pages serves the `gh-pages` branch, which only CI writes.
+
+## 2026-08-10 — The author's rulings applied
+
+All twelve gaps.js entries were ruled on by the author and now carry
+`status: 'author-ruled'`; where a ruling changed behaviour the entry's text
+is the author's rule. Engineering notes from applying them:
+
+**The effect-table clamps are gone, the budgets stay for display.**
+`facilitator:apply-effects` now checks only board arithmetic (real tracks,
+whole points, the zero floor, regains from the discard, sabotage of held
+uncommitted cards). `derive.effectBudgets` survives purely to light the
+guidance table on the adjudication panel. No override-variant verb was ever
+needed once the clamps left.
+
+**`destroyed` is a third card state.** Sabotage carries a per-card mode;
+`recover-discard` and regains refuse destroyed cards; `cm-hand` shows a
+destroyed epitaph. The 108-card economy is no longer strictly closed — by
+the author's own hand.
+
+**The future-impact bank is deleted, not deprecated.** `state.futureImpacts`
+is gone from state and manifest; `facilitator:note` (FACILITATOR-visible
+`state.notes`) and `facilitator:set-bonus` (public, on the action record,
+in derive's Impact) replace it. Saves from before this commit would replay
+their banking commands as refusals — acceptable pre-publication, when no
+real save exists.
+
+**assign-action-card appends to the back of a built queue** rather than
+re-sorting by printed initiative: the order already ran without them.
+
+**The tithe consequence quote joins the schedule as a transcription** in
+`gui/rules/turn-update.js` (the worksheet's reminder step), same reasoning
+as before: the rules never read the facilitator file. Not validator-checked
+— it is prose, not numbers; drift is cosmetic.
+
+**Consensus is derived, never stored.** `derive.opportunityConsensus`
+computes it from votes and claimed seats at render, keeping the
+derived-values law intact.
+
+## 2026-08-10 — STRINGS.md
+
+Every user-facing string is inventoried in STRINGS.md for the author's
+rewrite, organized by surface, with placeholders shown and gamespec-owned
+text explicitly excluded (that text is edited in the gamespec and
+re-exported). The inventory is hand-curated from a literal-extraction sweep
+of gui/ and the three pages; the extraction script was throwaway and is not
+committed.
