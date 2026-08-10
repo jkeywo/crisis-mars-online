@@ -9,6 +9,7 @@ import { admit } from '../../gui/rules/admission.js';
 import { toSave } from '../../gui/rules/command-log.js';
 import { projectView, unclassifiedPaths } from '../../gui/rules/views.js';
 import { titheOwed } from '../../gui/rules/commands.js';
+import { opportunityConsensus } from '../../gui/rules/derive.js';
 
 const data = await loadData();
 // The facilitator file, loaded the way only the host page ever does — the
@@ -128,7 +129,10 @@ describe('opportunities', () => {
         id: 'o1', status: 'pending', factionId: 'viva_mars',
       });
       expect(seen.opportunities.o1.title, name).toBeUndefined();
-      expect(seen.opportunities.o1.choice, name).toBeUndefined();
+      // Votes are faction content: an outsider gets none — an empty object
+      // survives the walk when nothing has been cast, and vanishes once
+      // anything has, either way carrying no entries.
+      expect(Object.keys(seen.opportunities.o1.votes ?? {}), name).toHaveLength(0);
     }
     expect(JSON.stringify(projectView(state, data, { kind: 'facilitator' })))
       .toContain('SECRET::opportunity.title');
@@ -157,19 +161,48 @@ describe('opportunities', () => {
       .toContain('SECRET::npc.opportunity');
   });
 
-  it('lets any player of the faction record and re-record the choice', () => {
+  it('collects one vote per seat, revotable, outsiders refused', () => {
     let state = delivered();
-    state = run(state, [[asPlayer('V1'), 'choose-opportunity',
-      { opportunityId: 'o1', choice: 'A' }]]);
-    expect(state.opportunities.o1.choice).toBe('A');
-    // A team-mate overwrites — the last tap before resolve counts.
+    state = run(state, [
+      [asPlayer('V1'), 'choose-opportunity', { opportunityId: 'o1', choice: 'A' }],
+      [asPlayer('V2'), 'choose-opportunity', { opportunityId: 'o1', choice: 'B' }],
+    ]);
+    expect(state.opportunities.o1.votes).toEqual({ V1: 'A', V2: 'B' });
+    // A revote replaces that seat's vote and nobody else's.
     state = run(state, [[asPlayer('V2'), 'choose-opportunity',
-      { opportunityId: 'o1', choice: 'B' }]]);
-    expect(state.opportunities.o1.choice).toBe('B');
-    // An outsider is refused.
+      { opportunityId: 'o1', choice: 'A' }]]);
+    expect(state.opportunities.o1.votes).toEqual({ V1: 'A', V2: 'A' });
     expect(admit(state, data, {
       verb: 'choose-opportunity', payload: { opportunityId: 'o1', choice: 'A' },
     }, asPlayer('C1')).reason).toContain('not your faction');
+  });
+
+  it('marks consensus when every CLAIMED seat agrees — empty chairs do not block', () => {
+    // Three Viva lanyards exist; two are claimed. Both claimed seats voting
+    // A is consensus, whatever the empty chair might have thought.
+    let state = delivered();
+    state.roles.V1.claimedBySeat = 's1';
+    state.roles.V2.claimedBySeat = 's2';
+    const record = () => state.opportunities.o1;
+    expect(opportunityConsensus(state, data, record()))
+      .toEqual({ claimed: ['V1', 'V2'], agreed: null });
+
+    state = run(state, [[asPlayer('V1'), 'choose-opportunity',
+      { opportunityId: 'o1', choice: 'A' }]]);
+    expect(opportunityConsensus(state, data, record()).agreed).toBe(null);
+
+    state = run(state, [[asPlayer('V2'), 'choose-opportunity',
+      { opportunityId: 'o1', choice: 'A' }]]);
+    expect(opportunityConsensus(state, data, record()).agreed).toBe('A');
+
+    // A dissenting revote breaks it again; the facilitator may still
+    // resolve — consensus is a readout, never a gate.
+    state = run(state, [[asPlayer('V2'), 'choose-opportunity',
+      { opportunityId: 'o1', choice: 'B' }]]);
+    expect(opportunityConsensus(state, data, record()).agreed).toBe(null);
+    expect(admit(state, data, {
+      verb: 'facilitator:resolve-opportunity', payload: { opportunityId: 'o1', effects: [] },
+    }, FACILITATOR).ok).toBe(true);
   });
 
   it('resolves once, applying its effects, and then stands settled', () => {
@@ -216,33 +249,40 @@ describe('the tithe', () => {
     expect(state.tithe.paidCardIds).toEqual([cards[0]]);
   });
 
-  it('takes two in turn three, and refuses the wrong count', () => {
-    const state = teamPhase(3);
+  it('accumulates instalments from any Belt hand until the due is met', () => {
+    // Turn three owes two. B2 pays one, then B1 pays another: two
+    // instalments, two payers, one faction's debt settled.
+    let state = teamPhase(3);
     expect(titheOwed(3)).toBe(2);
-    const cards = held(state, 'B2');
+    state = run(state, [
+      [asPlayer('B2'), 'pay-tithe', { cardIds: [held(state, 'B2')[0]] }],
+    ]);
+    expect(state.tithe.paidCardIds).toHaveLength(1);
+    state = run(state, [
+      [asPlayer('B1'), 'pay-tithe', { cardIds: [held(state, 'B1')[0]] }],
+    ]);
+    expect(state.tithe.paidCardIds).toHaveLength(2);
+    for (const cardId of state.tithe.paidCardIds) {
+      expect(state.cards[cardId].holderCode).toBe('N1');
+    }
+    // And generosity past the due is not refused — the guide licenses
+    // judgement on the amounts.
     expect(admit(state, data, {
-      verb: 'pay-tithe', payload: { cardIds: [cards[0]] },
-    }, asPlayer('B2')).reason).toContain('2 cards');
-    const paid = run(state, [[asPlayer('B2'), 'pay-tithe',
-      { cardIds: [cards[0], cards[1]] }]]);
-    expect(paid.cards[cards[0]].holderCode).toBe('N1');
-    expect(paid.cards[cards[1]].holderCode).toBe('N1');
+      verb: 'pay-tithe', payload: { cardIds: [held(state, 'B2')[0]] },
+    }, asPlayer('B2')).ok).toBe(true);
   });
 
-  it('is the Belt Union\'s to pay, once, from the payer\'s own hand', () => {
-    let state = teamPhase(1);
+  it('is the Belt Union\'s to pay, at least a card at a time, from your own hand', () => {
+    const state = teamPhase(1);
     expect(admit(state, data, {
       verb: 'pay-tithe', payload: { cardIds: [held(state, 'C1')[0]] },
     }, asPlayer('C1')).reason).toContain('Belt Union');
-    // Paying from somebody else's hand is refused.
     expect(admit(state, data, {
       verb: 'pay-tithe', payload: { cardIds: [held(state, 'C1')[0]] },
     }, asPlayer('B1')).reason).toContain('your own hand');
-    // And once paid, paid.
-    state = run(state, [[asPlayer('B1'), 'pay-tithe', { cardIds: [held(state, 'B1')[0]] }]]);
     expect(admit(state, data, {
-      verb: 'pay-tithe', payload: { cardIds: [held(state, 'B2')[0]] },
-    }, asPlayer('B2')).reason).toContain('already paid');
+      verb: 'pay-tithe', payload: { cardIds: [] },
+    }, asPlayer('B1')).reason).toContain('at least one');
   });
 
   it('records a refusal, which blocks a late payment, and resets with the turn', () => {

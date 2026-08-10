@@ -150,7 +150,7 @@ export const TEAM_COMMANDS = {
         title,
         optionA,
         optionB,
-        choice: null,
+        votes: {},
         effects: [],
         status: 'pending',
       };
@@ -158,15 +158,15 @@ export const TEAM_COMMANDS = {
   },
 
   /**
-   * A faction records its choice. Any player of the faction may tap it —
-   * the decision was made out loud at their table, and the tap is a record,
-   * not a vote. The last tap before the facilitator resolves is the one
-   * that counts. See gaps.js.
+   * A player casts their faction's vote. Each of the faction's claimed
+   * seats picks an option, revotable while the record is pending; the
+   * consoles mark consensus when every claimed seat agrees, and the
+   * facilitator resolves on judgement either way. See gaps.js.
    */
   'choose-opportunity': {
     phases: '*',
     actor: 'player',
-    label: 'Record your faction’s choice',
+    label: 'Vote on your faction’s opportunity',
     admit(ctx) {
       const { state, cmd, data } = ctx;
       const record = state.opportunities[cmd.payload?.opportunityId];
@@ -181,7 +181,8 @@ export const TEAM_COMMANDS = {
       return ok();
     },
     effects(draft, ctx) {
-      draft.opportunities[ctx.cmd.payload.opportunityId].choice = ctx.cmd.payload.choice;
+      const record = draft.opportunities[ctx.cmd.payload.opportunityId];
+      record.votes[subjectOf(ctx)] = ctx.cmd.payload.choice;
     },
   },
 
@@ -223,13 +224,11 @@ export const TEAM_COMMANDS = {
       if (data.roles.roles[subject]?.factionId !== TITHE_FROM_FACTION) {
         return no('the tithe is the Belt Union’s to pay');
       }
-      if (state.tithe.paidCardIds.length) return no('this turn’s tithe is already paid');
       if (state.tithe.refused) return no('this turn’s tithe was refused — talk to the facilitator');
-      const owed = titheOwed(state.phase.turn);
       const cardIds = cmd.payload?.cardIds ?? [];
-      if (cardIds.length !== owed) {
-        return no(`the tithe this turn is ${owed} card${owed === 1 ? '' : 's'}`);
-      }
+      // Instalments, by the author's ruling: any Belt player, any number of
+      // payments, each of at least one card, accumulating against the due.
+      if (!cardIds.length) return no('pay at least one card');
       if (new Set(cardIds).size !== cardIds.length) return no('the same card twice is one card');
       for (const cardId of cardIds) {
         const card = state.cards[cardId];
@@ -244,7 +243,7 @@ export const TEAM_COMMANDS = {
       for (const cardId of ctx.cmd.payload.cardIds) {
         draft.cards[cardId].holderCode = TITHE_TO_CODE;
       }
-      draft.tithe.paidCardIds = [...ctx.cmd.payload.cardIds];
+      draft.tithe.paidCardIds = [...draft.tithe.paidCardIds, ...ctx.cmd.payload.cardIds];
     },
     fields(state, data, roleId) {
       return [{
@@ -280,7 +279,6 @@ export const TEAM_COMMANDS = {
     phases: '*',
     actor: 'facilitator',
     admit(ctx) {
-      if (ctx.state.tithe.paidCardIds.length) return no('this turn’s tithe was paid');
       if (ctx.state.tithe.refused) return no('already recorded');
       return ok();
     },

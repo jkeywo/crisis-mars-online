@@ -6,10 +6,12 @@
  * the printed initiative row — so this only draws it.
  *
  * The countdown is a deadline read off the wall clock, like the phase clock:
- * a throttled tab comes back right. It announces two crossings as events —
- * ten seconds left, and time up — and leaves what they are worth to the page,
- * which is where the beeper lives. It never forfeits anybody: the facilitator
- * decides what an expired spotlight means. See gaps.js.
+ * a throttled tab comes back right. By the author's ruling it says nothing
+ * until time expires — one `cm-spotlight-up` at the crossing, then a
+ * `cm-spotlight-overtime` every ten seconds while the action stays open —
+ * and leaves what the crossings are worth to the page, which is where the
+ * beeper lives. It never forfeits anybody: the facilitator closes the
+ * spotlight when it is done. See gaps.js.
  */
 
 export class CmInitiativeQueue extends HTMLElement {
@@ -89,29 +91,34 @@ export class CmInitiativeQueue extends HTMLElement {
   /**
    * Says when the spotlight crosses a line; decides nothing about it.
    *
-   * Once each per action — a throttled tab that comes back a minute late
-   * hears one "time" rather than a backlog, the same bargain the phase
-   * clock strikes.
+   * Counted in whole ten-second steps of overtime, at most one event per
+   * render however many steps went by — a throttled tab that comes back a
+   * minute late hears one nag rather than a backlog, the same bargain the
+   * phase clock strikes.
    */
   _announce(action, left) {
     if (!action || left === null) return;
     if (this._announcedFor !== action.id) {
       this._announcedFor = action.id;
-      this._warned = false;
       this._called = false;
+      this._overtimeStep = null;
     }
-    if (left <= 0 && !this._called) {
+    if (left > 0) return;
+    if (!this._called) {
       this._called = true;
-      this._warned = true;
+      // The step it landed in is the step it starts from: arriving twelve
+      // seconds over is one crossing, not two.
+      this._overtimeStep = Math.floor(-left / 10_000);
       this.dispatchEvent(new CustomEvent('cm-spotlight-up', {
         bubbles: true, detail: { actionId: action.id, mapId: this.mapId },
       }));
       return;
     }
-    if (left > 0 && left <= 10_000 && !this._warned) {
-      this._warned = true;
-      this.dispatchEvent(new CustomEvent('cm-spotlight-warning', {
-        bubbles: true, detail: { actionId: action.id, mapId: this.mapId },
+    const step = Math.floor(-left / 10_000);
+    if (step > this._overtimeStep) {
+      this._overtimeStep = step;
+      this.dispatchEvent(new CustomEvent('cm-spotlight-overtime', {
+        bubbles: true, detail: { actionId: action.id, mapId: this.mapId, overMs: -left },
       }));
     }
   }

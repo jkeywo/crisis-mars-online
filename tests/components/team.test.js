@@ -53,7 +53,7 @@ describe('<cm-opportunity-card>', () => {
     }]);
   });
 
-  it('marks the recorded choice and renders nothing for other factions', () => {
+  it('marks each seat\u2019s own vote and renders nothing for other factions', () => {
     const state = delivered();
     const chosen = apply(state, data, {
       verb: 'choose-opportunity', payload: { opportunityId: 'o1', choice: 'B' },
@@ -64,8 +64,11 @@ describe('<cm-opportunity-card>', () => {
     card.data = data;
     card.view = projectView(chosen.state, data,
       { kind: 'player', roleId: 'V1', teamId: 'viva_mars' });
-    expect(card.querySelector('[data-choose="o1|B"]').getAttribute('aria-pressed')).toBe('true');
-    expect(card.textContent).toContain('Recorded: option B');
+    // V2 voted, not V1: the buttons mark the viewer's own vote only, and
+    // the votes line names the team-mate's.
+    expect(card.querySelector('[data-choose="o1|B"]').getAttribute('aria-pressed')).toBe('false');
+    expect(card.textContent).toContain('Viva Mars Firebrand — B');
+    expect(card.textContent).toContain('No consensus yet');
 
     // A Canopy player's projection carries the record's existence but none
     // of its words — redaction, not component politeness — so the card

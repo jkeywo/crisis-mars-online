@@ -33,6 +33,7 @@ import { PHASES, OUT_OF_PLAY, NPC_CODES } from '../rules/state.js';
 import { KNOWN_GAPS } from '../rules/gaps.js';
 import { loadData, loadFacilitatorData } from '../client/load-data.js';
 import { titheOwed } from '../rules/commands.js';
+import { opportunityConsensus } from '../rules/derive.js';
 import '../components/cm-connection-dot.js';
 import '../components/cm-seat-roster.js';
 import '../components/cm-phase-clock.js';
@@ -585,13 +586,21 @@ export async function startHostApp({ location = window.location, beeper = create
     const rank = (r) => (r.status === 'pending' ? 0 : 1);
     records.sort((a, b) => rank(a) - rank(b) || a.id.localeCompare(b.id));
 
-    $('opportunity-list').innerHTML = records.map((r) => `
-      <article class="cm-opportunity-row" data-status="${r.status}">
+    $('opportunity-list').innerHTML = records.map((r) => {
+      const { claimed, agreed } = opportunityConsensus(state, data, r);
+      const votes = Object.entries(r.votes ?? {});
+      const standing = r.status !== 'pending' ? ''
+        : agreed ? ` — CONSENSUS on ${agreed} (${claimed.length} claimed)`
+          : votes.length ? ` — ${votes.map(([code, choice]) => `${code}:${choice}`).join(' ')}`
+            + `, no consensus of ${claimed.length} claimed`
+            : ' — no votes yet';
+      return `
+      <article class="cm-opportunity-row" data-status="${r.status}"
+               data-consensus="${agreed ?? ''}">
         <h4>${escape(r.title)} <span class="cm-meta">${
   r.factionId ? escape(data.factions.factions[r.factionId]?.name ?? r.factionId)
     : escape(r.npcCode)} · ${r.status}</span></h4>
-        <p class="cm-meta">A: ${escape(r.optionA)} · B: ${escape(r.optionB)}
-          ${r.choice ? ` — chose ${r.choice}` : ' — undecided'}</p>
+        <p class="cm-meta">A: ${escape(r.optionA)} · B: ${escape(r.optionB)}${escape(standing)}</p>
         ${r.status === 'pending' ? `
           <div class="cm-row">
             ${(resolveStaged.get(r.id) ?? []).map((e, i) => `
@@ -606,7 +615,8 @@ export async function startHostApp({ location = window.location, beeper = create
             <button type="button" data-res-add="${r.id}">Add</button>
             <button type="button" class="cm-primary" data-resolve="${r.id}">Resolve</button>
           </div>` : ''}
-      </article>`).join('');
+      </article>`;
+    }).join('');
 
     for (const button of $('opportunity-list').querySelectorAll('[data-res-add]')) {
       button.onclick = () => {
@@ -639,11 +649,13 @@ export async function startHostApp({ location = window.location, beeper = create
 
   function renderTitheTracker(state) {
     const owed = titheOwed(state.phase.turn);
-    const paid = state.tithe.paidCardIds.length > 0;
+    const paid = state.tithe.paidCardIds.length;
     $('tithe-tracker').innerHTML = `
       <p>${escape(events.tithe.from)} owes ${owed} card${owed === 1 ? '' : 's'} this turn —
-        ${paid ? 'paid.' : state.tithe.refused ? 'refused.' : 'outstanding.'}</p>
-      ${!paid && !state.tithe.refused ? `
+        ${state.tithe.refused ? `refused, with ${paid} paid.`
+    : paid >= owed ? `paid in full (${paid}).`
+      : `${paid} of ${owed} paid.`}</p>
+      ${paid < owed && !state.tithe.refused ? `
         <button type="button" data-refuse-tithe>Mark refused</button>
         <p class="cm-meta">On refusal, the print says: ${
   events.tithe.onRefusal.map(escape).join('; ')}. The amounts are yours — move the
@@ -676,10 +688,11 @@ export async function startHostApp({ location = window.location, beeper = create
   // showing it.
   document.addEventListener('cm-time-up', () => beeper.beep(3, 880));
   document.addEventListener('cm-overtime', () => beeper.beep(1, 660));
-  // And the spotlight's own two crossings, higher-pitched so the umpire can
-  // tell the sixty-second clock from the phase clock without looking.
-  document.addEventListener('cm-spotlight-warning', () => beeper.beep(1, 990));
-  document.addEventListener('cm-spotlight-up', () => beeper.beep(2, 990));
+  // And the spotlight's own crossings, higher-pitched so the umpire can
+  // tell the sixty-second clock from the phase clock without looking: one
+  // pip at time, then one every ten seconds until the action closes.
+  document.addEventListener('cm-spotlight-up', () => beeper.beep(1, 990));
+  document.addEventListener('cm-spotlight-overtime', () => beeper.beep(1, 990));
 
   $('advance-phase').addEventListener('click', () => asFacilitator('facilitator:advance-phase'));
   $('pause-clock').addEventListener('click', () => asFacilitator('facilitator:pause-clock'));

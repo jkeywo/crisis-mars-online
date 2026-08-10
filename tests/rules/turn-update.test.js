@@ -48,14 +48,28 @@ describe('the printed conditions', () => {
 });
 
 describe('the proposals', () => {
-  it('proposes nothing qualitative and no thresholds at the printed opening', () => {
+  it('proposes the leads and the unpaid tithe at the printed opening', () => {
     // At initial values no trade route is below four, neither prosperity is
     // over its cap, war support and oversight sit between their thresholds —
-    // so the worksheet is the two lead triggers and nothing else (the war is
-    // not begun, so no war step either).
+    // so the worksheet is the tithe reminder (nothing was paid in this bare
+    // fixture) and the two lead triggers; the war is not begun, so no war
+    // step either.
     const steps = computeTurnUpdate(actionPhase(), data);
-    expect(steps.map((s) => s.kind)).toEqual(['opportunity', 'opportunity']);
+    expect(steps.map((s) => s.kind)).toEqual(['tithe', 'opportunity', 'opportunity']);
     expect(steps.every((s) => s.status === 'proposed')).toBe(true);
+    expect(steps[0]).toMatchObject({ paid: 0, owed: 1, refused: false });
+  });
+
+  it('drops the tithe reminder once the due is met, and names a refusal', () => {
+    const paid = actionPhase();
+    paid.tithe.paidCardIds = ['rc_b1_1'];
+    expect(computeTurnUpdate(paid, data).some((s) => s.kind === 'tithe')).toBe(false);
+
+    const refused = actionPhase();
+    refused.tithe.refused = true;
+    const step = computeTurnUpdate(refused, data).find((s) => s.kind === 'tithe');
+    expect(step).toMatchObject({ refused: true, paid: 0, owed: 1 });
+    expect(step.printed).toContain('Shipping Control');
   });
 
   it('hands the two opening leads to the two NPCs, facilitator-targeted', () => {

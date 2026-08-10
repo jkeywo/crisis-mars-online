@@ -6,10 +6,13 @@
  * this viewer's faction and no others. The component never asks "is this
  * mine?": redaction already answered.
  *
- * The tap records a decision the faction made out loud at its table; it is
- * not a ballot, and a team-mate can re-tap until the facilitator resolves.
- * See gaps.js.
+ * By the author's ruling the tap is a vote: each claimed seat of the
+ * faction picks an option, revotable while the record is pending, and the
+ * card marks consensus when every claimed seat agrees. The facilitator
+ * resolves on judgement either way. See gaps.js.
  */
+
+import { opportunityConsensus } from '../rules/derive.js';
 
 export class CmOpportunityCard extends HTMLElement {
   set data(value) { this._data = value; this._render(); }
@@ -32,23 +35,31 @@ export class CmOpportunityCard extends HTMLElement {
       .filter((record) => record.status === 'pending' && record.title !== undefined);
     if (!pending.length) { this.innerHTML = ''; return; }
 
-    this.innerHTML = pending.map((record) => `
-      <section class="cm-opportunity" data-opportunity="${escape(record.id)}">
+    const me = this._view.viewer?.roleId ?? null;
+    this.innerHTML = pending.map((record) => {
+      const { agreed } = opportunityConsensus(this._view, this._data, record);
+      const votes = Object.entries(record.votes ?? {});
+      return `
+      <section class="cm-opportunity" data-opportunity="${escape(record.id)}"
+               data-consensus="${agreed ?? ''}">
         <h3>${escape(record.title)}</h3>
         <p class="cm-meta">An opportunity for ${escape(
     this._data.factions.factions[record.factionId]?.name ?? 'your faction')} —
-          talk it over, then record the table's answer.</p>
+          talk it over, then vote. Every claimed seat agreeing is consensus.</p>
         <div class="cm-opportunity-options">
           ${[['A', record.optionA], ['B', record.optionB]].map(([key, text]) => `
             <button type="button" data-choose="${escape(record.id)}|${key}"
-                    aria-pressed="${record.choice === key}">
+                    aria-pressed="${(record.votes ?? {})[me] === key}">
               <strong>${key}.</strong> ${escape(text)}
             </button>`).join('')}
         </div>
-        ${record.choice ? `
-          <p class="cm-meta">Recorded: option ${escape(record.choice)}.
-            The facilitator settles it from here.</p>` : ''}
-      </section>`).join('');
+        ${votes.length ? `
+          <p class="cm-meta">Votes: ${votes.map(([code, choice]) => `${escape(
+    this._data.roles.roles[code]?.name ?? code)} — ${escape(choice)}`).join('; ')}.
+            ${agreed ? `<strong>Consensus on ${agreed}.</strong>`
+    : 'No consensus yet.'}</p>` : ''}
+      </section>`;
+    }).join('');
 
     for (const button of this.querySelectorAll('[data-choose]')) {
       button.onclick = () => {

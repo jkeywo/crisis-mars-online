@@ -136,13 +136,16 @@ export const KNOWN_GAPS = [
   },
   {
     id: 'spotlight-timer-informs-only',
+    status: 'author-ruled',
+    ruledOn: '2026-08-10',
     about: 'The 60-second spotlight running out',
     silent:
       'The handbook gives each called player 60 seconds and never says what '
       + 'happens at 61.',
     ruling:
-      'Nothing, automatically. The ring and the beep inform the room; the '
-      + 'facilitator skips, hurries, or lets the sentence finish.',
+      'Nothing, automatically. One beep when time expires, then one every '
+      + 'ten seconds while the action stays open; the facilitator closes '
+      + 'the spotlight when it is done.',
     because:
       'An auto-forfeit would let a clock adjudicate, and adjudication is '
       + 'human in this game by design. The printed timer is pacing advice '
@@ -173,44 +176,54 @@ export const KNOWN_GAPS = [
   },
   {
     id: 'opportunity-choice-is-a-record',
+    status: 'author-ruled',
+    ruledOn: '2026-08-10',
     about: 'How a faction answers an opportunity',
     silent:
       'The print offers a triggered faction "a two-option team choice" and '
       + 'never says who speaks for the team or how the answer is collected.',
     ruling:
-      'Any player of the faction taps the option; the tap is a record of a '
-      + 'decision made out loud, overwritable until the facilitator '
-      + 'resolves. The last tap counts.',
+      'Consensus to act: each claimed seat of the faction casts a vote, '
+      + 'revotable while pending; the consoles mark consensus when every '
+      + 'claimed seat agrees, and the facilitator resolves on judgement '
+      + 'either way.',
     because:
-      'A ballot would invent voting weights the print does not have. The '
-      + 'table talks, somebody taps, and if the tap misrepresents the table '
-      + 'that is a table problem — the same trust the paper game runs on.',
+      'The author\u2019s ruling. The table still talks — the votes are the '
+      + 'record of the talking, empty chairs do not block agreement, and '
+      + 'the umpire keeps the final say the print gives them.',
   },
   {
     id: 'tithe-one-payment-per-turn',
+    status: 'author-ruled',
+    ruledOn: '2026-08-10',
     about: 'Who pays the tithe, and from what',
     silent:
       'The print says the Belt Union owes the Ambassador 1, 1, 2, 2 cards '
       + 'by turn, without naming which Belt player pays or whose cards go.',
     ruling:
-      'Any one Belt Union player pays the whole turn\u2019s tithe from cards '
-      + 'in their own hand, once per turn for the faction.',
+      'Any Belt Union player pays, in any instalments of at least one card, '
+      + 'accumulating across the turn against the printed due. The refusal '
+      + 'marker stays for the explicit "we refuse".',
     because:
-      'The debt is the faction\u2019s, so anybody\u2019s hand can settle it — '
-      + 'and cards are freely loanable, so the faction can move the burden '
-      + 'between hands first. One payment per turn is what "1, 1, 2, 2 by '
-      + 'turn" says.',
+      'The author\u2019s ruling, loosening the build\u2019s one-payment '
+      + 'reading: the debt is the faction\u2019s and so is the whip-round. '
+      + 'The consoles show paid-against-due; short is short, and short is '
+      + 'the worksheet\u2019s business.',
   },
   {
     id: 'tithe-refusal-is-judgement',
+    status: 'author-ruled',
+    ruledOn: '2026-08-10',
     about: 'What refusing the tithe costs',
     silent:
       'The print says refusal should "move Shipping Control towards Earth" '
       + 'and bring "consequences for the stations if Earth has shipping '
       + 'control", with amounts licensed to judgement.',
     ruling:
-      'The app records the refusal and enforces nothing. Retaliation is the '
-      + 'facilitator moving tracks by hand, as themselves, in the log.',
+      'The app records the refusal and enforces nothing — and the '
+      + 'end-of-turn worksheet reminds: a short or refused tithe surfaces a '
+      + 'step quoting the printed consequences, for the facilitator to act '
+      + 'on or wave past.',
     because:
       'The printed consequences have no numbers on purpose — "the amounts '
       + 'are as standard; the guide licenses judgement based on how much '

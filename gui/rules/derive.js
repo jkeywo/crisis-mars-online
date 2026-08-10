@@ -117,3 +117,26 @@ export function actionImpact(state, data, action) {
     bonus: action.bonus ?? 0,
   }, data);
 }
+
+/**
+ * Where a faction's opportunity vote stands.
+ *
+ * Consensus is every CLAIMED seat of the faction voting the same way —
+ * empty chairs do not block a table that agrees, and an unclaimed faction
+ * can never reach consensus. The facilitator resolves on judgement either
+ * way; this is the readout, not a gate.
+ *
+ * @returns {{claimed: string[], agreed: ('A'|'B'|null)}}
+ */
+export function opportunityConsensus(state, data, record) {
+  if (!record.factionId) return { claimed: [], agreed: null };
+  const claimed = Object.values(state.roles)
+    .filter((role) => !role.npc && role.claimedBySeat !== null
+      && data.roles.roles[role.id]?.factionId === record.factionId)
+    .map((role) => role.id);
+  const votes = record.votes ?? {};
+  const first = claimed.length ? votes[claimed[0]] : undefined;
+  const agreed = claimed.length && first !== undefined
+    && claimed.every((code) => votes[code] === first) ? first : null;
+  return { claimed, agreed };
+}

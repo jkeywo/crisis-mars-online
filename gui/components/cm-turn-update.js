@@ -54,6 +54,10 @@ export class CmTurnUpdate extends HTMLElement {
       case 'otherwise':
         return `<strong>No clear lead</strong>
           <span class="cm-meta">${escape(step.triggerId)}: the print says ${escape(step.text)}.</span>`;
+      case 'tithe':
+        return `<strong>The tithe is short</strong> — ${step.paid} of ${step.owed} paid${
+  step.refused ? ', refused outright' : ''}.
+          <span class="cm-meta">${escape(step.printed)}</span>`;
       case 'surrender':
         return `<strong class="cm-warn">${step.side === 'earth' ? 'Earth' : 'Mars'}
           has hit the surrender boundary.</strong>

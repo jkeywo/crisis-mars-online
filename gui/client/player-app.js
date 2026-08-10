@@ -141,10 +141,10 @@ export async function startPlayerApp({ location = window.location, beeper = crea
     $('card-viewer').show(event.detail.cardId));
 
   // The spotlight clock says when it crosses a line; what that is worth is
-  // the page's call — one pip at ten seconds, two at time. Best-effort, like
-  // every noise this app makes.
-  document.addEventListener('cm-spotlight-warning', () => beeper?.beep(1, 990));
-  document.addEventListener('cm-spotlight-up', () => beeper?.beep(2, 990));
+  // the page's call — one pip at time, then one every ten seconds while the
+  // action stays open. Best-effort, like every noise this app makes.
+  document.addEventListener('cm-spotlight-up', () => beeper?.beep(1, 990));
+  document.addEventListener('cm-spotlight-overtime', () => beeper?.beep(1, 990));
 
   function dispatch(verb, payload) {
     $('action-error').textContent = '';
@@ -285,10 +285,10 @@ export async function startPlayerApp({ location = window.location, beeper = crea
   const titheSelection = new Set();
   function renderTithe(view, mine) {
     const owed = titheOwed(view.phase.turn);
+    const paid = view.tithe.paidCardIds.length;
     const isBelt = data.roles.roles[mine]?.factionId === TITHE_FROM_FACTION;
     const inWindow = ['team', 'negotiation'].includes(view.phase.name);
-    const settled = view.tithe.paidCardIds.length > 0 || view.tithe.refused;
-    const open = isBelt && inWindow && !settled && owed > 0;
+    const open = isBelt && inWindow && !view.tithe.refused && paid < owed;
     $('tithe').hidden = !open;
     if (!open) { titheSelection.clear(); return; }
 
@@ -298,8 +298,8 @@ export async function startPlayerApp({ location = window.location, beeper = crea
       if (!held.some((card) => card.id === id)) titheSelection.delete(id);
     }
     $('tithe-note').textContent =
-      `The Ambassador is owed ${owed} card${owed === 1 ? '' : 's'} this turn. `
-      + `Pick ${owed} from your hand — any Belt player can pay for the faction.`;
+      `The Ambassador is owed ${owed} card${owed === 1 ? '' : 's'} this turn — `
+      + `${paid} paid so far. Any Belt player can pay, in instalments.`;
     $('tithe-cards').innerHTML = held.map((card) => `
       <label><input type="checkbox" value="${card.id}"
         ${titheSelection.has(card.id) ? 'checked' : ''}>
@@ -308,10 +308,10 @@ export async function startPlayerApp({ location = window.location, beeper = crea
       input.onchange = () => {
         if (input.checked) titheSelection.add(input.value);
         else titheSelection.delete(input.value);
-        $('pay-tithe').disabled = titheSelection.size !== owed;
+        $('pay-tithe').disabled = titheSelection.size === 0;
       };
     }
-    $('pay-tithe').disabled = titheSelection.size !== owed;
+    $('pay-tithe').disabled = titheSelection.size === 0;
   }
 
   $('pay-tithe').addEventListener('click', () => {

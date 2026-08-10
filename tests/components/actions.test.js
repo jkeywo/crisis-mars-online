@@ -86,27 +86,35 @@ describe('<cm-initiative-queue>', () => {
       .toContain(data.roles.roles[second].name);
   });
 
-  it('announces ten seconds and time, once each', () => {
+  it('beeps once at time, then every ten seconds while the action is open', () => {
+    // The author's ruling: nothing before the crossing, one call at it, and
+    // a nag per ten-second step after — with a throttled tab's backlog
+    // collapsed to a single nag.
     const state = run(actionPhase(),
       [[FACILITATOR, 'facilitator:call-next', { mapId: 'earth_map' }]]);
     const endsAt = state.actions.a1.endsAt;
     const queue = mount('cm-initiative-queue', { map: 'earth_map' });
     const heard = [];
-    queue.addEventListener('cm-spotlight-warning', () => heard.push('warning'));
     queue.addEventListener('cm-spotlight-up', () => heard.push('up'));
+    queue.addEventListener('cm-spotlight-overtime', () => heard.push('overtime'));
     queue.data = data;
 
     queue.now = () => endsAt - 30_000;
     queue.view = projectFor(state, null);
+    queue.now = () => endsAt - 5_000;    // inside the last ten seconds: silence
     expect(heard).toEqual([]);
 
-    queue.now = () => endsAt - 9_000;    // crossing ten seconds
-    queue.now = () => endsAt - 8_000;    // still inside it: nothing new
-    expect(heard).toEqual(['warning']);
-
     queue.now = () => endsAt + 500;      // time
-    queue.now = () => endsAt + 20_000;   // long past: still one call
-    expect(heard).toEqual(['warning', 'up']);
+    queue.now = () => endsAt + 9_000;    // still the first ten seconds
+    expect(heard).toEqual(['up']);
+
+    queue.now = () => endsAt + 10_500;   // first nag
+    queue.now = () => endsAt + 15_000;   // same step: nothing new
+    queue.now = () => endsAt + 21_000;   // second nag
+    expect(heard).toEqual(['up', 'overtime', 'overtime']);
+
+    queue.now = () => endsAt + 90_000;   // a throttled tab returns: one nag
+    expect(heard).toEqual(['up', 'overtime', 'overtime', 'overtime']);
   });
 });
 

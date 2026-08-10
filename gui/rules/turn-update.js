@@ -15,6 +15,8 @@
  * call. See gaps.js.
  */
 
+import { titheOwed } from './commands/team.js';
+
 /** A track's current value, wherever it lives. */
 export function trackValue(state, trackId) {
   for (const board of Object.values(state.maps)) {
@@ -78,6 +80,24 @@ export function computeTurnUpdate(state, data) {
         });
       }
     }
+  }
+
+  // --- 1b. the tithe, if it is short ------------------------------------------
+  // The author's addition: a reminder, never an enforcement. The printed
+  // consequences are transcribed here because the rules never read the
+  // facilitator file; see DECISIONS.md.
+  const owed = titheOwed(state.phase.turn);
+  const paid = state.tithe.paidCardIds.length;
+  if (owed > 0 && paid < owed) {
+    step({
+      kind: 'tithe',
+      paid,
+      owed,
+      refused: state.tithe.refused,
+      printed: 'On refusal: move Shipping Control towards Earth; consequences '
+        + 'for the stations if Earth has shipping control. The amounts are '
+        + 'as standard — judged by how much tension the table needs.',
+    });
   }
 
   // --- 2. threshold opportunity triggers -------------------------------------
