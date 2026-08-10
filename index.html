@@ -78,6 +78,18 @@
       <div class="cm-game-body">
         <!-- what you can do, always in view -->
         <aside id="action-rail" class="cm-rail cm-action-rail">
+          <!-- Your faction's opportunity, when one is live. Redaction means
+               this element only ever receives your own faction's. -->
+          <cm-opportunity-card id="opportunities"></cm-opportunity-card>
+
+          <!-- The tithe, for Belt Union players while it is owed. -->
+          <div id="tithe" class="cm-tithe" hidden>
+            <h2>The tithe</h2>
+            <p id="tithe-note" class="cm-meta"></p>
+            <div id="tithe-cards"></div>
+            <button id="pay-tithe" type="button" class="cm-primary">Pay the tithe</button>
+          </div>
+
           <!-- The Negotiation Phase's one obligation, as its own control
                rather than a row in the list: three map buttons and where
                your card currently sits. -->

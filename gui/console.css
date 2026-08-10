@@ -2639,3 +2639,51 @@ cm-initiative-queue { display: block; }
   border-radius: 6px;
   padding: 0.4rem 0.6rem;
 }
+
+
+/* --------------------------------------------------------------------------
+   The Team Phase (Phase B6): opportunities, correspondence, the tithe.
+   -------------------------------------------------------------------------- */
+
+.cm-opportunity, .cm-opportunity-row, .cm-correspondence, .cm-tithe {
+  background: var(--cm-paper);
+  border: 1px solid var(--cm-rule);
+  border-radius: 6px;
+  padding: 0.5rem 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.cm-opportunity { border-color: var(--cm-gold); }
+
+.cm-opportunity-options { display: grid; gap: 0.4rem; }
+
+.cm-opportunity-options button { text-align: left; }
+
+.cm-opportunity-options button[aria-pressed="true"] {
+  border: 1px solid var(--cm-gold);
+  background: color-mix(in srgb, var(--cm-gold) 18%, transparent);
+}
+
+.cm-correspondence blockquote {
+  margin: 0 0 0.4rem;
+  padding-left: 0.6rem;
+  border-left: 3px solid var(--cm-gold);
+  white-space: pre-line;
+  font-style: italic;
+}
+
+.cm-correspondence[data-status="published"], .cm-correspondence[data-status="skipped"] {
+  opacity: 0.7;
+}
+
+.cm-team-panel { margin: 0.8rem 0; }
+
+#opportunity-composer { display: grid; gap: 0.3rem; }
+
+#opportunity-composer input { width: 100%; }
+
+.cm-opportunity-row[data-status="resolved"] { opacity: 0.65; }
+
+.cm-tithe { border-color: var(--cm-amber); }
+
+#tithe-cards { display: grid; gap: 0.2rem; margin: 0.4rem 0; }

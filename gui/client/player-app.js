@@ -36,6 +36,8 @@ import '../components/cm-role-card.js';
 import '../components/cm-card-viewer.js';
 import '../components/cm-initiative-queue.js';
 import '../components/cm-action-spotlight.js';
+import '../components/cm-opportunity-card.js';
+import { titheOwed, TITHE_FROM_FACTION } from '../rules/commands.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -237,7 +239,10 @@ export async function startPlayerApp({ location = window.location, beeper = crea
     $('role-card').view = view;
     $('hand').data = data;
     $('hand').view = view;
+    $('opportunities').data = data;
+    $('opportunities').view = view;
     renderPlacement(view, mine);
+    renderTithe(view, mine);
     renderAllHands(view, mine);
     $('game-roster').roles = data.roles.roles;
     $('game-roster').seats = seats;
@@ -262,6 +267,50 @@ export async function startPlayerApp({ location = window.location, beeper = crea
       ? `On ${data.maps.maps[card.placed]?.name ?? card.placed} — you can move it until the phase ends.`
       : 'Not placed yet. Placement is mandatory — pick a map.';
   }
+
+  /**
+   * The tithe, for a Belt Union player while it is owed.
+   *
+   * The selection survives re-renders in a Set rather than in the DOM,
+   * because a projection arrives on every change anybody makes and would
+   * otherwise wipe half-ticked checkboxes.
+   */
+  const titheSelection = new Set();
+  function renderTithe(view, mine) {
+    const owed = titheOwed(view.phase.turn);
+    const isBelt = data.roles.roles[mine]?.factionId === TITHE_FROM_FACTION;
+    const inWindow = ['team', 'negotiation'].includes(view.phase.name);
+    const settled = view.tithe.paidCardIds.length > 0 || view.tithe.refused;
+    const open = isBelt && inWindow && !settled && owed > 0;
+    $('tithe').hidden = !open;
+    if (!open) { titheSelection.clear(); return; }
+
+    const held = Object.values(view.cards ?? {})
+      .filter((card) => card.holderCode === mine && card.state === 'held');
+    for (const id of [...titheSelection]) {
+      if (!held.some((card) => card.id === id)) titheSelection.delete(id);
+    }
+    $('tithe-note').textContent =
+      `The Ambassador is owed ${owed} card${owed === 1 ? '' : 's'} this turn. `
+      + `Pick ${owed} from your hand — any Belt player can pay for the faction.`;
+    $('tithe-cards').innerHTML = held.map((card) => `
+      <label><input type="checkbox" value="${card.id}"
+        ${titheSelection.has(card.id) ? 'checked' : ''}>
+        ${data.resources.types[card.type]?.name ?? card.type}</label>`).join('');
+    for (const input of $('tithe-cards').querySelectorAll('input')) {
+      input.onchange = () => {
+        if (input.checked) titheSelection.add(input.value);
+        else titheSelection.delete(input.value);
+        $('pay-tithe').disabled = titheSelection.size !== owed;
+      };
+    }
+    $('pay-tithe').disabled = titheSelection.size !== owed;
+  }
+
+  $('pay-tithe').addEventListener('click', () => {
+    dispatch('pay-tithe', { cardIds: [...titheSelection] });
+    titheSelection.clear();
+  });
 
   /**
    * Everyone else's cards, one readonly hand per active lanyard.
