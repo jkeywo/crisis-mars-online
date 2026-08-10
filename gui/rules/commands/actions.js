@@ -498,6 +498,28 @@ export const ACTION_COMMANDS = {
   },
 
   /**
+   * Put a facilitator's name on a lane, or take it off.
+   *
+   * UI semantics only: nothing is gated by it. Two umpires splitting three
+   * maps between them need the split visible on every console, and that is
+   * the whole of it.
+   */
+  'facilitator:claim-lane': {
+    phases: '*',
+    actor: 'facilitator',
+    admit(ctx) {
+      const { mapId, name } = ctx.cmd.payload ?? {};
+      if (!(mapId in (ctx.state.lanes ?? {}))) return no('no such lane');
+      if (name !== null && typeof name !== 'string') return no('a name, or null to release');
+      return ok();
+    },
+    effects(draft, ctx) {
+      const { mapId, name } = ctx.cmd.payload;
+      draft.lanes[mapId] = typeof name === 'string' && name.trim() ? name.trim() : null;
+    },
+  },
+
+  /**
    * Pass somebody over — absent, passing, or out of time by the
    * facilitator's judgement. Spends nothing.
    *

@@ -2771,3 +2771,30 @@ cm-initiative-queue { display: block; }
   #epilogue-panel { display: block !important; }
   .cm-epilogue section { border: none; background: none; }
 }
+
+
+/* --- the co-facilitator and the lanes (Phase B8) ---------------------------- */
+
+.cm-co-form { display: grid; gap: 0.3rem; max-width: 22rem; }
+
+.cm-co-banner {
+  background: color-mix(in srgb, var(--cm-gold) 14%, var(--cm-paper));
+  border: 1px solid var(--cm-gold);
+  border-radius: 6px;
+  padding: 0.5rem 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.cm-lane-bar {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  border-bottom: 1px dashed var(--cm-rule);
+  padding-bottom: 0.25rem;
+}

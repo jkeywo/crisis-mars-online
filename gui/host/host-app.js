@@ -20,11 +20,13 @@ import { GameHost } from './game-host.js';
 import {
   Persistence, saveFilename, downloadSave, downloadPage, epiloguePage, parseSave,
 } from './persistence.js';
-import { PrimarySession } from './session.js';
+import { PrimarySession, CoFacilitatorSession } from './session.js';
+import { installSessionToken } from '../net/session-token.js';
+import { loadSavedName, saveName } from '../net/name-storage.js';
 import { eventPumpFor } from './event-pump.js';
 import { createBeeper } from '../sound.js';
 import {
-  mintJoinCode, mintFacilitatorPin, playerLink,
+  mintJoinCode, mintFacilitatorPin, playerLink, normaliseJoinCode, isValidJoinCode,
 } from '../net/join-code.js';
 import { mintSeed } from '../rules/rng.js';
 import { PHASES, OUT_OF_PLAY, NPC_CODES } from '../rules/state.js';
@@ -171,6 +173,66 @@ export async function startHostApp({ location = window.location, beeper = create
     if (button) resume(persistence.read(button.dataset.code));
   });
 
+  // Prefilled from whoever last typed one on this machine — and the
+  // ?role=co warm-standby entrance drops the cursor straight on the form.
+  $('co-name').value = loadSavedName();
+  if (new URLSearchParams(location.search ?? '').get('role') === 'co') {
+    $('co-code').focus();
+  }
+
+  $('join-as-co').addEventListener('submit', (event) => {
+    event.preventDefault();
+    const code = normaliseJoinCode($('co-code').value);
+    if (!isValidJoinCode(code)) {
+      // Not guessed at: a misheard letter that was silently corrected could
+      // be a different, valid game.
+      $('start-error').textContent = 'That code is not right. Ask them to read it again.';
+      return;
+    }
+    const enteredPin = $('co-pin').value.trim();
+    if (!enteredPin) {
+      $('start-error').textContent = 'The PIN is on the other facilitator\u2019s screen.';
+      return;
+    }
+    $('start-error').textContent = '';
+    const coName = $('co-name').value.trim() || 'Co-facilitator';
+    saveName(coName);
+    take(new CoFacilitatorSession({
+      joinCode: code,
+      pin: enteredPin,
+      name: coName,
+      token: installSessionToken(code),
+      data,
+      onChange,
+      onStatus: (status) => $('connection').setAttribute('status', status),
+      onLog: (line) => appendLog(line),
+    }));
+  });
+
+  $('take-over').addEventListener('click', () => {
+    // eslint-disable-next-line no-alert
+    const sure = globalThis.confirm?.(
+      'Take over hosting? Do this only when the other facilitator has stopped.');
+    if (sure === false) return;
+
+    const result = session.takeOver({
+      onChange,
+      onStatus: (status) => $('connection').setAttribute('status', status),
+      onLog: (line) => appendLog(line),
+      pump,
+    });
+    if (!result.ok) { appendLog('[co] ' + result.reason); return; }
+    if (result.refused?.length) {
+      $('replay-warning').hidden = false;
+      $('replay-warning').textContent =
+        result.refused.length + ' recorded action'
+        + (result.refused.length === 1 ? '' : 's')
+        + ' could not be replayed and had no effect.';
+    }
+    appendLog('[co] taking the game over — claiming the code');
+    take(result.session);
+  });
+
   $('import-file').addEventListener('change', async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -222,7 +284,7 @@ export async function startHostApp({ location = window.location, beeper = create
     }));
   }
 
-  /** Adopt a session and show the running console. */
+  /** Adopt a session, whichever kind it is, and show the running console. */
   function take(started) {
     session = started;
     pin = session.facilitatorPin;
@@ -231,6 +293,7 @@ export async function startHostApp({ location = window.location, beeper = create
     $('join-code').textContent = session.joinCode;
     $('facilitator-pin').textContent = pin ?? '—';
     $('player-link').value = playerLink(location, session.joinCode);
+    document.body.dataset.role = session.kind;
     show('running');
     render();
 
@@ -261,6 +324,18 @@ export async function startHostApp({ location = window.location, beeper = create
   }
 
   function render() {
+    // A co-facilitator before the first projection has nothing but a
+    // connection status; the console fills in the moment the mirror does.
+    $('co-banner').hidden = session.kind !== 'co';
+    if (session.kind === 'co') {
+      const ready = session.canTakeOver;
+      $('take-over').disabled = !ready;
+      $('co-mirror').textContent = ready
+        ? `${session.state.log.length} action${session.state.log.length === 1 ? '' : 's'} mirrored`
+        : 'nothing has arrived yet';
+    }
+    if (!session.state) return;
+
     const roster = $('roster');
     roster.roles = data.roles.roles;
     roster.seats = session.roster();
@@ -282,8 +357,13 @@ export async function startHostApp({ location = window.location, beeper = create
     $('war-strip').hidden = false;
     $('war').data = data;
     $('war').view = session.state;
+    const umpireName = session.kind === 'co'
+      ? (loadSavedName() || 'Co-facilitator') : 'the host';
     for (const element of $('host-boards')
       .querySelectorAll('cm-map-board, cm-initiative-queue, cm-adjudication')) {
+      if (element.tagName === 'CM-ADJUDICATION') {
+        element.setAttribute('facilitator-name', umpireName);
+      }
       element.data = data;
       element.view = session.state;
     }

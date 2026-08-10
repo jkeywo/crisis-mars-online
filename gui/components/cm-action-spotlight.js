@@ -51,10 +51,13 @@ export class CmActionSpotlight extends HTMLElement {
     const action = id ? this._view.actions?.[id] : null;
     const queue = this._view.initiative?.queues?.[this.mapId] ?? [];
 
+    const umpire = this._view.lanes?.[this.mapId]
+      ? `<p class="cm-meta">Umpire for this map: ${escape(this._view.lanes[this.mapId])}.</p>` : '';
+
     if (!action) {
-      this.innerHTML = queue.length ? `
+      this.innerHTML = queue.length ? `${umpire}
         <p class="cm-meta">Up next: <strong>${escape(this._name(queue[0]))}</strong> —
-          waiting on the facilitator to call them.</p>` : '';
+          waiting on the facilitator to call them.</p>` : umpire && queue ? umpire : '';
       return;
     }
 
@@ -63,7 +66,7 @@ export class CmActionSpotlight extends HTMLElement {
     const band = bandFor(impact, this._data);
     const consequence = action.roll === null ? null : consequenceOf(action.roll, this._data);
 
-    this.innerHTML = `
+    this.innerHTML = `${umpire}
       <div class="cm-spotlight" data-status="${escape(action.status)}">
         <h4>${escape(this._name(action.actorCode))}${action.actorCode === me ? ' — you' : ''}</h4>
         ${action.declaration

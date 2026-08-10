@@ -31,10 +31,35 @@ export class CmAdjudication extends HTMLElement {
 
   get mapId() { return this.getAttribute('map'); }
 
+  /** What this console's umpire calls themselves, for the lane claim. */
+  get facilitatorName() { return this.getAttribute('facilitator-name') || 'the host'; }
+
   _emit(verb, payload) {
     this.dispatchEvent(new CustomEvent('cm-facilitate', {
       bubbles: true, detail: { verb, payload },
     }));
+  }
+
+  /** The lane's ownership line: whose table this is, claim or release. */
+  _laneBar() {
+    const owner = this._view.lanes?.[this.mapId] ?? null;
+    const mine = owner === this.facilitatorName;
+    return `
+      <p class="cm-lane-bar">
+        ${owner ? `Lane: <strong>${escape(owner)}</strong>${mine ? ' (you)' : ''}`
+    : '<span class="cm-meta">Lane unclaimed</span>'}
+        <button type="button" data-lane="${mine ? '' : escape(this.facilitatorName)}">
+          ${mine ? 'Release' : 'Run this lane'}</button>
+      </p>`;
+  }
+
+  _wireLane() {
+    const button = this.querySelector('[data-lane]');
+    if (button) {
+      button.onclick = () => this._emit('facilitator:claim-lane', {
+        mapId: this.mapId, name: button.dataset.lane || null,
+      });
+    }
   }
 
   _name(code) {
@@ -79,6 +104,7 @@ export class CmAdjudication extends HTMLElement {
     if (!action) {
       this.innerHTML = `
         <div class="cm-adjudicate" data-idle="true">
+          ${this._laneBar()}
           ${queue.length ? `
             <button type="button" class="cm-primary" data-call>Call ${
   escape(this._name(queue[0]))}</button>
@@ -86,6 +112,7 @@ export class CmAdjudication extends HTMLElement {
             <p class="cm-meta">This map's queue is done.</p>`}
         </div>`;
       this._wireIdle();
+      this._wireLane();
       return;
     }
 
@@ -98,6 +125,7 @@ export class CmAdjudication extends HTMLElement {
 
     this.innerHTML = `
       <div class="cm-adjudicate" data-status="${escape(action.status)}">
+        ${this._laneBar()}
         <h4>#${action.seq} · ${escape(this._name(action.actorCode))}
           <span class="cm-meta">${escape(action.status)}</span></h4>
         ${action.declaration
@@ -150,6 +178,7 @@ export class CmAdjudication extends HTMLElement {
       </div>`;
 
     this._wire(action, staged);
+    this._wireLane();
   }
 
   _effectsPanel(action, staged, budgets, confirmed) {

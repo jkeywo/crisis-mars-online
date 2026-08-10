@@ -174,6 +174,10 @@ export function createInitialState({ joinCode, seed, data, playerCount, rosterCo
     // The end-of-turn worksheet: null until facilitator:begin-turn-update
     // computes this turn's proposals into it; cleared by the rollover.
     turnUpdate: null,
+    // Which umpire is running each map's lane, by the name they gave. Pure
+    // console furniture: it gates nothing, it just tells the room whom to
+    // shout at. Facilitators claim and release freely.
+    lanes: Object.fromEntries(Object.keys(maps).map((mapId) => [mapId, null])),
     // Every spotlight ever opened, keyed a1, a2… and kept — a closed action
     // is part of the story of the game, and the replay reads it back.
     actions: {},

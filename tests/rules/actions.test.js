@@ -549,6 +549,25 @@ describe('closing', () => {
   });
 });
 
+describe('lane claims', () => {
+  it('writes a name on a lane, releases it, and gates nothing', () => {
+    let state = actionPhase();
+    state = run(state, [[FACILITATOR, 'facilitator:claim-lane',
+      { mapId: 'mars_map', name: 'Dana' }]]);
+    expect(state.lanes).toMatchObject({ mars_map: 'Dana', earth_map: null });
+    // Gates nothing: another umpire can still call on that map.
+    expect(admit(state, data, {
+      verb: 'facilitator:call-next', payload: { mapId: 'mars_map' },
+    }, FACILITATOR).ok).toBe(true);
+    state = run(state, [[FACILITATOR, 'facilitator:claim-lane',
+      { mapId: 'mars_map', name: null }]]);
+    expect(state.lanes.mars_map).toBe(null);
+    expect(admit(state, data, {
+      verb: 'facilitator:claim-lane', payload: { mapId: 'jupiter', name: 'x' },
+    }, FACILITATOR).reason).toContain('no such lane');
+  });
+});
+
 describe('the record', () => {
   it('replays three interleaved lanes to the same state, byte for byte', () => {
     // The load-bearing one: earth, mars and belt adjudicated in parallel,

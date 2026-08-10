@@ -116,6 +116,8 @@ export const FIELD_VISIBILITY = [
   // be theatre. What an opportunity SAYS stays scoped; that one is proposed
   // is not a secret. See DECISIONS.md.
   { path: 'turnUpdate.**', audience: PUBLIC },
+  // Whose table each lane is: said out loud so players know whom to call.
+  { path: 'lanes.**', audience: PUBLIC },
 
   { path: 'aftermath.**', audience: PUBLIC },
 ];
