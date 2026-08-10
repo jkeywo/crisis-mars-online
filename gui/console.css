@@ -2969,3 +2969,55 @@ cm-board-overlay { display: block; }
   border-radius: 4px;
   padding: 0.3rem 0.5rem;
 }
+
+
+/* --------------------------------------------------------------------------
+   The tabbed host console.
+   -------------------------------------------------------------------------- */
+
+.cm-host-tabs {
+  margin: 1rem 0 0;
+  border-bottom: 1px solid var(--cm-rule);
+  overflow-x: auto;
+  flex-wrap: nowrap;
+}
+
+.cm-host-tabs [role="tab"] { white-space: nowrap; position: relative; }
+
+/* A quiet dot where attention is due. */
+.cm-host-tabs [data-live="true"]::after {
+  content: '';
+  position: absolute;
+  top: 0.25rem;
+  right: 0.35rem;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--cm-gold);
+}
+
+.cm-tab-panel {
+  padding: 0.8rem 0;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.cm-npc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 1.2rem;
+}
+
+.cm-npc-column {
+  background: var(--cm-paper);
+  border: 1px solid var(--cm-rule);
+  border-radius: 6px;
+  padding: 0.6rem 0.9rem;
+}
+
+.cm-npc-lanyard {
+  width: 8rem;
+  float: right;
+  margin: 0 0 0.5rem 0.7rem;
+  border-radius: 4px;
+}

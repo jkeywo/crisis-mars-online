@@ -38,8 +38,9 @@ import '../components/cm-connection-dot.js';
 import '../components/cm-seat-roster.js';
 import '../components/cm-phase-clock.js';
 import '../components/cm-state-inspector.js';
-import '../components/cm-map-board.js';
+import '../components/cm-board-overlay.js';
 import '../components/cm-war-progress.js';
+import '../components/cm-roles-panel.js';
 import '../components/cm-hand.js';
 import '../components/cm-card-viewer.js';
 import '../components/cm-initiative-queue.js';
@@ -79,20 +80,61 @@ export async function startHostApp({ location = window.location, beeper = create
     <dt>${gap.about} — ${gap.ruling}</dt>
     <dd><em>${gap.silent}</em> ${gap.because}</dd>`).join('');
 
-  // One lane per map: the board the players see, plus the umpire's own
-  // queue and adjudication panel beside it.
-  for (const mapId of Object.keys(data.maps.maps)) {
-    const lane = document.createElement('div');
-    lane.className = 'cm-lane';
-    for (const tag of ['cm-map-board', 'cm-initiative-queue', 'cm-adjudication']) {
+  // The console tabs: one per map — the printed board overlaid with the
+  // live game, plus that map's Action-Phase machinery — then Roles, NPCs
+  // and Game. Map tabs and panels are built from the data; the other three
+  // panels are in the page.
+  const TAB_IDS = [...Object.keys(data.maps.maps), 'roles', 'npcs', 'game'];
+  for (const [mapId, map] of Object.entries(data.maps.maps)) {
+    const panel = document.createElement('section');
+    panel.className = 'cm-tab-panel';
+    panel.id = `panel-${mapId}`;
+    panel.setAttribute('role', 'tabpanel');
+    panel.setAttribute('aria-labelledby', `tab-${mapId}`);
+    panel.hidden = true;
+    for (const tag of ['cm-board-overlay', 'cm-initiative-queue', 'cm-adjudication']) {
       const element = document.createElement(tag);
       element.setAttribute('map', mapId);
-      lane.append(element);
+      panel.append(element);
     }
-    $('host-boards').append(lane);
+    $('tab-panels').prepend(panel);
+  }
+  // Prepending reversed them; put the maps back in printed order.
+  for (const mapId of [...Object.keys(data.maps.maps)].reverse()) {
+    $('tab-panels').prepend($(`panel-${mapId}`));
+  }
+  $('host-tabs').innerHTML = TAB_IDS.map((id) => `
+    <button type="button" role="tab" id="tab-${id}" aria-controls="panel-${id}"
+            aria-selected="false">${escape(data.maps.maps[id]?.name
+    ?? { roles: 'Roles', npcs: 'NPCs', game: 'Game' }[id])}</button>`).join('');
+
+  /** Which tab is in front. In the hash, so a refresh comes back to it. */
+  function selectTab(id) {
+    if (!TAB_IDS.includes(id)) return;
+    for (const tabId of TAB_IDS) {
+      $(`tab-${tabId}`).setAttribute('aria-selected', String(tabId === id));
+      $(`panel-${tabId}`).hidden = tabId !== id;
+    }
+    if (location.hash !== `#${id}`) location.hash = id;
   }
 
+  $('host-tabs').addEventListener('click', (event) => {
+    const button = event.target.closest('[role="tab"]');
+    if (button) selectTab(button.id.slice(4));
+  });
+  // Arrow keys walk the strip, as a tablist should.
+  $('host-tabs').addEventListener('keydown', (event) => {
+    if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+    const current = TAB_IDS.findIndex((id) =>
+      $(`tab-${id}`).getAttribute('aria-selected') === 'true');
+    const next = (current + (event.key === 'ArrowRight' ? 1 : -1)
+      + TAB_IDS.length) % TAB_IDS.length;
+    selectTab(TAB_IDS[next]);
+    $(`tab-${TAB_IDS[next]}`).focus();
+  });
+
   buildOpportunityComposer();
+  renderNpcBriefs();
 
   const screens = { start: $('screen-start'), running: $('screen-running') };
   const show = (which) => {
@@ -296,6 +338,8 @@ export async function startHostApp({ location = window.location, beeper = create
     $('player-link').value = playerLink(location, session.joinCode);
     document.body.dataset.role = session.kind;
     show('running');
+    selectTab(TAB_IDS.includes(location.hash.slice(1))
+      ? location.hash.slice(1) : TAB_IDS[0]);
     render();
 
     // The tab may be closed, put to sleep, or crash. Write unconditionally on
@@ -346,8 +390,6 @@ export async function startHostApp({ location = window.location, beeper = create
 
     const phase = session.state.phase;
     $('clock').phase = phase;
-    $('lobby-roles').hidden = phase.name !== 'lobby';
-    if (phase.name === 'lobby') renderRoleGrid(session.state, session.roster());
 
     $('inspector').data = data;
     $('inspector').state = session.state;
@@ -360,8 +402,8 @@ export async function startHostApp({ location = window.location, beeper = create
     $('war').view = session.state;
     const umpireName = session.kind === 'co'
       ? (loadSavedName() || 'Co-facilitator') : 'the host';
-    for (const element of $('host-boards')
-      .querySelectorAll('cm-map-board, cm-initiative-queue, cm-adjudication')) {
+    for (const element of $('tab-panels')
+      .querySelectorAll('cm-board-overlay, cm-initiative-queue, cm-adjudication')) {
       if (element.tagName === 'CM-ADJUDICATION') {
         element.setAttribute('facilitator-name', umpireName);
       }
@@ -372,6 +414,10 @@ export async function startHostApp({ location = window.location, beeper = create
       $(id).data = data;
       $(id).view = session.state;
     }
+    $('roles-panel').data = data;
+    $('roles-panel').view = session.state;
+    renderTitheTracker(session.state);
+    renderTabBadges(session.state);
 
     renderUnplaced(session.state, phase);
 
@@ -399,269 +445,6 @@ export async function startHostApp({ location = window.location, beeper = create
     // "is it paused" no longer answers this on its own.
     const running = !OUT_OF_PLAY.includes(phase.name) && (phase.endsAt !== null || phase.paused);
     for (const id of ['pause-clock', 'extend-clock', 'shorten-clock']) $(id).disabled = !running;
-  }
-
-  /**
-   * The same lanyard wall every player's lobby shows, read rather than
-   * clicked — dealt out a faction to a row, because every question a
-   * facilitator asks this grid is about a faction: is Canopy all seated, has
-   * anybody from the Free Federation turned up.
-   */
-  function renderRoleGrid(state, seats) {
-    const holderOf = new Map(seats.filter((s) => s.roleId).map((s) => [s.roleId, s]));
-    const factions = new Map();
-    for (const code of Object.keys(state.roles)) {
-      if (NPC_CODES.includes(code)) continue;
-      const factionId = data.roles.roles[code]?.factionId ?? 'unaligned';
-      if (!factions.has(factionId)) factions.set(factionId, []);
-      factions.get(factionId).push(code);
-    }
-
-    $('role-grid').innerHTML = [...factions].map(([factionId, codes]) => {
-      const faction = data.factions.factions[factionId];
-      return `<div class="cm-roles-faction" data-faction="${escape(factionId)}"
-        style="--faction-colour: ${escape(faction?.colour ?? '#888888')}">
-        <h3 class="cm-roles-faction-name">${escape(faction?.name ?? factionId)}</h3>
-        <div class="cm-roles-row">${codes.map((code) => {
-    const printed = data.roles.roles[code] ?? {};
-    const seat = holderOf.get(code);
-    return `<div class="cm-role">
-            <span class="cm-role-name">${escape(printed.name ?? code)}</span>
-            <span class="cm-role-team">${escape(printed.title ?? '')}</span>
-            ${seat
-    ? `<span class="cm-role-taken">${escape(seat.name)}${seat.connected ? '' : ' — away'}</span>`
-    : '<span class="cm-meta">open</span>'}
-          </div>`;
-  }).join('')}</div>
-      </div>`;
-    }).join('');
-  }
-
-  // --- the Team Phase table --------------------------------------------------
-
-  /**
-   * Who has not placed — and, by the author's ruling, the way to place for
-   * them. Each name carries the three map buttons; a click assigns their
-   * card, and mid-Action-Phase the rules append them to the back of that
-   * map's queue.
-   */
-  function renderUnplaced(state, phase) {
-    const waiting = phase.name === 'action'
-      ? state.initiative.unplaced
-      : phase.name === 'negotiation'
-        ? Object.keys(state.actionCards).filter((code) => state.actionCards[code].placed === null)
-        : [];
-    $('unplaced').hidden = !['negotiation', 'action'].includes(phase.name);
-    if ($('unplaced').hidden) return;
-    if (!waiting.length) {
-      $('unplaced').textContent = 'Every action card is placed.';
-      return;
-    }
-    $('unplaced').innerHTML = `Still to place: ${waiting.map((code) => `
-      <span class="cm-unplaced-entry">${escape(data.roles.roles[code]?.name ?? code)}
-        ${Object.entries(data.maps.maps).map(([mapId, map]) => `
-          <button type="button" data-assign="${escape(code)}|${escape(mapId)}">${
-  escape(map.name)}</button>`).join('')}
-      </span>`).join(' ')}`;
-    for (const button of $('unplaced').querySelectorAll('[data-assign]')) {
-      button.onclick = () => {
-        const [code, mapId] = button.dataset.assign.split('|');
-        asFacilitator('facilitator:assign-action-card', { code, mapId });
-      };
-    }
-  }
-
-  /**
-   * The correspondence card, the opportunity ledger and the tithe tracker.
-   *
-   * Rebuilt from state on every render, with one guard: never while the
-   * facilitator is typing in it — a projection landing mid-sentence must
-   * not eat the sentence. The composer is built once and left alone.
-   */
-  function renderTeamPanel(state) {
-    const panel = $('team-panel');
-    panel.hidden = state.phase.name === 'lobby';
-    if (panel.hidden) return;
-    if (panel.contains(document.activeElement)
-      && document.activeElement.matches('input, textarea, select')) return;
-
-    renderCorrespondence(state);
-    renderOpportunityList(state);
-    renderTitheTracker(state);
-  }
-
-  function renderCorrespondence(state) {
-    const turn = state.phase.turn;
-    const entry = events.correspondence.find((c) => c.turn === turn);
-    const status = state.correspondence['t' + turn];
-    if (!entry) { $('correspondence-card').innerHTML = ''; return; }
-
-    $('correspondence-card').innerHTML = `
-      <article class="cm-correspondence" data-status="${status ?? 'unread'}">
-        ${entry.readAloud ? `<blockquote>${escape(entry.readAloud)}</blockquote>`
-    : '<p class="cm-meta">Nothing scripted to read this turn.</p>'}
-        ${entry.note ? `<p class="cm-meta">${escape(entry.note)}</p>` : ''}
-        ${entry.effects.length ? `<ul>${entry.effects.map((e) => `
-          <li>${escape(e.track)}: ${'set' in e ? `set to ${e.set}` : (e.delta > 0 ? '+' : '') + e.delta}</li>`).join('')}
-        </ul>` : ''}
-        ${status ? `<p class="cm-meta">Already ${status}.</p>` : `
-          <div class="cm-row">
-            <button type="button" class="cm-primary" data-publish>Publish</button>
-            ${entry.optional ? '<button type="button" data-skip-news>Skip it</button>' : ''}
-          </div>`}
-      </article>`;
-
-    const publish = $('correspondence-card').querySelector('[data-publish]');
-    if (publish) {
-      publish.onclick = () => asFacilitator('facilitator:publish-correspondence', {
-        turn, effects: entry.effects.map((e) => ({ ...e })),
-      });
-    }
-    const skip = $('correspondence-card').querySelector('[data-skip-news]');
-    if (skip) {
-      skip.onclick = () => asFacilitator('facilitator:publish-correspondence',
-        { turn, skip: true });
-    }
-  }
-
-  /**
-   * Built once: a composer whose inputs must survive every projection.
-   * The guidance line follows the chosen trigger, straight from the
-   * facilitator file's menus.
-   */
-  function buildOpportunityComposer() {
-    const triggers = data.maps.opportunityTriggers;
-    const host = $('opportunity-composer');
-    host.innerHTML = `
-      <label>Trigger
-        <select id="op-trigger">
-          <option value="">Free-form</option>
-          ${triggers.map((t) => `<option value="${t.id}">${t.id}</option>`).join('')}
-        </select>
-      </label>
-      <p id="op-guidance" class="cm-meta"></p>
-      <label>For
-        <select id="op-target">
-          ${Object.entries(data.factions.factions).map(([id, f]) =>
-    `<option value="faction|${id}">${escape(f.name)}</option>`).join('')}
-          <option value="npc|N1">U.N. Ambassador (you)</option>
-          <option value="npc|N2">Senate Speaker (you)</option>
-        </select>
-      </label>
-      <label>Title <input id="op-title" maxlength="120"></label>
-      <label>Option A <input id="op-a" maxlength="200"></label>
-      <label>Option B <input id="op-b" maxlength="200"></label>
-      <button type="button" id="op-deliver" class="cm-primary">Deliver it</button>`;
-
-    const guidanceFor = () => {
-      const picked = $('op-trigger').value;
-      const guide = events.opportunityGuidance.find((g) => picked.startsWith(g.trigger));
-      $('op-guidance').textContent = guide
-        ? guide.principle + ' e.g. ' + guide.examples[0] : '';
-    };
-    $('op-trigger').onchange = guidanceFor;
-    guidanceFor();
-
-    $('op-deliver').onclick = () => {
-      const [kind, id] = $('op-target').value.split('|');
-      asFacilitator('facilitator:deliver-opportunity', {
-        triggerId: $('op-trigger').value || null,
-        ...(kind === 'faction' ? { factionId: id } : { npcCode: id }),
-        title: $('op-title').value,
-        optionA: $('op-a').value,
-        optionB: $('op-b').value,
-      });
-      for (const field of ['op-title', 'op-a', 'op-b']) $(field).value = '';
-    };
-  }
-
-  /** Pending first; each pending one carries a small resolve builder. */
-  const resolveStaged = new Map();   // opportunityId -> [{track, delta}]
-  function renderOpportunityList(state) {
-    const records = Object.values(state.opportunities);
-    if (!records.length) {
-      $('opportunity-list').innerHTML = '<p class="cm-empty">None delivered yet.</p>';
-      return;
-    }
-    const rank = (r) => (r.status === 'pending' ? 0 : 1);
-    records.sort((a, b) => rank(a) - rank(b) || a.id.localeCompare(b.id));
-
-    $('opportunity-list').innerHTML = records.map((r) => {
-      const { claimed, agreed } = opportunityConsensus(state, data, r);
-      const votes = Object.entries(r.votes ?? {});
-      const standing = r.status !== 'pending' ? ''
-        : agreed ? ` — CONSENSUS on ${agreed} (${claimed.length} claimed)`
-          : votes.length ? ` — ${votes.map(([code, choice]) => `${code}:${choice}`).join(' ')}`
-            + `, no consensus of ${claimed.length} claimed`
-            : ' — no votes yet';
-      return `
-      <article class="cm-opportunity-row" data-status="${r.status}"
-               data-consensus="${agreed ?? ''}">
-        <h4>${escape(r.title)} <span class="cm-meta">${
-  r.factionId ? escape(data.factions.factions[r.factionId]?.name ?? r.factionId)
-    : escape(r.npcCode)} · ${r.status}</span></h4>
-        <p class="cm-meta">A: ${escape(r.optionA)} · B: ${escape(r.optionB)}${escape(standing)}</p>
-        ${r.status === 'pending' ? `
-          <div class="cm-row">
-            ${(resolveStaged.get(r.id) ?? []).map((e, i) => `
-              <span class="cm-card-chip">${escape(e.track)} ${e.delta > 0 ? '+' : ''}${e.delta}
-                <button type="button" data-unstage="${r.id}|${i}">×</button></span>`).join('')}
-            <select data-res-track="${r.id}">
-              <option value="">Track…</option>
-              ${Object.keys(data.maps.tracks).filter((t) => t !== 'war_progress')
-    .map((t) => `<option value="${t}">${escape(data.maps.tracks[t].name)}</option>`).join('')}
-            </select>
-            <input type="number" step="1" data-res-delta="${r.id}" placeholder="+/-" style="width:4rem">
-            <button type="button" data-res-add="${r.id}">Add</button>
-            <button type="button" class="cm-primary" data-resolve="${r.id}">Resolve</button>
-          </div>` : ''}
-      </article>`;
-    }).join('');
-
-    for (const button of $('opportunity-list').querySelectorAll('[data-res-add]')) {
-      button.onclick = () => {
-        const id = button.dataset.resAdd;
-        const track = $('opportunity-list').querySelector(`[data-res-track="${id}"]`).value;
-        const delta = Number($('opportunity-list').querySelector(`[data-res-delta="${id}"]`).value);
-        if (!track || !Number.isInteger(delta) || delta === 0) return;
-        resolveStaged.set(id, [...(resolveStaged.get(id) ?? []), { track, delta }]);
-        renderOpportunityList(session.state);
-      };
-    }
-    for (const button of $('opportunity-list').querySelectorAll('[data-unstage]')) {
-      button.onclick = () => {
-        const [id, index] = button.dataset.unstage.split('|');
-        const staged = resolveStaged.get(id) ?? [];
-        staged.splice(Number(index), 1);
-        renderOpportunityList(session.state);
-      };
-    }
-    for (const button of $('opportunity-list').querySelectorAll('[data-resolve]')) {
-      button.onclick = () => {
-        const id = button.dataset.resolve;
-        asFacilitator('facilitator:resolve-opportunity', {
-          opportunityId: id, effects: resolveStaged.get(id) ?? [],
-        });
-        resolveStaged.delete(id);
-      };
-    }
-  }
-
-  function renderTitheTracker(state) {
-    const owed = titheOwed(state.phase.turn);
-    const paid = state.tithe.paidCardIds.length;
-    $('tithe-tracker').innerHTML = `
-      <p>${escape(events.tithe.from)} owes ${owed} card${owed === 1 ? '' : 's'} this turn —
-        ${state.tithe.refused ? `refused, with ${paid} paid.`
-    : paid >= owed ? `paid in full (${paid}).`
-      : `${paid} of ${owed} paid.`}</p>
-      ${paid < owed && !state.tithe.refused ? `
-        <button type="button" data-refuse-tithe>Mark refused</button>
-        <p class="cm-meta">On refusal, the print says: ${
-  events.tithe.onRefusal.map(escape).join('; ')}. The amounts are yours — move the
-          tracks by hand.</p>` : ''}`;
-    const refuse = $('tithe-tracker').querySelector('[data-refuse-tithe]');
-    if (refuse) refuse.onclick = () => asFacilitator('facilitator:mark-tithe-refused', {});
   }
 
   /** The facilitator acts as themselves — a seat of their own on this tab. */

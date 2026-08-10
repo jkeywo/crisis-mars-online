@@ -106,11 +106,54 @@
         <p id="unplaced" class="cm-meta" hidden></p>
       </section>
 
-      <!-- The three boards, one lane each, built from maps.json by the app.
-           The inspector edits the tracks; these react like every other
-           cm- component. -->
-      <div id="host-boards" class="cm-boards-lanes"></div>
+      <!-- The console is tabs from here down: one per map (the printed
+           board with the live game overlaid, and that map's Action Phase
+           machinery), then Roles, NPCs, and Game. The map tab buttons and
+           panels are built by the app from maps.json; the clock strip above
+           stays put whichever tab is in front. -->
+      <nav id="host-tabs" class="cm-tabs cm-host-tabs" role="tablist"
+           aria-label="Console tabs"></nav>
 
+      <div id="tab-panels">
+        <!-- The three map panels are built here by the app. -->
+
+        <section class="cm-tab-panel" id="panel-roles" role="tabpanel"
+                 aria-labelledby="tab-roles" hidden>
+          <h2>The lanyards</h2>
+          <p class="cm-meta">
+            Who is wearing what. Open a row to manage that player's cards —
+            every move lands on the override ledger — or to place their
+            action card for them.
+          </p>
+          <cm-roles-panel id="roles-panel"></cm-roles-panel>
+        </section>
+
+        <section class="cm-tab-panel" id="panel-npcs" role="tabpanel"
+                 aria-labelledby="tab-npcs" hidden>
+          <h2>Your lanyards</h2>
+          <p class="cm-meta">
+            The Ambassador and the Speaker are yours to roleplay. Their cards
+            move through the same verbs the players use; every pass lands in
+            the log like everything else.
+          </p>
+          <div class="cm-npc-grid">
+            <article class="cm-npc-column">
+              <div id="npc-brief-n1"></div>
+              <h3>The tithe</h3>
+              <div id="tithe-tracker"></div>
+              <h3>Hand</h3>
+              <cm-hand id="npc-n1" acts-for="N1"></cm-hand>
+            </article>
+            <article class="cm-npc-column">
+              <div id="npc-brief-n2"></div>
+              <h3>Hand</h3>
+              <cm-hand id="npc-n2" acts-for="N2"></cm-hand>
+            </article>
+          </div>
+        </section>
+
+        <section class="cm-tab-panel" id="panel-game" role="tabpanel"
+                 aria-labelledby="tab-game" hidden>
       <!-- The end-of-turn worksheet: computed by the reducer, stepped
            through here once the last spotlight has closed. -->
       <cm-turn-update id="turn-update"></cm-turn-update>
@@ -137,8 +180,6 @@
           <div>
             <h3>War correspondence</h3>
             <div id="correspondence-card"></div>
-            <h3>The tithe</h3>
-            <div id="tithe-tracker"></div>
           </div>
           <div>
             <h3>Compose an opportunity</h3>
@@ -147,16 +188,6 @@
             <div id="opportunity-list"></div>
           </div>
         </div>
-      </section>
-
-      <section id="lobby-roles" class="cm-lobby-roles" hidden>
-        <h2>Choosing lanyards</h2>
-        <p class="cm-meta">
-          The same picker every player has open right now. Begin the game
-          above once enough of the table has sat down — a lanyard can still be
-          claimed or re-claimed after that, same as any late arrival.
-        </p>
-        <div id="role-grid" class="cm-roles-by-team"></div>
       </section>
 
       <div class="cm-columns">
@@ -219,20 +250,6 @@
         </div>
 
         <div>
-          <h2>The NPC hands</h2>
-          <p class="cm-meta">
-            The U.N. Ambassador and the Martian Senate Speaker are yours to
-            roleplay. Hand their cards out — the tithe, a bribe, a favour —
-            through the same verbs the players use; every pass lands in the
-            log like everything else.
-          </p>
-          <section class="cm-npc-hands">
-            <h3>Unified Nations Ambassador</h3>
-            <cm-hand id="npc-n1" acts-for="N1"></cm-hand>
-            <h3>Martian Senate Speaker</h3>
-            <cm-hand id="npc-n2" acts-for="N2"></cm-hand>
-          </section>
-
           <h2>Change anything</h2>
           <cm-state-inspector id="inspector"></cm-state-inspector>
 
@@ -250,6 +267,8 @@
           </section>
         </div>
       </div>
+        </section>
+      </div><!-- /#tab-panels -->
     </section>
   </main>
 
