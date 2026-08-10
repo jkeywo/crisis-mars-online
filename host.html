@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Crisis: Mars — Facilitator</title>
+  <link rel="icon" href="favicon.ico">
   <link rel="stylesheet" href="gui/console.css">
   <script src="vendor/peerjs.min.js"></script>
 </head>
@@ -91,6 +92,19 @@
       <!-- The end-of-turn worksheet: computed by the reducer, stepped
            through here once the last spotlight has closed. -->
       <cm-turn-update id="turn-update"></cm-turn-update>
+
+      <!-- The debrief. Everything on it is worked out from the frozen board,
+           so it cannot disagree with the maps the players are looking at. -->
+      <section id="epilogue-panel" class="cm-epilogue-panel" hidden>
+        <h2>The debrief</h2>
+        <p class="cm-meta">Read from this. Print it, or save it as a page to
+          send round the week after.</p>
+        <div class="cm-row">
+          <button id="print-epilogue" type="button" class="cm-primary">Print it</button>
+          <button id="save-epilogue" type="button">Save as a page</button>
+        </div>
+        <cm-epilogue id="epilogue"></cm-epilogue>
+      </section>
 
       <!-- The Team Phase table: the turn's war news, the opportunity
            composer, and the tithe. Built from the facilitator-only files

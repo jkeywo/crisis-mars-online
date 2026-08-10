@@ -37,6 +37,7 @@ import '../components/cm-card-viewer.js';
 import '../components/cm-initiative-queue.js';
 import '../components/cm-action-spotlight.js';
 import '../components/cm-opportunity-card.js';
+import '../components/cm-epilogue.js';
 import { titheOwed, TITHE_FROM_FACTION } from '../rules/commands.js';
 
 const $ = (id) => document.getElementById(id);
@@ -243,6 +244,12 @@ export async function startPlayerApp({ location = window.location, beeper = crea
     $('opportunities').view = view;
     renderPlacement(view, mine);
     renderTithe(view, mine);
+    // Time called: the public portrait of how it ended, above the boards.
+    $('epilogue-view').hidden = view.phase.name !== 'epilogue';
+    if (view.phase.name === 'epilogue') {
+      $('epilogue-view').data = data;
+      $('epilogue-view').view = view;
+    }
     renderAllHands(view, mine);
     $('game-roster').roles = data.roles.roles;
     $('game-roster').seats = seats;

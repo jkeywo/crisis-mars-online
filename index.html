@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Crisis: Mars</title>
+  <title>Crisis: Mars — Online</title>
+  <link rel="icon" href="favicon.ico">
   <link rel="stylesheet" href="gui/console.css">
   <script src="vendor/peerjs.min.js"></script>
 </head>
@@ -107,6 +108,10 @@
         <!-- the three boards -->
         <div id="game-main" class="cm-game-main">
           <div class="cm-pane">
+            <!-- Once time is called: the public portrait of how it ended.
+                 No aftermath data here — that file is the facilitator's. -->
+            <cm-epilogue id="epilogue-view" hidden></cm-epilogue>
+
             <!-- One lane per map, built from maps.json by the app so the row
                  cannot disagree with the boards that exist. -->
             <div id="boards" class="cm-boards-lanes"></div>

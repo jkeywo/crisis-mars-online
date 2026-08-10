@@ -2723,3 +2723,51 @@ cm-initiative-queue { display: block; }
 .cm-worksheet-steps li[data-kind="surrender"] { border-left-color: var(--cm-blood); }
 
 .cm-warn { color: var(--cm-blood); }
+
+
+/* --------------------------------------------------------------------------
+   The epilogue (Phase B8).
+   -------------------------------------------------------------------------- */
+
+.cm-epilogue { display: grid; gap: 1rem; }
+
+.cm-epilogue section {
+  background: var(--cm-paper);
+  border: 1px solid var(--cm-rule);
+  border-radius: 6px;
+  padding: 0.6rem 0.9rem;
+}
+
+.cm-epilogue-faction {
+  border-left: 4px solid var(--faction-colour, var(--cm-rule));
+  padding: 0.4rem 0.7rem;
+  margin: 0.4rem 0;
+}
+
+.cm-epilogue-faction ul, .cm-epilogue-personals {
+  list-style: none;
+  margin: 0.2rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.cm-epilogue-faction li, .cm-epilogue-personals li {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.cm-epilogue-ledger ol { margin: 0.2rem 0 0; padding-left: 1.2rem; }
+
+.cm-epilogue-notes textarea { width: 100%; }
+
+/* The debrief prints: everything else on the console does not. */
+@media print {
+  body.cm-shell > *:not(main),
+  .cm-run-control, .cm-boards-lanes, .cm-team-panel, .cm-columns,
+  cm-turn-update, .cm-lobby-roles {
+    display: none !important;
+  }
+  #epilogue-panel { display: block !important; }
+  .cm-epilogue section { border: none; background: none; }
+}

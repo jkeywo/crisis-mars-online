@@ -18,7 +18,7 @@
 
 import { GameHost } from './game-host.js';
 import {
-  Persistence, saveFilename, downloadSave, parseSave,
+  Persistence, saveFilename, downloadSave, downloadPage, epiloguePage, parseSave,
 } from './persistence.js';
 import { PrimarySession } from './session.js';
 import { eventPumpFor } from './event-pump.js';
@@ -42,6 +42,7 @@ import '../components/cm-card-viewer.js';
 import '../components/cm-initiative-queue.js';
 import '../components/cm-adjudication.js';
 import '../components/cm-turn-update.js';
+import '../components/cm-epilogue.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -50,7 +51,8 @@ export async function startHostApp({ location = window.location, beeper = create
   // The facilitator-only files — the war correspondence script, the
   // opportunity menus, the tithe notes. This page alone fetches them; the
   // player page never does. See DECISIONS.md.
-  const events = (await loadFacilitatorData()).events;
+  const facilitatorData = await loadFacilitatorData();
+  const events = facilitatorData.events;
   const persistence = new Persistence({
     onError: () => {
       $('save-warning').hidden = false;
@@ -314,6 +316,15 @@ export async function startHostApp({ location = window.location, beeper = create
     renderTeamPanel(session.state);
     $('turn-update').data = data;
     $('turn-update').view = session.state;
+
+    // The debrief appears when time is called, worked out from the frozen
+    // board — plus the aftermath file's evidence tables, host-only.
+    $('epilogue-panel').hidden = phase.name !== 'epilogue';
+    if (phase.name === 'epilogue') {
+      $('epilogue').data = data;
+      $('epilogue').aftermath = facilitatorData.aftermath;
+      $('epilogue').view = session.state;
+    }
 
     const ended = phase.name === 'epilogue';
     $('advance-phase').textContent = phase.name === 'lobby' ? 'Begin the game'
@@ -606,6 +617,15 @@ export async function startHostApp({ location = window.location, beeper = create
       const url = `${base}${base.includes('?') ? '&' : '?'}seat=${seat}${hash ? `#${hash}` : ''}`;
       globalThis.open?.(url, `cm-seat-${seat}`);
     }
+  });
+
+  $('print-epilogue').addEventListener('click', () => globalThis.print?.());
+
+  $('save-epilogue').addEventListener('click', () => {
+    // A self-contained page, so a debrief can be sent round afterwards
+    // without needing the app or the game still to exist.
+    downloadPage(epiloguePage($('epilogue').innerHTML, session.joinCode),
+      `crisis-mars-${session.state.joinCode}-debrief.html`);
   });
 
   $('copy-link').addEventListener('click', async () => {
