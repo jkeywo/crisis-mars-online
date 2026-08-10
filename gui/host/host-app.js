@@ -37,7 +37,6 @@ import { opportunityConsensus } from '../rules/derive.js';
 import '../components/cm-connection-dot.js';
 import '../components/cm-seat-roster.js';
 import '../components/cm-phase-clock.js';
-import '../components/cm-state-inspector.js';
 import '../components/cm-board-overlay.js';
 import '../components/cm-war-progress.js';
 import '../components/cm-roles-panel.js';
@@ -391,12 +390,10 @@ export async function startHostApp({ location = window.location, beeper = create
     const phase = session.state.phase;
     $('clock').phase = phase;
 
-    $('inspector').data = data;
-    $('inspector').state = session.state;
-
     // The boards and the war rail render the same shape the players get — a
     // facilitator's projection is the whole state, so the state itself will
-    // do. They react to the inspector like every other cm- component.
+    // do. The editable chips on the board overlays are the pencil now; the
+    // old state inspector retired when they made it redundant.
     $('war-strip').hidden = false;
     $('war').data = data;
     $('war').view = session.state;

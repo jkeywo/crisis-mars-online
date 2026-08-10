@@ -152,6 +152,30 @@ describe('<cm-board-overlay>', () => {
     }]);
   });
 
+  it('clears the war marker back to "not begun" from its edit mode', () => {
+    // The one control the retired state inspector alone used to have: the
+    // war chip's edit mode carries a clear that sets warProgress to null.
+    const overlay = mount('mars_map');
+    overlay.data = data;
+    const view = fresh();
+    view.warProgress = 12;
+    overlay.view = view;
+    const raised = [];
+    overlay.addEventListener('cm-facilitate', (e) => raised.push(e.detail));
+
+    // Track chips carry no clear — only the marker can be lifted off.
+    overlay.querySelector('[data-chip="senate_military"] button').click();
+    expect(overlay.querySelector('[data-war-clear]')).toBeNull();
+    overlay.querySelector('[data-cancel]').click();
+
+    overlay.querySelector('[data-chip="war-progress"] button').click();
+    overlay.querySelector('[data-war-clear]').click();
+    expect(raised).toEqual([{
+      verb: 'facilitator:set', payload: { path: ['warProgress'], value: null },
+    }]);
+    expect(overlay.querySelector('input')).toBeNull();   // edit closed
+  });
+
   it('carries the placed action-card tokens under the image', () => {
     const overlay = mount('earth_map');
     overlay.data = data;

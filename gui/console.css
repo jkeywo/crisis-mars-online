@@ -1510,7 +1510,7 @@ cm-envoy-channel h4 { margin: 0 0 0.5rem; }
 }
 
 .cm-envoy-buttons { display: flex; gap: 0.4rem; }
-.cm-envoy-panel, .cm-inspector-panel, .cm-consent-panel { margin-bottom: 1.5rem; }
+.cm-envoy-panel, .cm-consent-panel { margin-bottom: 1.5rem; }
 
 .cm-foreign-influence textarea {
   font: inherit;
@@ -1754,154 +1754,6 @@ cm-envoy-channel h4 { margin: 0 0 0.5rem; }
 .cm-consent-who button { font-size: 0.7rem; padding: 0.1rem 0.4rem; }
 
 .cm-consent-buttons { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-
-/* --- the inspector ------------------------------------------------------- */
-
-.cm-inspector-cardgrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
-  gap: 0.8rem;
-  margin-bottom: 1rem;
-}
-
-/* Cards are grouped by whose man each role is, so the heading has to read as a
-   band across the page rather than as another card. */
-.cm-inspector-household { margin: 0 0 0.6rem; }
-
-.cm-inspector-household h5 {
-  margin: 0 0 0.4rem;
-  padding-bottom: 0.2rem;
-  border-bottom: 1px solid var(--cm-rule);
-  font-size: 0.8rem;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--cm-muted);
-}
-
-.cm-inspector-card {
-  background: var(--cm-parchment);
-  border: 1px solid var(--cm-rule);
-  border-radius: 3px;
-  padding: 0.7rem 0.9rem;
-  display: grid;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-}
-
-.cm-inspector-card header h5 { margin: 0; font-family: var(--cm-serif); font-size: 1rem; }
-
-.cm-inspector-stats { display: grid; gap: 0.35rem; }
-
-.cm-inspector-stat {
-  display: grid;
-  grid-template-columns: 5rem 2rem 3.5rem auto 1fr;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.cm-inspector-stat-label {
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--cm-muted);
-}
-
-.cm-inspector-stat-value { font-family: var(--cm-serif); }
-.cm-inspector-stat input[type="number"] { width: 100%; padding: 0.2rem 0.3rem; font-size: 0.82rem; }
-.cm-inspector-stat button { font-size: 0.72rem; padding: 0.15rem 0.4rem; }
-.cm-inspector-error { grid-column: 1 / -1; color: var(--cm-blood); font-size: 0.72rem; }
-
-.cm-inspector-claim-list {
-  list-style: none;
-  margin: 0.2rem 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-}
-
-.cm-inspector-claim-list li {
-  background: var(--cm-paper);
-  border: 1px solid var(--cm-rule);
-  border-radius: 3px;
-  padding: 0.1rem 0.4rem;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.cm-inspector-claim-list button {
-  border: none;
-  background: none;
-  padding: 0;
-  color: var(--cm-blood);
-  cursor: pointer;
-  font-size: 0.9rem;
-  line-height: 1;
-}
-
-.cm-inspector-claims form { display: flex; gap: 0.3rem; margin-top: 0.2rem; }
-
-.cm-inspector-steward-list {
-  list-style: none;
-  margin: 0.2rem 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-}
-
-.cm-inspector-steward-list li {
-  background: var(--cm-paper);
-  border: 1px solid var(--cm-rule);
-  border-radius: 3px;
-  padding: 0.1rem 0.4rem;
-  font-size: 0.8rem;
-}
-
-.cm-inspector-toggle { display: flex; align-items: center; gap: 0.4rem; }
-
-.cm-inspector-tokens {
-  border: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  gap: 0.7rem;
-  flex-wrap: wrap;
-}
-
-.cm-inspector-tokens legend {
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--cm-muted);
-  padding: 0;
-}
-
-.cm-inspector-tokens label { display: flex; align-items: center; gap: 0.25rem; font-size: 0.8rem; }
-
-.cm-inspector-remove {
-  justify-self: start;
-  font-size: 0.75rem;
-  color: var(--cm-blood);
-  border-color: var(--cm-blood);
-}
-
-.cm-inspector-addrole {
-  background: var(--cm-parchment);
-  border: 1px solid var(--cm-rule);
-  border-radius: 3px;
-  padding: 0.7rem 0.9rem;
-  margin-bottom: 1rem;
-}
-
-.cm-inspector-addrole-form fieldset {
-  border: 1px solid var(--cm-rule);
-  border-radius: 3px;
-  margin: 0.5rem 0;
-}
-
-.cm-inspector-addrole-form label { display: flex; align-items: center; gap: 0.35rem; font-size: 0.85rem; }
 
 /* --- the facilitator's shire editor, on the map --------------------------- */
 
@@ -2149,14 +2001,6 @@ cm-shire-editor { display: block; }
 }
 
 .cm-tracks td { text-align: right; font-variant-numeric: tabular-nums; }
-
-.cm-inspector-war {
-  margin-top: 1rem;
-  padding: 0.6rem 0.8rem;
-  background: var(--cm-paper);
-  border: 1px solid var(--cm-rule);
-  border-radius: 6px;
-}
 
 
 /* --------------------------------------------------------------------------

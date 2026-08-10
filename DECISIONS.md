@@ -291,6 +291,18 @@ that is on screen for the whole evening it is furniture. A facilitator
 learns the behaviour the first time a phase overruns. The unplaced strip
 stays in the header — that one is live information with a deadline.
 
+## 2026-08-10 — The state inspector retires (author's ruling)
+
+The editable board chips made "Change anything" a second, worse way to do
+the same edits, and the author ruled it off the Game tab. Before removal
+its one irreplaceable control moved home: clearing War Progress back to
+"the war has not begun" (facilitator:set to null) is now a third button in
+the war marker chip's edit mode on the board overlays — the earlier note
+that "setting the war back to null stays with the inspector's Deactivate"
+is hereby superseded. The component file, its CSS and its STRINGS rows are
+gone; the facilitator:set / facilitator:adjust verbs it drove are untouched
+and remain the pencil under every chip.
+
 ## HTTPS enforcement lives at Cloudflare, not GitHub (2026-08-10, coordinator)
 
 crisis-mars-online.kiwigamedesign.co.uk resolves to Cloudflare's proxy, so

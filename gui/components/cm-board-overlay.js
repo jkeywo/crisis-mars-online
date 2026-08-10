@@ -14,7 +14,9 @@
  * delta commutes with whatever the players did in between, exactly the
  * inspector's own reasoning. The War Progress marker is a chip like the
  * others, standing at the route hex whose band holds the value, except its
- * commit is `facilitator:set` — a marker is placed, not nudged.
+ * commit is `facilitator:set` — a marker is placed, not nudged — and its
+ * edit mode carries a third button, clear, which lifts the marker off the
+ * boards entirely (warProgress back to null: the war has not begun).
  *
  * Read-only without a facilitator page around it in spirit, but the
  * component itself only ever emits `cm-facilitate`; admission decides.
@@ -70,7 +72,10 @@ export class CmBoardOverlay extends HTMLElement {
             <input type="number" step="1" value="${this._editValue}"
               aria-label="New value for ${escape(label)}">
             <button type="button" data-commit aria-label="Commit">✓</button>
-            <button type="button" data-cancel aria-label="Cancel">✕</button>` : `
+            <button type="button" data-cancel aria-label="Cancel">✕</button>
+            ${id === 'war-progress' ? `
+            <button type="button" data-war-clear
+              aria-label="Clear — the war has not begun">clear</button>` : ''}` : `
             <button type="button" class="cm-board-chip-value"
               aria-label="${escape(label)}: ${value} — click to edit">${value}</button>`}
         </div>`;
@@ -154,6 +159,16 @@ export class CmBoardOverlay extends HTMLElement {
 
       holder.querySelector('[data-commit]').onclick = commit;
       holder.querySelector('[data-cancel]').onclick = () => this._closeEdit();
+      // The war marker alone can be lifted off the boards entirely — back
+      // to "the war has not begun". This was the state inspector's one
+      // irreplaceable control before it retired; it lives here now.
+      const clear = holder.querySelector('[data-war-clear]');
+      if (clear) {
+        clear.onclick = () => {
+          this._emit('facilitator:set', { path: ['warProgress'], value: null });
+          this._closeEdit();
+        };
+      }
     }
   }
 

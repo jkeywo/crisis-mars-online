@@ -114,9 +114,8 @@ messages, and test strings — see the note at the end.
 | NPC h2 | The NPC hands |
 | NPC note | The U.N. Ambassador and the Martian Senate Speaker are yours to roleplay. Hand their cards out — the tithe, a bribe, a favour — through the same verbs the players use; every pass lands in the log like everything else. |
 | NPC h3s | Unified Nations Ambassador / Martian Senate Speaker |
-| inspector h2 | Change anything |
 | gaps fold summary | Where the rules are silent |
-| gaps note | The printed rules were written for a room with you in it, so a few questions are never answered on paper. The app had to pick something before anybody sat down. Here is what it picked — overrule any of it with the inspector above. |
+| gaps note | The printed rules were written for a room with you in it, so a few questions are never answered on paper. The app had to pick something before anybody sat down. Here is what it picked — overrule any of it on the boards themselves: every chip is the pencil. |
 
 ## 5. Host page — dynamic (gui/host/host-app.js)
 
@@ -273,17 +272,6 @@ messages, and test strings — see the note at the end.
 |---|---|
 | lede | An opportunity for {faction name} — talk it over, then vote. Every claimed seat agreeing is consensus. |
 | votes line | Votes: {name} — {A/B}; … **Consensus on {A/B}.** / No consensus yet. |
-
-### cm-state-inspector
-| Ref | Text |
-|---|---|
-| heading | The tracks |
-| stat controls | +/- placeholder / Commit |
-| adjust error | enter a nonzero amount, positive or negative |
-| war heading | War Progress |
-| war quiet | Not active yet — the turn-two war correspondence starts the marker. |
-| war active | At {n}. 0 is Earth's surrender; 20 or more is Mars's. |
-| war controls | Set to / Set / Deactivate |
 
 ### cm-turn-update
 | Ref | Text |
@@ -475,6 +463,7 @@ messages, and test strings — see the note at the end.
 | edit input aria | New value for {track name} |
 | commit / cancel | ✓ *(aria: Commit)* / ✕ *(aria: Cancel)* |
 | war marker chip aria | War Progress: {n} — click to edit |
+| war marker clear | clear *(aria: Clear — the war has not begun)* |
 
 ### Roles tab (host.html + cm-roles-panel)
 | Ref | Text |
